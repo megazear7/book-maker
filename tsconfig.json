@@ -1,0 +1,15 @@
+{
+    "compileOnSave": false,
+    "compilerOptions": {
+        "strict": true,
+        "rootDir": "src",
+        "outDir": "dist",
+        "module": "ES2022",
+        "moduleResolution": "Bundler",
+        "target": "ESNext",
+        "typeRoots": [
+            "node_modules/@types"
+        ],
+        "sourceMap": true
+    }
+}

@@ -3,9 +3,26 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "lint": "prettier src --check && eslint src",
+    "fix": "prettier src --write && eslint src --fix",
+    "create": "tsc && node dist/index.js"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "eslint": "^9.28.0",
+    "openai": "^5.0.1",
+    "prettier": "^3.5.3",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.33.0",
+    "zod": "^3.25.42"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.29"
+  }
 }
