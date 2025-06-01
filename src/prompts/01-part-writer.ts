@@ -19,7 +19,7 @@ export const PartWriterPromptParams = z.object({
 });
 export type PartWriterPromptParams = z.infer<typeof PartWriterPromptParams>;
 
-export default ({ chapter, part, length }: PartWriterPromptParams): Prompt => `
-I want you to write part ${part} of the "${chapter}" scene as though you are an amazing author with subtly and nuance.
-It should be about ${length} words in length.
-`;
+export function partWriterPrompt({ chapter, part, length }: PartWriterPromptParams): Prompt {
+  return `I want you to write part ${part} of the "${chapter}" scene as though you are an amazing author with subtly and nuance.
+It should be about ${length} words in length.`;
+}
