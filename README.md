@@ -32,6 +32,10 @@ We will pretend the books name is `book-abc` for the purpose of explaining how t
 
 ## Create the Book
 
+Configure the `book-maker.config.json` file per the instructions of the BookMakerConfig object as defined in `src/types/standard.ts`
+
+Then run the below command.
+
 ```sh
-BOOK=book-abc npm run create
+npm run create
 ```

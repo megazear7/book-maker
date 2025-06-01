@@ -1,7 +1,9 @@
 
-const book = process.env.BOOK;
+import { promises as fs } from "fs";
+import { BookMakerConfig } from "./types/standard.js";
 
-console.log(book);
+const config = BookMakerConfig.parse(JSON.parse(await fs.readFile("book-maker.config.json", "utf-8")));
+console.log(config);
 
 // Refer to the below grok chat for example process and prompts
 // https://grok.com/chat/8a266bc2-ecb7-4c2c-bde0-128b7a01d132
