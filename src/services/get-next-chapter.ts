@@ -7,7 +7,7 @@ export async function getNextChapter(config: BookMakerConfig): Promise<ChapterSu
     const txt = await fs.readFile(`data/${config.book}/chapter-outline.json`, "utf-8");
     const json = JSON.parse(txt);
     const chapters = BookByChapters.parse(json);
-    const index = 1;
+    let index = 1;
     for (const chapter of chapters.chapters) {
         if (!existingChapterNames.includes(`chapter-${index}`)) {
             return {
@@ -15,6 +15,7 @@ export async function getNextChapter(config: BookMakerConfig): Promise<ChapterSu
                 ...chapter,
             };
         }
+        index++;
     }
 
     return undefined;

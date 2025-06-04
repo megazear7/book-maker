@@ -14,9 +14,6 @@ import { getNextChapter } from "./services/get-next-chapter.js";
 import { logMessages } from "./services/log-messages.js";
 import { getReferences } from "./services/get-references.js";
 
-// Refer to the below grok chat for example process and prompts
-// https://grok.com/chat/8a266bc2-ecb7-4c2c-bde0-128b7a01d132
-
 const client = await getClient();
 const config = BookMakerConfig.parse(JSON.parse(await fs.readFile("book-maker.config.json", "utf-8")));
 const references = await getReferences(config);
@@ -31,8 +28,8 @@ const messages: Array<ChatCompletionMessageParam> = [
 let index = 0;
 let nextChapter = await getNextChapter(config);
 
-while (index < 1 && nextChapter) {
-    console.log(`Writing chapter ${nextChapter.title}`);
+while (index < 30 && nextChapter) {
+    console.log(`Writing chapter ${nextChapter.index} to be between ${nextChapter.parts.min} and ${nextChapter.parts.max} parts: ${nextChapter.title}`);
     messages.push(...promptToMessage(Role.enum.user, getNextChapterPrompt(nextChapter)));
     const parts = await getJsonCompletion(client, messages, ChapterOutline);
     messages.push(...promptToMessage(Role.enum.assistant, JSON.stringify(parts, undefined, 4)));
@@ -43,7 +40,7 @@ while (index < 1 && nextChapter) {
     const writtenParts: string[] = [];
     for (let j = 0; j < parts.length; j++) {
         const part = parts[j];
-        console.log(`  Writing part ${j+1}: ${part.title}`);
+        console.log(`  Writing part ${j+1} to be about ${nextChapter.parts.length} words long: ${part.title}`);
         messages.push(...promptToMessage(Role.enum.user, getPartPrompt(nextChapter, j+1)));
         const partText = await getCompletion(client, messages);
         messages.push(...promptToMessage(Role.enum.assistant, partText));
@@ -55,9 +52,3 @@ while (index < 1 && nextChapter) {
     index++;
     nextChapter = await getNextChapter(config);
 }
-
-
-
-// Step 4: For the next chapter, use the chapter outliner to create a chapter outline
-
-// Step 5: Use the part writer to write the parts for each chapter

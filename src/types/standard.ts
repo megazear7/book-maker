@@ -22,6 +22,11 @@ export const ChapterSummary = z.object({
     why: z.string().min(1).describe("Why the chapter is included in the plot of the book."),
     how: z.string().min(1).describe("Specify what characters perspective is the chapter written from."),
     who: z.string().min(1).describe("Which characters is involved in the chapter."),
+    parts: z.object({
+        min: z.number().min(1).default(3).describe("The minumum number of parts for the chapter"),
+        max: z.number().min(1).default(5).describe("The maximum number of parts for the chapter"),
+        length: z.number().min(1).default(600).describe("The the length of each part for the chapter"),
+    }),
 });
 export type ChapterSummary = z.infer<typeof ChapterSummary>;
 
