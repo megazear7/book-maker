@@ -1,5 +1,5 @@
-import { referencesPrompt } from "../prompts/00-references";
-import { BookMakerConfig, Prompt } from "../types/standard";
+import { referencesPrompt } from "../prompts/00-references.js";
+import { BookMakerConfig, Prompt } from "../types/standard.js";
 import { promises as fs } from "fs";
 
 export async function getReferences(config: BookMakerConfig): Promise<Prompt[]> {
