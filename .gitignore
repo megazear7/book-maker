@@ -5,3 +5,4 @@ data
 .env
 book-maker.config.json
 tmp.txt
+tmp

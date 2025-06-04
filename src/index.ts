@@ -1,7 +1,6 @@
 
 import { promises as fs } from "fs";
 import { BookMakerConfig, ChapterOutline, Prompt, Role } from "./types/standard.js";
-import { getReferences } from "./services/get-references.js";
 import { getClient } from "./services/xai-auth.js";
 import { ChatCompletionMessageParam } from "openai/resources";
 import { getOverview } from "./services/get-overview.js";
@@ -12,6 +11,8 @@ import { getNextChapterPrompt } from "./services/get-next-chapter-prompt.js";
 import { getJsonCompletion } from "./services/get-json-completion.js";
 import { getPartPrompt } from "./services/get-part-prompt.js";
 import { getNextChapter } from "./services/get-next-chapter.js";
+import { logMessages } from "./services/log-messages.js";
+import { getReferences } from "./services/get-references.js";
 
 // Refer to the below grok chat for example process and prompts
 // https://grok.com/chat/8a266bc2-ecb7-4c2c-bde0-128b7a01d132
@@ -34,18 +35,22 @@ while (index < 1 && nextChapter) {
     console.log(`Writing chapter ${nextChapter.title}`);
     messages.push(...promptToMessage(Role.enum.user, getNextChapterPrompt(nextChapter)));
     const parts = await getJsonCompletion(client, messages, ChapterOutline);
-    const writtenParts: string[] = [];
+    messages.push(...promptToMessage(Role.enum.assistant, JSON.stringify(parts, undefined, 4)));
+    await logMessages(messages);
+    await fs.mkdir(`data/${config.book}/chapters/chapter-${nextChapter.index}`, { recursive: true });
+    await fs.writeFile(`data/${config.book}/chapters/chapter-${nextChapter.index}/chapter-${nextChapter.index}.json`, JSON.stringify(parts, undefined, 4));
 
+    const writtenParts: string[] = [];
     for (let j = 0; j < parts.length; j++) {
         const part = parts[j];
         console.log(`  Writing part ${j+1}: ${part.title}`);
         messages.push(...promptToMessage(Role.enum.user, getPartPrompt(nextChapter, j+1)));
-        writtenParts.push(await getCompletion(client, messages));
+        const partText = await getCompletion(client, messages);
+        messages.push(...promptToMessage(Role.enum.assistant, partText));
+        await logMessages(messages);
+        writtenParts.push(partText);
+        await fs.writeFile(`data/${config.book}/chapters/chapter-${nextChapter.index}/chapter-${nextChapter.index}.txt`, writtenParts.join('\n'));
     }
-
-    fs.mkdir(`data/${config.book}/chapters/chapter-${nextChapter.index}`);
-    fs.writeFile(`data/${config.book}/chapters/chapter-${nextChapter.index}/chapter-${nextChapter.index}.json`, JSON.stringify(parts, undefined, 4));
-    fs.writeFile(`data/${config.book}/chapters/chapter-${nextChapter.index}/chapter-${nextChapter.index}.txt`, writtenParts.join('\n'));
 
     index++;
     nextChapter = await getNextChapter(config);

@@ -21,5 +21,6 @@ export type PartWriterPromptParams = z.infer<typeof PartWriterPromptParams>;
 
 export function partWriterPrompt({ chapter, part, length }: PartWriterPromptParams): Prompt {
   return `I want you to write part ${part} of the "${chapter}" scene as though you are an amazing author with subtly and nuance.
-It should be about ${length} words in length.`;
+It should be about ${length} words in length. Only reply with the text of the part with no additional commentary, no headers, and
+no other text.`;
 }

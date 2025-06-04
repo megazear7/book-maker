@@ -10,6 +10,6 @@ export async function getCompletion(client: OpenAI, history: Array<ChatCompletio
   if (!completion.choices[0].message.content) {
     throw new Error("Failed to get completion");
   }
-  
+
   return completion.choices[0].message.content;
 }
