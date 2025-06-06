@@ -2,6 +2,7 @@ import OpenAI from "openai";
 import { ChatCompletionMessageParam } from "openai/resources";
 import { ZodSchema } from "zod";
 import zodToJsonSchema from "zod-to-json-schema";
+import { model } from "./models.js";
 
 export async function getJsonCompletion<T>(client: OpenAI, history: Array<ChatCompletionMessageParam>, zod: ZodSchema<T>): Promise<T> {
   const innerSchema = zodToJsonSchema(zod);
@@ -12,7 +13,7 @@ export async function getJsonCompletion<T>(client: OpenAI, history: Array<ChatCo
   };
 
   const completion = await client.chat.completions.create({
-    model: "grok-3",
+    model: model.name,
     messages: history,
     response_format: {
       type: "json_schema",

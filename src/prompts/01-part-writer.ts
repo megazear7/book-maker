@@ -25,7 +25,6 @@ I want you to write part ${part} of the "${chapter}" scene as though you are an 
 It should be about ${length} words in length.
 Remember to match the writing style of the author based on the existing written material provided earlier. 
 
-Only reply with the text of the part with no additional commentary, no headers, and
-no other text.
+Only reply with the text of the part with no additional commentary, no formtting, no headers, and no other text.
 `.trim();
 }

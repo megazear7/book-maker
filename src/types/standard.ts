@@ -56,5 +56,7 @@ export const ChapterOutlinePart = z.object({
 });
 export type ChapterOutlinePart = z.infer<typeof ChapterOutlinePart>;
 
-export const ChapterOutline = ChapterOutlinePart.array();
+export const ChapterOutline = z.object({
+    parts: ChapterOutlinePart.array()
+});
 export type ChapterOutline = z.infer<typeof ChapterOutline>;

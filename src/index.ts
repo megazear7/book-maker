@@ -1,7 +1,7 @@
 
 import { promises as fs } from "fs";
-import { BookMakerConfig, ChapterOutline, Prompt, Role } from "./types/standard.js";
-import { getClient } from "./services/xai-auth.js";
+import { BookMakerConfig, ChapterOutline, Role } from "./types/standard.js";
+import { getClient } from "./services/client.js";
 import { ChatCompletionMessageParam } from "openai/resources";
 import { getOverview } from "./services/get-overview.js";
 import { promptToMessage } from "./services/prompt-to-message.js";
@@ -28,10 +28,10 @@ const messages: Array<ChatCompletionMessageParam> = [
 let index = 0;
 let nextChapter = await getNextChapter(config);
 
-while (index < 30 && nextChapter) {
+while (index < 1 && nextChapter) {
     console.log(`Writing chapter ${nextChapter.index} to be between ${nextChapter.parts.min} and ${nextChapter.parts.max} parts: ${nextChapter.title}`);
     messages.push(...promptToMessage(Role.enum.user, getNextChapterPrompt(nextChapter)));
-    const parts = await getJsonCompletion(client, messages, ChapterOutline);
+    const { parts } = await getJsonCompletion(client, messages, ChapterOutline);
     messages.push(...promptToMessage(Role.enum.assistant, JSON.stringify(parts, undefined, 4)));
     await logMessages(messages);
     await fs.mkdir(`data/${config.book}/chapters/chapter-${nextChapter.index}`, { recursive: true });

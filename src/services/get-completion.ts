@@ -1,9 +1,10 @@
 import OpenAI from "openai";
 import { ChatCompletionMessageParam } from "openai/resources";
+import { model } from "./models.js";
 
 export async function getCompletion(client: OpenAI, history: Array<ChatCompletionMessageParam>) {
   const completion = await client.chat.completions.create({
-    model: "grok-3",
+    model: model.name,
     messages: history,
   });
 
