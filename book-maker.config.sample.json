@@ -1,4 +1,5 @@
 {
+    "model": "grok",
     "title": "My Awesome Book",
     "book": "my-book-to-make",
     "references": [

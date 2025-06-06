@@ -2,9 +2,12 @@ import OpenAI from "openai";
 import { ChatCompletionMessageParam } from "openai/resources";
 import { ZodSchema } from "zod";
 import zodToJsonSchema from "zod-to-json-schema";
-import { model } from "./models.js";
+import { modelLoader } from "./models.js";
+import { BookMakerConfig } from "../types/standard.js";
 
-export async function getJsonCompletion<T>(client: OpenAI, history: Array<ChatCompletionMessageParam>, zod: ZodSchema<T>): Promise<T> {
+export async function getJsonCompletion<T>(config: BookMakerConfig, client: OpenAI, history: Array<ChatCompletionMessageParam>, zod: ZodSchema<T>): Promise<T> {
+  const model = modelLoader(config);
+
   const innerSchema = zodToJsonSchema(zod);
   const jsonSchemaForOpenAI = {
     name: "schema",

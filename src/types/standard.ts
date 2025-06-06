@@ -35,12 +35,16 @@ export const ChapterSummaryWithIndex = ChapterSummary.extend({
 });
 export type ChapterSummaryWithIndex = z.infer<typeof ChapterSummaryWithIndex>;
 
-export const BookByChapters = z.object({
-    chapters: ChapterSummary.array()
+export const ModelTypes = z.enum([ "grok", "gpt", "azure" ]);
+export type ModelTypes = z.infer<typeof ModelTypes>;
+
+export const BookConfig = z.object({
+    chapters: ChapterSummary.array(),
 });
-export type BookByChapters = z.infer<typeof BookByChapters>;
+export type BookConfig = z.infer<typeof BookConfig>;
 
 export const BookMakerConfig = z.object({
+    model: ModelTypes,
     title: z.string().describe("The name of the book being written"),
     book: z.string().describe("The name of the directory under the `data` directory that contains the book overview and chapter outline."),
     references: z.string().array().describe("The name of directories under the `data` directory that each contains a book.txt file and prompt.txt files. The book.txt file contains the contents of an already written book. The prompt.txt file contains describes this reference book's relationship to the book being written."),
