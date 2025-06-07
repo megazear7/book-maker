@@ -5,5 +5,8 @@
     "references": [
         "example-book-1",
         "example-book-2"
-    ]
+    ],
+    "audio": {
+        "lineByLine": true
+    }
 }
