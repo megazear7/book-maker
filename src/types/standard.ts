@@ -50,6 +50,7 @@ export const BookMakerConfig = z.object({
     references: z.string().array().describe("The name of directories under the `data` directory that each contains a book.txt file and prompt.txt files. The book.txt file contains the contents of an already written book. The prompt.txt file contains describes this reference book's relationship to the book being written."),
     audio: z.object({
         lineByLine: z.boolean().describe("Whether to create the audio line by line or the whole chapter at once."),
+        format: z.enum([ "mp3", "wav" ]).describe("The file format for the audio book."),
     }),
 });
 export type BookMakerConfig = z.infer<typeof BookMakerConfig>;

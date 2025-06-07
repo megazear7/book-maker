@@ -15,6 +15,7 @@ import { getReferences } from "./services/get-references.js";
 import { getBookConfig } from "./services/get-book-config.js";
 import { exists } from "./services/fs.js";
 import { makeAudio } from "./services/audio.js";
+import { concatAudio } from "./services/concat-audio.js";
 
 const config = BookMakerConfig.parse(JSON.parse(await fs.readFile("book-maker.config.json", "utf-8")));
 const client = await getClient(config);
@@ -87,26 +88,30 @@ async function createChapter(chapterIndex: number, parts: ChapterOutlinePart[]):
 async function createAudio(chapterIndex: number, chapterText: string) {
     const bookConfig = await getBookConfig(config);
     const chapter = bookConfig.chapters[chapterIndex - 1];
+    const finalAudioFilePath = `data/${config.book}/chapters/chapter-${chapterIndex}/chapter-${chapterIndex}.${config.audio.format}`;
 
     if (config.audio.lineByLine) {
+        const files: string[] = [];
         const lines = chapterText.split('\n').map(line => line.trim()).filter(line => !!line);
         for (let j = 1; j <= lines.length; j++) {
             const lineText = lines[j-1];
-            const audioFilePath = `data/${config.book}/chapters/chapter-${chapterIndex}/chapter-${chapterIndex}-line-${j}.wav`;
+            const audioFilePath = `data/${config.book}/chapters/chapter-${chapterIndex}/chapter-${chapterIndex}-line-${j}.${config.audio.format}`;
             if (await exists(audioFilePath)) {
                 console.log(`Chapter audio already created for line ${j} of ${chapter.title}`);
             } else {
                 console.log(`Creating chapter audio for line ${j} of ${chapter.title}`);
-                await makeAudio(audioFilePath, lineText);
+                await makeAudio(config, audioFilePath, lineText);
             }
+            files.push(audioFilePath);
         }
+
+        await concatAudio(files, finalAudioFilePath);
     } else {
-        const audioFilePath = `data/${config.book}/chapters/chapter-${chapterIndex}/chapter-${chapterIndex}.wav`;
-        if (await exists(audioFilePath)) {
+        if (await exists(finalAudioFilePath)) {
             console.log(`Chapter audio already created for ${chapter.title}`);
         } else {
             console.log(`Creating chapter audio for ${chapter.title}`);
-            await makeAudio(audioFilePath, chapterText);
+            await makeAudio(config, finalAudioFilePath, chapterText);
         }
     }
 }

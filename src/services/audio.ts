@@ -1,8 +1,9 @@
 import OpenAI from "openai";
 import { promises as fs } from "fs";
 import { env } from "./env.js";
+import { BookMakerConfig } from "../types/standard.js";
 
-export async function makeAudio(outputFilePath: string, text: string) {
+export async function makeAudio(config: BookMakerConfig, outputFilePath: string, text: string) {
     const client = new OpenAI({
         apiKey: env("OPENAI_API_KEY"),
     });
@@ -13,12 +14,12 @@ export async function makeAudio(outputFilePath: string, text: string) {
         max_completion_tokens: 15000,
         audio: {
             voice: "ash", // Preview voice options here: https://www.openai.fm/
-            format: "mp3", // Output format (mp3 or wav)
+            format: config.audio.format, // Output format (mp3 or wav)
         },
         messages: [
             {
                 role: "system",
-                content: "You are a professional audio book narrator. You speak the provided text exactly as written."
+                content: "You are a professional audio book narrator. You repeat the provided text exactly as written."
             },
             {
                 role: "user",
@@ -35,14 +36,6 @@ export async function makeAudio(outputFilePath: string, text: string) {
       throw new Error("No audio data returned in the response");
     }
     const buffer = Buffer.from(audio, "base64");
-
-    // const audio = await client.audio.speech.create({
-    //     model: "tts-1-hd",
-    //     voice: "ash",
-    //     input: text,
-    //     instructions: "Speak like you are an expert audio book narrator",
-    // });
-    // const buffer = Buffer.from(await audio.arrayBuffer());
 
     await fs.writeFile(outputFilePath, buffer);
 }
