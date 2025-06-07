@@ -18,7 +18,7 @@ export async function makeAudio(outputFilePath: string, text: string) {
         messages: [
             {
                 role: "system",
-                content: "You speak the provided text exactly as written."
+                content: "You are a professional audio book narrator. You speak the provided text exactly as written."
             },
             {
                 role: "user",
