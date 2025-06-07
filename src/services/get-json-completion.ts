@@ -7,7 +7,6 @@ import { BookMakerConfig } from "../types/standard.js";
 
 export async function getJsonCompletion<T>(config: BookMakerConfig, client: OpenAI, history: Array<ChatCompletionMessageParam>, zod: ZodSchema<T>): Promise<T> {
   const model = modelLoader(config);
-
   const innerSchema = zodToJsonSchema(zod);
   const jsonSchemaForOpenAI = {
     name: "schema",
@@ -18,6 +17,7 @@ export async function getJsonCompletion<T>(config: BookMakerConfig, client: Open
   const completion = await client.chat.completions.create({
     model: model.name,
     messages: history,
+    //reasoning_effort: "high",
     response_format: {
       type: "json_schema",
       json_schema: jsonSchemaForOpenAI,
