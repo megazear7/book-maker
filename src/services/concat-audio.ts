@@ -12,11 +12,9 @@ export async function concatAudio(inputFiles: string[], outputFile: string): Pro
 
         command
             .on("end", () => {
-                console.log(`Concatenated audio saved to ${outputFile}`);
                 resolve();
             })
             .on("error", (err) => {
-                console.error("Error concatenating audio:", err);
                 reject(err);
             })
             .mergeToFile(outputFile, path.dirname(outputFile));

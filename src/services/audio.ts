@@ -4,6 +4,8 @@ import { env } from "./env.js";
 import { BookMakerConfig } from "../types/standard.js";
 
 export async function makeAudio(config: BookMakerConfig, outputFilePath: string, text: string) {
+    const audioInstructions = await fs.readFile(`data/${config.book}/audio-instructions.txt`);
+
     const client = new OpenAI({
         apiKey: env("OPENAI_API_KEY"),
     });
@@ -19,7 +21,7 @@ export async function makeAudio(config: BookMakerConfig, outputFilePath: string,
         messages: [
             {
                 role: "system",
-                content: "You are a professional audio book narrator. You repeat the provided text exactly as written."
+                content: `You are a professional audio book narrator. You repeat the provided text exactly as written. ${audioInstructions}`
             },
             {
                 role: "user",

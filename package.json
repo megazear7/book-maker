@@ -9,7 +9,9 @@
     "watch": "tsc --watch",
     "lint": "prettier src --check && eslint src",
     "fix": "prettier src --write && eslint src --fix",
-    "create": "tsc && node dist/index.js"
+    "create": "tsc && node dist/create.js",
+    "edit": "tsc && node dist/edit.js",
+    "edit:audio": "tsc && node dist/edit-audio.js"
   },
   "author": "",
   "license": "ISC",
