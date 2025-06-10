@@ -126,9 +126,27 @@ export type KnownModelTypeName = z.infer<typeof KnownModelTypeName>;
 export const ModelTypeName = KnownModelTypeName.or(z.string()).describe("The model you select should have three environment variables in a .env file called ABC_MODEL_NAME, ABC_API_KEY, and ABC_BASE_URL where `ABC` is replaced with the uppercse version of the model. The azure mmodel type requires a ABC_DEPLOYMENT environment variable as well.");
 export type ModelTypeName = z.infer<typeof ModelTypeName>;
 
+export const ModelTypeCostTokens = z.number().min(0).describe("The tokens spent so far on this book with this model.");
+export type ModelTypeCostTokens = z.infer<typeof ModelTypeCostTokens>;
+
+export const ModelTypeCostDollars = z.number().min(0).describe("The dollars spent so far on this book with this model.");
+export type ModelTypeCostDollars = z.infer<typeof ModelTypeCostDollars>;
+
+export const ModelTypeCost = z.object({
+    tokens: ModelTypeCostTokens,
+    dollars: ModelTypeCostDollars,
+});
+export type ModelTypeCost = z.infer<typeof ModelTypeCost>;
+
+export const ModelTypeConfig = z.object({
+    name: ModelTypeName,
+    cost: ModelTypeCost
+});
+export type ModelTypeConfig = z.infer<typeof ModelTypeConfig>;
+
 export const BookModelConfigs = z.object({
-    text: ModelTypeName,
-    audio: ModelTypeName,
+    text: ModelTypeConfig,
+    audio: ModelTypeConfig,
 });
 export type BookModelConfigs = z.infer<typeof BookModelConfigs>;
 
