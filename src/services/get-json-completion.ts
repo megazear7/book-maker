@@ -4,6 +4,7 @@ import { ZodSchema } from "zod";
 import zodToJsonSchema from "zod-to-json-schema";
 import { Book } from "../types/book.type.js";
 import { getTextModelConfig } from "./get-model-config.js";
+import { writeBook } from "./write-book.js";
 
 export async function getJsonCompletion<T>(book: Book, client: OpenAI, history: ChatCompletionMessageParam[], zod: ZodSchema<T>): Promise<T> {
   const modelConfig = getTextModelConfig(book);
@@ -27,7 +28,11 @@ export async function getJsonCompletion<T>(book: Book, client: OpenAI, history: 
     throw new Error("No response");
   }
 
-  // TODO Update book json file with completion.usage information.
+  if (book.model.text.cost) {
+    book.model.text.usage.completion_tokens += completion.usage?.completion_tokens || 0;
+    book.model.text.usage.prompt_tokens += completion.usage?.prompt_tokens || 0;
+    await writeBook(book);
+  }
 
   try {
     return zod.parse(JSON.parse(completion.choices[0].message.content));

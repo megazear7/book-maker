@@ -7,3 +7,6 @@ book-maker.config.json
 tmp.txt
 tmp
 book.json
+books/*
+!books/book.empty.json
+!books/book.sample.json

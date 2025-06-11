@@ -17,12 +17,9 @@ export type ModelName = z.infer<typeof ModelName>;
 export const UsageTokens = z.number().min(0).describe("The number of tokens used of all types.");
 export type UsageTokens = z.infer<typeof UsageTokens>;
 
-export const UsageCost = z.number().min(0).describe("The cost in dollars based on the tokens used.");
-export type UsageCost = z.infer<typeof UsageCost>;
-
 export const Usage = z.object({
-    tokens: UsageTokens,
-    dollars: UsageCost,
+    completion_tokens: UsageTokens,
+    prompt_tokens: UsageTokens,
 })
 export type Usage = z.infer<typeof Usage>;
 
