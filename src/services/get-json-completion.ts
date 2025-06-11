@@ -2,11 +2,11 @@ import OpenAI from "openai";
 import { ChatCompletionMessageParam } from "openai/resources";
 import { ZodSchema } from "zod";
 import zodToJsonSchema from "zod-to-json-schema";
-import { modelLoader } from "./models.js";
-import { BookMakerConfig } from "../types/standard.js";
+import { Book } from "../types/book.type.js";
+import { getTextModelConfig } from "./get-model-config.js";
 
-export async function getJsonCompletion<T>(config: BookMakerConfig, client: OpenAI, history: Array<ChatCompletionMessageParam>, zod: ZodSchema<T>): Promise<T> {
-  const model = modelLoader(config);
+export async function getJsonCompletion<T>(book: Book, client: OpenAI, history: ChatCompletionMessageParam[], zod: ZodSchema<T>): Promise<T> {
+  const modelConfig = getTextModelConfig(book);
   const innerSchema = zodToJsonSchema(zod);
   const jsonSchemaForOpenAI = {
     name: "schema",
@@ -15,9 +15,8 @@ export async function getJsonCompletion<T>(config: BookMakerConfig, client: Open
   };
 
   const completion = await client.chat.completions.create({
-    model: model.name,
+    model: modelConfig.modelName,
     messages: history,
-    //reasoning_effort: "high",
     response_format: {
       type: "json_schema",
       json_schema: jsonSchemaForOpenAI,
@@ -28,8 +27,10 @@ export async function getJsonCompletion<T>(config: BookMakerConfig, client: Open
     throw new Error("No response");
   }
 
+  // TODO Update book json file with completion.usage information.
+
   try {
-    return zod.parse(JSON.parse(completion.choices[0].message.content)) as T;
+    return zod.parse(JSON.parse(completion.choices[0].message.content));
   } catch (error: any) {
     console.error(completion.choices[0].message.content);
     throw error;

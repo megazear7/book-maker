@@ -1,0 +1,57 @@
+{
+    "title": "",
+    "references": [],
+    "overview": "",
+    "chapters": [
+        {
+            "title": "",
+            "when": "",
+            "where": "",
+            "what": "",
+            "why": "",
+            "how": "",
+            "who": "",
+            "minParts": 2,
+            "maxParts": 4,
+            "partLength": 600
+        }
+    ],
+    "instructions": {
+        "edit": "",
+        "audio": ""
+    },
+    "pronunciation": [
+        {
+            "match": "",
+            "replace": ""
+        },
+        {
+            "match": "Thalion",
+            "replace": ""
+        },
+        {
+            "match": "",
+            "replace": ""
+        },
+        {
+            "match": "",
+            "replace": ""
+        }
+    ],
+    "model": {
+        "text": {
+            "name": "grok",
+            "cost": {
+                "tokens": 0,
+                "dollars": 0
+            }
+        },
+        "audio": {
+            "name": "gpt",
+            "cost": {
+                "tokens": 0,
+                "dollars": 0
+            }
+        }
+    }
+}

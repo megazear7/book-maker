@@ -1,6 +1,10 @@
 import z from "zod";
+import { Cost, Usage } from "./prompt.type.js";
 
-export const BookTitle = z.string().min(1).describe("The title of this part of the chapter");
+export const BookId = z.string().min(3).max(15).describe("The id of the book. This should be all lower case letters and should use dashes instead of spaces. It should be a snakecase version of the title, simplified if neccessary.");
+export type BookId = z.infer<typeof BookId>;
+
+export const BookTitle = z.string().min(1).describe("The title of the book");
 export type BookTitle = z.infer<typeof BookTitle>;
 
 export const BookReference = z.string().min(1).describe("Reference material to base writing style off of.");
@@ -126,21 +130,10 @@ export type KnownModelTypeName = z.infer<typeof KnownModelTypeName>;
 export const ModelTypeName = KnownModelTypeName.or(z.string()).describe("The model you select should have three environment variables in a .env file called ABC_MODEL_NAME, ABC_API_KEY, and ABC_BASE_URL where `ABC` is replaced with the uppercse version of the model. The azure mmodel type requires a ABC_DEPLOYMENT environment variable as well.");
 export type ModelTypeName = z.infer<typeof ModelTypeName>;
 
-export const ModelTypeCostTokens = z.number().min(0).describe("The tokens spent so far on this book with this model.");
-export type ModelTypeCostTokens = z.infer<typeof ModelTypeCostTokens>;
-
-export const ModelTypeCostDollars = z.number().min(0).describe("The dollars spent so far on this book with this model.");
-export type ModelTypeCostDollars = z.infer<typeof ModelTypeCostDollars>;
-
-export const ModelTypeCost = z.object({
-    tokens: ModelTypeCostTokens,
-    dollars: ModelTypeCostDollars,
-});
-export type ModelTypeCost = z.infer<typeof ModelTypeCost>;
-
 export const ModelTypeConfig = z.object({
     name: ModelTypeName,
-    cost: ModelTypeCost
+    cost: Cost,
+    usage: Usage,
 });
 export type ModelTypeConfig = z.infer<typeof ModelTypeConfig>;
 
@@ -151,6 +144,7 @@ export const BookModelConfigs = z.object({
 export type BookModelConfigs = z.infer<typeof BookModelConfigs>;
 
 export const BookInput = z.object({
+    id: BookId,
     title: BookTitle,
     references: BookReference.array(),
     overview: BookOverview,

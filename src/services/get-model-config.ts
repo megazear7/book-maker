@@ -1,5 +1,5 @@
-import { Book } from "../types/book.type";
-import { env } from "./env";
+import { Book } from "../types/book.type.js";
+import { env } from "./env.js";
 
 export function getTextModelConfig(book: Book) {
     return {

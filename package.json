@@ -11,7 +11,8 @@
     "fix": "prettier src --write && eslint src --fix",
     "create": "tsc && node dist/create.js",
     "edit": "tsc && node dist/edit.js",
-    "edit:audio": "tsc && node dist/edit-audio.js"
+    "edit:audio": "tsc && node dist/edit-audio.js",
+    "test": "tsc && node dist/services/make-book-outline.js"
   },
   "author": "",
   "license": "ISC",
