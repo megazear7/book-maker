@@ -43,14 +43,15 @@ class ClientApp {
         }
 
         this.root.innerHTML = `
-            <ul>
-                <li><a href="/">Home</a></li>
-                ${this.books.map(bookId => `
-                    <li><a href="/book/${bookId}">${bookId}</a></li>
-                `)}
-            </ul>
-
-            ${page}
+            <div class="container">
+                <ul class="pills">
+                    <li><a href="/">Home</a></li>
+                    ${this.books.map(bookId => `
+                        <li><a href="/book/${bookId}">${bookId}</a></li>
+                    `)}
+                </ul>
+                ${page}
+            </div>
         `
     }
 
