@@ -14,6 +14,7 @@ server.get('/api/book/:id', async (req, res) => {
     res.send(await getBook(req.params.id));
 });
 server.use(express.static('dist/client'));
+server.use("/types", express.static('dist/types'));
 server.use(express.static("src/static"));
 server.get('/*', async (req, res) => {
     res.send(page(body()));

@@ -1,6 +1,4 @@
-import OpenAI from "openai";
 import z from "zod";
-import { ChatCompletionMessageParam } from "openai/resources";
 
 export const Role = z.enum([ "system", "user", "assistant" ]);
 export type Role = z.infer<typeof Role>;

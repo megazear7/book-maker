@@ -5,6 +5,14 @@ export default (body: string) => `
         <title>Whipo Template</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="/app.css">
+
+        <script type="importmap">
+            {
+                "imports": {
+                    "zod": "https://cdn.jsdelivr.net/npm/zod@3.23.8/+esm"
+                }
+            }
+        </script>
     </head>
     <body>
         ${body}

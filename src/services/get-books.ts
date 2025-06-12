@@ -9,5 +9,6 @@ export async function getBooks(): Promise<BookId[]> {
         const match = file.match(regex);
         return match ? match[1] : null;
       })
-      .filter(result => result !== null);
+      .filter(result => result !== null)
+      .filter(result => result !== "empty");
 }
