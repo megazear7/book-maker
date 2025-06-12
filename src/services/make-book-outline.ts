@@ -41,8 +41,8 @@ export async function makeBookOutline(client: OpenAI, textModelTypeName: ModelTy
     await fs.rm("books/book.000.json");
 }
 
-const client = new OpenAI({
-    baseURL: env(`GROK_BASE_URL`),
-    apiKey: env(`GROK_API_KEY`),
-});
-await makeBookOutline(client, 'grok', 'gpt', "A story about a knight, a dragon, and a princess that needs rescued.");
+// const client = new OpenAI({
+//     baseURL: env(`GROK_BASE_URL`),
+//     apiKey: env(`GROK_API_KEY`),
+// });
+// await makeBookOutline(client, 'grok', 'gpt', "A story about a knight, a dragon, and a princess that needs rescued.");
