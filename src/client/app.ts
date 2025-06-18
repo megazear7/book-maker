@@ -1,8 +1,9 @@
 import { Book, BookId, Chapter } from '../types/book.type.js';
-import { bookPage } from './page.book.js';
-import { homePage } from './page.home.js';
-import { page404 } from './page.404.js';
+import { BookPage } from './page.book.js';
+import { HomePage } from './page.home.js';
+import { Page404 } from './page.404.js';
 import '/example.js';
+import { Page } from './page.interface.js';
 
 class ClientApp {
     rootElementId: string;
@@ -35,7 +36,7 @@ class ClientApp {
     }
 
     async render() {
-        let page = page404();
+        let page: Page = new Page404();
         let pageName: string = "";
 
         if (location.pathname === "/") {
@@ -61,33 +62,40 @@ class ClientApp {
                         </li>
                     `).join('')}
                 </ul>
+                <div id="page"></div>
                 ${page}
             </div>
-        `
+        `;
+
+        const pageRoot = document.getElementById("page");
+        if (pageRoot) {
+            page.render(pageRoot);
+            page.addEventListeners();
+        }
     }
 
-    async homePageRouter() {
+    async homePageRouter(): Promise<Page> {
         this.book = undefined;
         this.chapter = undefined;
-        return homePage(this.books);
+        return new HomePage();
     }
 
-    async bookPageRouter() {
+    async bookPageRouter(): Promise<Page> {
         this.chapter = undefined;
         await this.getBookFromRoute();
         const book = this.book;
         if (!book) throw new Error("Book not loaded");
-        return bookPage(this.books, book);
+        return new BookPage(book);
     }
 
-    async chapterPageRouter() {
+    async chapterPageRouter(): Promise<Page> {
         await this.getBookFromRoute();
         const book = this.book;
         if (!book) throw new Error("Book not loaded");
         await this.getChapterFromRoute();
         const chapter = this.chapter;
         if (!book) throw new Error("Chapter not loaded");
-        return bookPage(this.books, book, chapter);
+        return new BookPage(book, chapter);
     }
 
     async getBookFromRoute() {

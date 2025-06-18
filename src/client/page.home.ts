@@ -1,7 +1,17 @@
-import { BookId } from "../types/book.type.js";
+import { Page } from "./page.interface";
 
-export const homePage = (books: BookId[]) => `
-    <h1>Book Maker</h1>
+export class HomePage implements Page {
+    constructor() {
+    }
 
-    <p>TODO Provide instructions, intro, abiltiy to create new books from scratch, etc.</p>
-`;
+    render(root: HTMLElement) {
+        root.innerHTML = `
+            <h1>Book Maker</h1>
+            <p>TODO Provide instructions, intro, abiltiy to create new books from scratch, etc.</p>
+        `
+    }
+
+    async addEventListeners() {
+
+    }
+}

@@ -4,12 +4,12 @@ export async function createChapterParts(book: BookId, chapter: ChapterNumber): 
 
     return [{
         outline: {
-            title: "",
-            events: []
+            title: "test",
+            events: [ "test" ]
         },
         created: {
-            text: "",
-            audio: ""
+            text: "test",
+            audio: "test"
         }
     }]
 }

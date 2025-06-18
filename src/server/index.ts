@@ -9,13 +9,13 @@ const server = express();
 const port = 3000;
 
 server.get('/api/books', async (req, res) => {
-    res.send(await getBooks());
+    res.json(await getBooks());
 });
 server.get('/api/book/:id', async (req, res) => {
-    res.send(await getBook(req.params.id));
+    res.json(await getBook(req.params.id));
 });
 server.post('/api/book/:id/chapter/:chapter/parts', async (req, res) => {
-    res.send(await createChapterParts(req.params.id, parseInt(req.params.chapter)));
+    res.json(await createChapterParts(req.params.id, parseInt(req.params.chapter)));
 });
 server.use(express.static('dist/client'));
 server.use("/types", express.static('dist/types'));
