@@ -1,4 +1,4 @@
-import { Book, BookId } from '../types/book.type.js';
+import { Book, BookId, Chapter } from '../types/book.type.js';
 import { bookPage } from './page.book.js';
 import { homePage } from './page.home.js';
 import { page404 } from './page.404.js';
@@ -9,6 +9,7 @@ class ClientApp {
     books: BookId[] = [];
     bookId?: BookId;
     book?: Book;
+    chapter?: Chapter;
 
     constructor(rootElementId: string) {
         this.rootElementId = rootElementId;
@@ -35,20 +36,30 @@ class ClientApp {
 
     async render() {
         let page = page404();
+        let pageName: string = "";
 
         if (location.pathname === "/") {
+            pageName = "home";
             page = await this.homePageRouter();
-        } else if (location.pathname.match(/^\/book\/([^\/]+)$/)) {
+        } if (location.pathname.match(/^\/book\/([^\/]+)\/chapter\/([^\/]+)/)) {
+            pageName = "book";
+            page = await this.chapterPageRouter();
+        } else if (location.pathname.match(/^\/book\/([^\/]+)/)) {
+            pageName = "chapter";
             page = await this.bookPageRouter();
         }
 
         this.root.innerHTML = `
             <div class="container">
                 <ul class="pills">
-                    <li><a href="/">Home</a></li>
+                    <li class="${pageName === 'home'}">
+                        <a href="/">Home</a>
+                    </li>
                     ${this.books.map(bookId => `
-                        <li><a href="/book/${bookId}">${bookId}</a></li>
-                    `)}
+                        <li class="${bookId === this.book?.id ? 'active' : ''}">
+                            <a href="/book/${bookId}">${bookId}</a>
+                        </li>
+                    `).join('')}
                 </ul>
                 ${page}
             </div>
@@ -56,19 +67,63 @@ class ClientApp {
     }
 
     async homePageRouter() {
+        this.book = undefined;
+        this.chapter = undefined;
         return homePage(this.books);
     }
 
     async bookPageRouter() {
-        const matches = location.pathname.match(/^\/book\/([^\/]+)$/);
+        this.chapter = undefined;
+        await this.getBookFromRoute();
+        const book = this.book;
+        if (!book) throw new Error("Book not loaded");
+        return bookPage(this.books, book);
+    }
+
+    async chapterPageRouter() {
+        await this.getBookFromRoute();
+        const book = this.book;
+        if (!book) throw new Error("Book not loaded");
+        await this.getChapterFromRoute();
+        const chapter = this.chapter;
+        if (!book) throw new Error("Chapter not loaded");
+        return bookPage(this.books, book, chapter);
+    }
+
+    async getBookFromRoute() {
+        const matches = location.pathname.match(/^\/book\/([^\/]+)/);
         if (!matches || matches.length < 1) throw new Error('Match not found');
         this.bookId = matches[1];
         await this.loadBook();
         const book = this.book;
         if (!book) throw new Error("Book not loaded");
-        return bookPage(this.books, book);
+    }
+
+    async getChapterFromRoute() {
+        const matches = location.pathname.match(/^\/book\/([^\/]+)\/chapter\/([^\/]+)/);
+        if (!matches || matches.length < 2) throw new Error('Match not found');
+        const chapterIndex = parseInt(matches[2]) - 1;
+        const book = this.book;
+        if (!book) throw new Error("Book not loaded");
+        this.chapter = book.chapters[chapterIndex];
     }
 }
 
 const app = new ClientApp("app");
 app.init();
+
+// Function to handle navigation
+function navigate(event: Event) {
+    const target = event.target as HTMLElement;
+    const anchor = target as HTMLAnchorElement;
+    if (target.tagName === 'A' && anchor.href) {
+        event.preventDefault();
+        const url = new URL(anchor.href);
+        const path = url.pathname;
+        window.history.pushState({}, '', path);
+        app.render();
+    }
+}
+
+// Add event listener to capture all clicks on links
+document.addEventListener('click', navigate);

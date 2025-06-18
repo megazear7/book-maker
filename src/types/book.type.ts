@@ -85,6 +85,9 @@ export type ChapterMaxParts = z.infer<typeof ChapterMaxParts>;
 export const ChapterPartLength = z.number().min(200).max(1200).describe("The the number of words of each part for the chapter. It should be short enough for the audio conversion to accurately transcribe the audio but long enough to be a significant portion of the chapter. A suggested number is 600.");
 export type ChapterPartLength = z.infer<typeof ChapterPartLength>;
 
+export const ChapterNumber = z.number().min(1).describe("The chapter number starting from 1");
+export type ChapterNumber = z.infer<typeof ChapterNumber>;
+
 export const Chapter = z.object({
     title: ChapterTitle,
     when: ChapterWhen,
@@ -98,6 +101,7 @@ export const Chapter = z.object({
     partLength: ChapterPartLength,
     parts: ChapterPart.array(),
     created: CreatedChapter.array(),
+    number: ChapterNumber,
 });
 export type Chapter = z.infer<typeof Chapter>;
 

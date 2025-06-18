@@ -1,8 +1,8 @@
 html {
-    --color-primary-surface: #5f5f5f;
+    --color-primary-surface: #434343;
     --color-primary-text: #dedede;
-    --color-secondary-surface: #ffffff;
-    --color-secondary-text: #494949;
+    --color-secondary-surface: #787878;
+    --color-secondary-text: #fcfcfc;
     --color-tertiary-surface: #49a741;
     --color-tertiary-text: #f3faf3;
 
@@ -10,13 +10,16 @@ html {
     --size-large: 15px;
     --size-medium: 10px;
     --size-small: 5px;
-    --radius: 10px;
-    --font-medium: 16px;
+    --radius-medium: 15px;
+    --radius-large: 25px;
+    --font-medium: 18px;
+    --line-height: 1.4;
     --border-active: 1px solid var(--color-primary);
     --shadow-active: rgba(0, 0, 0, 0.30) 0px 3px 10px;
     --shadow-hover: rgba(0, 0, 0, 0.50) 0px 6px 16px;
     --time-normal: 300ms;
     --transition-all: all var(--time-normal);
+    --font-family: 'Merriweather', serif;
     margin: 0;
     padding: 0;
 }
@@ -25,11 +28,10 @@ body {
     background-color: var(--color-primary-surface);
     color: var(--color-primary-text);
     font-size: var(--font-medium);
-    font-family: sans-serif;
-    letter-spacing: 1px;
-    line-height: 20px;
+    font-family: var(--font-family);
+    line-height: var(--line-height);
     margin: 0;
-    padding: 0;
+    padding: 0 0 var(--size-xl) 0;
 }
 
 h1 {
@@ -38,8 +40,19 @@ h1 {
 }
 
 h2 {
+    font-size: calc(var(--font-medium) * 1.5);
+    margin: var(--size-large) 0 0 0;
+}
+
+h3 {
     font-size: calc(var(--font-medium) * 1.25);
     margin: var(--size-large) 0 0 0;
+}
+
+h4 {
+    font-size: calc(var(--font-medium) * 1.125);
+    margin: var(--size-large) 0 0 0;
+    font-style: italic;
 }
 
 .container {
@@ -50,23 +63,31 @@ h2 {
 
 ul.pills {
     display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    width: 100%;
+    gap: var(--size-small);
     margin: 0;
     margin-top: var(--size-large);
     padding: 0;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 
 ul.pills li {
+    flex: 0 0 auto;
     background-color: var(--color-secondary-surface);
     color: var(--color-secondary-text);
     list-style: none;
     padding: var(--size-medium);
     margin-right: var(--size-medium);
-    border-radius: var(--radius);
+    border-radius: var(--radius-large);
     transition: var(--transition-all);
     cursor: pointer;
 }
 
-ul.pills li:hover {
+ul.pills li:hover, ul.pills li.active {
     background-color: var(--color-tertiary-surface);
     color: var(--color-tertiary-text);
 }
@@ -77,6 +98,90 @@ ul.pills li a {
     text-decoration: none;
 }
 
-ul.pills li:hover a {
+ul.pills li:hover a, ul.pills li.active a {
+    color: var(--color-tertiary-text);
+}
+
+.secondary-surface {
+    margin-top: var(--size-xl);
+    padding: var(--size-large);
+    background-color: var(--color-secondary-surface);
+    color: var(--color-secondary-text);
+    border-radius: var(--radius-medium);
+}
+
+.secondary-surface :first-child {
+    margin-top: 0;
+}
+
+.secondary-surface textarea, .secondary-surface input {
+    background-color: var(--color-secondary-surface);
+    color: var(--color-secondary-text);
+}
+
+textarea {
+    width: 100%;
+    box-sizing: border-box;
+    height: 25vh;
+    font-family: var(--font-family);
+    font-size: var(--font-medium);
+    line-height: var(--line-height);
+    margin-top: var(--size-medium);
+    resize: vertical;
+    border: none;
+}
+
+textarea:active, textarea:focus, input:active, input:focus {
+    outline: none;
+}
+
+textarea.h2 {
+    font-size: calc(var(--font-medium) * 1.5);
+    margin: var(--size-large) 0 0 0;
+    height: calc(var(--font-medium) * 1.5);
+    line-height: calc(var(--font-medium) * 1.5);
+    padding: 0;
+}
+
+textarea.small {
+    height: 5vh;
+}
+
+input {
+    width: 100%;
+    box-sizing: border-box;
+    font-family: var(--font-family);
+    font-size: var(--font-medium);
+    line-height: var(--line-height);
+    margin-top: var(--size-medium);
+    border: none;
+}
+
+button {
+    background-color: var(--color-secondary-surface);
+    color: var(--color-secondary-text);
+    transition: var(--transition-all);
+    outline: none;
+    border: none;
+    border-style: none;
+    padding: var(--size-large);
+    border-radius: var(--radius-large);
+    margin: var(--size-large) 0 0 0;
+    cursor: pointer;
+    font-size: var(--font-medium);
+    font-size: var(--font-family);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+button svg {
+    width: 36px;
+    height: 36px;
+    fill: currentColor;
+}
+
+button:hover {
+    background-color: var(--color-tertiary-surface);
     color: var(--color-tertiary-text);
 }

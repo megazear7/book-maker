@@ -14,7 +14,8 @@
             "who": "",
             "minParts": 2,
             "maxParts": 4,
-            "partLength": 600
+            "partLength": 600,
+            "number": 1
         }
     ],
     "instructions": {
