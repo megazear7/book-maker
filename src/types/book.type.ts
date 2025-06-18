@@ -43,6 +43,9 @@ export const ChapterPart = z.object({
 });
 export type ChapterPart = z.infer<typeof ChapterPart>;
 
+export const ChapterParts = ChapterPart.array();
+export type ChapterParts = z.infer<typeof ChapterParts>;
+
 export const BookChapterText = z.string().min(1).describe("A written part of a chapter of the book.");
 export type BookChapterText = z.infer<typeof BookChapterText>;
 
@@ -99,7 +102,7 @@ export const Chapter = z.object({
     minParts: ChapterMinParts,
     maxParts: ChapterMaxParts,
     partLength: ChapterPartLength,
-    parts: ChapterPart.array(),
+    parts: ChapterParts,
     created: CreatedChapter.array(),
     number: ChapterNumber,
 });
