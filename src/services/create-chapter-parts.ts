@@ -1,11 +1,12 @@
-import { Book, BookId, Chapter, ChapterNumber, ChapterParts } from "../types/book.type.js";
+import { Book, BookId, Chapter, ChapterNumber, ChapterOutline } from "../types/book.type.js";
 import { ChatCompletionMessageParam } from "openai/resources";
 import { getTextClient } from "./client.js";
 import { getJsonCompletion } from "./get-json-completion.js";
 import { getBook } from "./get-book.js";
 import { bookOverviewPrompt, referencesPrompt, writtenChaptersPrompt } from "./prompts.js";
+import { writeBook } from "./write-book.js";
 
-export async function createChapterParts(bookId: BookId, chapterNumber: ChapterNumber): Promise<ChapterParts> {
+export async function createChapterParts(bookId: BookId, chapterNumber: ChapterNumber): Promise<ChapterOutline> {
     const book: Book = await getBook(bookId);
     const chapter: Chapter = book.chapters[chapterNumber - 1];
     const history: ChatCompletionMessageParam[] = [
@@ -16,7 +17,10 @@ export async function createChapterParts(bookId: BookId, chapterNumber: ChapterN
         ...makeChapterOutlinePrompt(chapter),
     ];
     const client = await getTextClient(book);
-    const outline = getJsonCompletion(book, client, history, ChapterParts);
+    const outline = await getJsonCompletion(book, client, history, ChapterOutline);
+    chapter.outline = outline;
+
+    await writeBook(book);
 
     return outline;
 }

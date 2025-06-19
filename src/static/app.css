@@ -55,6 +55,12 @@ h4 {
     font-style: italic;
 }
 
+h5 {
+    font-size: calc(var(--font-medium) * 0.8);
+    margin: var(--size-small) 0 0 0;
+    font-style: italic;
+}
+
 .container {
     max-width: 1200px;
     padding: var(--size-medium);
@@ -122,13 +128,14 @@ ul.pills li:hover a, ul.pills li.active a {
 textarea {
     width: 100%;
     box-sizing: border-box;
-    height: 25vh;
     font-family: var(--font-family);
     font-size: var(--font-medium);
     line-height: var(--line-height);
     margin-top: var(--size-medium);
     resize: vertical;
     border: none;
+    resize: none;
+    overflow: hidden;
 }
 
 textarea:active, textarea:focus, input:active, input:focus {
@@ -141,10 +148,6 @@ textarea.h2 {
     height: calc(var(--font-medium) * 1.5);
     line-height: calc(var(--font-medium) * 1.5);
     padding: 0;
-}
-
-textarea.small {
-    height: 5vh;
 }
 
 input {

@@ -22,24 +22,15 @@ export type BookChapterPartAudio = z.infer<typeof BookChapterPartAudio>;
 export const ChapterPartTitle = z.string().min(1).describe("The name of the chapter part");
 export type ChapterPartTitle = z.infer<typeof ChapterPartTitle>;
 
-export const ChapterPartEvent = z.string().min(1).describe("Details about the events that take place");
-export type ChapterPartEvent = z.infer<typeof ChapterPartEvent>;
+export const ChapterPartDescription = z.string().min(1).describe("Details about the events that take place");
+export type ChapterPartDescription = z.infer<typeof ChapterPartDescription>;
 
-export const ChapterPartOutline = z.object({
-    title: ChapterPartTitle,
-    events: ChapterPartEvent.array(),
-});
-export type ChapterPartOutline = z.infer<typeof ChapterPartOutline>;
-
-export const ChapterPartCreated = z.object({
-    text: BookChapterPartText,
-    audio: BookChapterPartAudio,
-});
-export type ChapterPartCreated = z.infer<typeof ChapterPartCreated>;
+export const ChapterOutline = ChapterPartDescription.array();
+export type ChapterOutline = z.infer<typeof ChapterOutline>;
 
 export const ChapterPart = z.object({
-    outline: ChapterPartOutline,
-    created: ChapterPartCreated,
+    text: BookChapterPartText,
+    audio: BookChapterPartAudio,
 });
 export type ChapterPart = z.infer<typeof ChapterPart>;
 
@@ -92,6 +83,7 @@ export const ChapterNumber = z.number().min(1).describe("The chapter number star
 export type ChapterNumber = z.infer<typeof ChapterNumber>;
 
 export const Chapter = z.object({
+    number: ChapterNumber,
     title: ChapterTitle,
     when: ChapterWhen,
     where: ChapterWhere,
@@ -102,9 +94,8 @@ export const Chapter = z.object({
     minParts: ChapterMinParts,
     maxParts: ChapterMaxParts,
     partLength: ChapterPartLength,
+    outline: ChapterOutline,
     parts: ChapterParts,
-    created: CreatedChapter.array(),
-    number: ChapterNumber,
 });
 export type Chapter = z.infer<typeof Chapter>;
 

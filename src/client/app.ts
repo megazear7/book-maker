@@ -1,4 +1,4 @@
-import { Book, BookId, Chapter } from '../types/book.type.js';
+import { Book, BookId, Chapter, ChapterPart } from '../types/book.type.js';
 import { BookPage } from './page.book.js';
 import { HomePage } from './page.home.js';
 import { Page404 } from './page.404.js';
@@ -11,6 +11,7 @@ class ClientApp {
     bookId?: BookId;
     book?: Book;
     chapter?: Chapter;
+    part?: ChapterPart;
 
     constructor(rootElementId: string) {
         this.rootElementId = rootElementId;
@@ -42,7 +43,10 @@ class ClientApp {
         if (location.pathname === "/") {
             pageName = "home";
             page = await this.homePageRouter();
-        } if (location.pathname.match(/^\/book\/([^\/]+)\/chapter\/([^\/]+)/)) {
+        } else if (location.pathname.match(/^\/book\/([^\/]+)\/chapter\/([^\/]+)\/part\/([^\/]+)/)) {
+            pageName = "book";
+            page = await this.partPageRouter();
+        } else if (location.pathname.match(/^\/book\/([^\/]+)\/chapter\/([^\/]+)/)) {
             pageName = "book";
             page = await this.chapterPageRouter();
         } else if (location.pathname.match(/^\/book\/([^\/]+)/)) {
@@ -72,6 +76,24 @@ class ClientApp {
             page.render(pageRoot);
             page.addEventListeners();
         }
+
+        this.resizeTextAreas();
+    }
+
+    resizeTextAreas() {
+        const textareas: NodeListOf<HTMLTextAreaElement> = document.querySelectorAll('textarea');
+
+        const resizeTextarea = (element: HTMLTextAreaElement) => {
+            element.style.height = 'auto';
+            element.style.height = `${element.scrollHeight}px`;
+        };
+
+        textareas.forEach(textarea => {
+            if (textarea) {
+                textarea.addEventListener('input', () => resizeTextarea(textarea));
+                window.addEventListener('load', () => resizeTextarea(textarea));
+            }
+        });
     }
 
     async homePageRouter(): Promise<Page> {
@@ -86,6 +108,19 @@ class ClientApp {
         const book = this.book;
         if (!book) throw new Error("Book not loaded");
         return new BookPage(book);
+    }
+
+    async partPageRouter(): Promise<Page> {
+        await this.getBookFromRoute();
+        const book = this.book;
+        if (!book) throw new Error("Book not loaded");
+        await this.getChapterFromRoute();
+        const chapter = this.chapter;
+        if (!book) throw new Error("Chapter not loaded");
+        await this.getPartFromRoute();
+        const part = this.part;
+        if (!part) throw new Error("Part not loaded");
+        return new BookPage(book, chapter, part);
     }
 
     async chapterPageRouter(): Promise<Page> {
@@ -109,11 +144,23 @@ class ClientApp {
 
     async getChapterFromRoute() {
         const matches = location.pathname.match(/^\/book\/([^\/]+)\/chapter\/([^\/]+)/);
-        if (!matches || matches.length < 2) throw new Error('Match not found');
+        if (!matches || matches.length < 3) throw new Error('Match not found');
         const chapterIndex = parseInt(matches[2]) - 1;
         const book = this.book;
         if (!book) throw new Error("Book not loaded");
         this.chapter = book.chapters[chapterIndex];
+    }
+
+    async getPartFromRoute() {
+        const matches = location.pathname.match(/^\/book\/([^\/]+)\/chapter\/([^\/]+)\/part\/([^\/]+)/);
+        if (!matches || matches.length < 4) throw new Error('Match not found');
+        const chapterIndex = parseInt(matches[2]) - 1;
+        const partIndex = parseInt(matches[3]) - 1;
+        const book = this.book;
+        if (!book) throw new Error("Book not loaded");
+        const chapter = book.chapters[chapterIndex];
+        if (!chapter) throw new Error("Chapter not found");
+        this.part = chapter.parts[partIndex];
     }
 }
 

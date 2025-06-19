@@ -52,22 +52,22 @@ export class BookPage implements Page {
 
             <div class="secondary-surface">
                 <h4>When</h4>
-                <textarea class="small">${activeChapter.when}</textarea>
+                <textarea>${activeChapter.when}</textarea>
 
                 <h4>Where</h4>
-                <textarea class="small">${activeChapter.where}</textarea>
+                <textarea>${activeChapter.where}</textarea>
 
                 <h4>What</h4>
-                <textarea class="small">${activeChapter.what}</textarea>
+                <textarea>${activeChapter.what}</textarea>
 
                 <h4>Why</h4>
-                <textarea class="small">${activeChapter.why}</textarea>
+                <textarea>${activeChapter.why}</textarea>
 
                 <h4>How</h4>
-                <textarea class="small">${activeChapter.how}</textarea>
+                <textarea>${activeChapter.how}</textarea>
 
                 <h4>Who</h4>
-                <textarea class="small">${activeChapter.who}</textarea>
+                <textarea>${activeChapter.who}</textarea>
             </div>
 
             <div class="secondary-surface">
@@ -81,32 +81,26 @@ export class BookPage implements Page {
                 <input type="text" value="${activeChapter.partLength}"></input>
             </div>
 
-            ${ activeChapter.parts.length > 0 ? `
-                <ul class="pills">
-                    ${activeChapter.parts.map((part, index) => `
-                        <li><a href="/book/${book.id}/chapter/${activeChapter.number}/part/${index}">Part ${index}: ${part.outline}</a></li>
+            <button id="create-chapter-outline">${aiIconLeft}<span>${activeChapter.outline.length > 0 ? 'Regenerate' : 'Generate'} Chapter Outline</span>${aiIconRight}</button>
+
+            ${activeChapter.outline ? `
+                <div class="secondary-surface">
+                    <h4>Chapter Outline</h4>
+                    ${activeChapter.outline.map((partDescription, index) => `
+                        <h5>Part ${index+1}</h5>
+                        <textarea>${partDescription}</textarea>
                     `).join('')}
-                </ul>
-            ` : `
-                <button id="create-chapter-outline">${aiIconLeft}<span>Create Chapter Outline</span>${aiIconRight}</button>
-            `}
-
-            ${activePart ? `
-                <div class="secondary-surface">
-                    <h4>Chapter Part Outline</h4>
-                    <textarea>${activePart.created}</textarea>
-                </div>
-
-                <div class="secondary-surface">
-                    <h4>Created Part Text</h4>
-                    <textarea>${activePart.created}</textarea>
                 </div>
             `: ''}
 
-            <div class="secondary-surface">
-                <h4>Chapter Text</h4>
-                <textarea>${activeChapter.created}</textarea>
-            </div>
+            ${ activeChapter.parts.length > 0 ? `
+                <ul class="pills">
+                    ${activeChapter.parts.map((part, index) => `
+                        <li><a href="/book/${book.id}/chapter/${activeChapter.number}/part/${index}">Version ${index}</a></li>
+                    `).join('')}
+                </ul>
+            ` : `
+            `}
         `: ''}
         `
     }
@@ -120,7 +114,7 @@ export class BookPage implements Page {
         if (createChapterOutlineButton && activeChapter) {
             createChapterOutlineButton.addEventListener('click', async () => {
                 const result = await createChapterOutline(book.id, activeChapter?.number);
-                console.log(result);
+                window.location.pathname = `/book/${book.id}/chapter/${activeChapter.number}`;
             });
         } else {
             throw new Error("Create chapter outline button not found");

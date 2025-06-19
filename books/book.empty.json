@@ -5,6 +5,7 @@
     "overview": "",
     "chapters": [
         {
+            "number": 1,
             "title": "",
             "when": "",
             "where": "",
@@ -15,7 +16,8 @@
             "minParts": 2,
             "maxParts": 4,
             "partLength": 600,
-            "number": 1
+            "outline": [],
+            "parts": []
         }
     ],
     "instructions": {
