@@ -16,7 +16,7 @@ export const aiIconRight = `
   <!-- Bottom-left star (moved up and left) -->
   <use href="#star" x="0" y="0" width="40" height="43" transform="translate(20,57)" fill="#FFFFFF"/>
 </svg>
-`
+`;
 
 export const aiIconLeft = `
 <svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -39,4 +39,4 @@ export const aiIconLeft = `
     <use href="#star" x="0" y="0" width="40" height="43" transform="translate(20,57)" fill="#FFFFFF"/>
   </g>
 </svg>
-`
+`;
