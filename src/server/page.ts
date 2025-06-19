@@ -15,6 +15,10 @@ export default (body: string) => `
         </script>
     </head>
     <body>
+        <div class="loading-overlay">
+            <div class="loader"></div>
+            <div class="loading-text">Working...</div>
+        </div>
         ${body}
         <script type="module" src="/app.js"></script>
     </body>

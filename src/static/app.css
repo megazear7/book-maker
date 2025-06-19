@@ -93,7 +93,8 @@ ul.pills li {
     cursor: pointer;
 }
 
-ul.pills li:hover, ul.pills li.active {
+ul.pills li:hover,
+ul.pills li.active {
     background-color: var(--color-tertiary-surface);
     color: var(--color-tertiary-text);
 }
@@ -104,7 +105,8 @@ ul.pills li a {
     text-decoration: none;
 }
 
-ul.pills li:hover a, ul.pills li.active a {
+ul.pills li:hover a,
+ul.pills li.active a {
     color: var(--color-tertiary-text);
 }
 
@@ -120,7 +122,8 @@ ul.pills li:hover a, ul.pills li.active a {
     margin-top: 0;
 }
 
-.secondary-surface textarea, .secondary-surface input {
+.secondary-surface textarea,
+.secondary-surface input {
     background-color: var(--color-secondary-surface);
     color: var(--color-secondary-text);
 }
@@ -138,7 +141,10 @@ textarea {
     overflow: hidden;
 }
 
-textarea:active, textarea:focus, input:active, input:focus {
+textarea:active,
+textarea:focus,
+input:active,
+input:focus {
     outline: none;
 }
 
@@ -187,4 +193,81 @@ button svg {
 button:hover {
     background-color: var(--color-tertiary-surface);
     color: var(--color-tertiary-text);
+}
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.loading-overlay.active {
+    opacity: 1;
+    display: flex;
+}
+
+.loader {
+    width: 60px;
+    height: 60px;
+    border: 6px solid transparent;
+    border-top: 6px solid #3498db;
+    border-right: 6px solid #8e44ad;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Pulsating text */
+.loading-text {
+    color: #fff;
+    font-family: Arial, sans-serif;
+    font-size: 24px;
+    margin-top: 20px;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.7;
+        transform: scale(1.1);
+    }
+}
+
+/* Prevent scrolling when overlay is active */
+body.overlay-active {
+    overflow: hidden;
+}
+
+/* Button for demo */
+.toggle-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 20px;
 }
