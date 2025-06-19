@@ -9,6 +9,7 @@ import { writeBook } from "./write-book.js";
 export async function createChapterOutline(bookId: BookId, chapterNumber: ChapterNumber): Promise<ChapterOutline> {
     const book: Book = await getBook(bookId);
     const chapter: Chapter = book.chapters[chapterNumber - 1];
+    console.log(`Generating chapter outline for ${chapter.number} of book ${book.title}`);
     const history: ChatCompletionMessageParam[] = [
         ...referencesPrompt(book),
         ...bookOverviewPrompt(book),
@@ -19,7 +20,7 @@ export async function createChapterOutline(bookId: BookId, chapterNumber: Chapte
     const client = await getTextClient(book);
     const outline = await getJsonCompletion(book, client, history, ChapterOutline);
     chapter.outline = outline;
-
+    console.log(`Writing updates for chapter ${chapter.number} of book ${book.title}`);
     await writeBook(book);
 
     return outline;

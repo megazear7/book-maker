@@ -9,6 +9,7 @@ import { writeBook } from "./write-book.js";
 export async function createChapter(bookId: BookId, chapterNumber: ChapterNumber): Promise<ChapterParts> {
     const book: Book = await getBook(bookId);
     const chapter: Chapter = book.chapters[chapterNumber - 1];
+    console.log(`Generating chapter ${chapter.number} of book ${book.title}`);
     const parts: ChapterParts = [];
 
     for (let partNumber: ChapterPartNumber = 1; partNumber <= chapter.outline.length; partNumber++) {
@@ -21,6 +22,8 @@ export async function createChapter(bookId: BookId, chapterNumber: ChapterNumber
 }
 
 export async function createChapterPart(book: Book, chapter: Chapter, partNumber: ChapterPartNumber, partDescription: ChapterPartDescription): Promise<ChapterPart> {
+    console.log(`Generating part ${partNumber} of chapter ${chapter.number} of book ${book.title}`);
+
     const history: ChatCompletionMessageParam[] = [
         ...referencesPrompt(book),
         ...bookOverviewPrompt(book),
@@ -35,6 +38,7 @@ export async function createChapterPart(book: Book, chapter: Chapter, partNumber
         text: chapterPartText,
     };
     chapter.parts[partNumber-1] = chapterPart;
+    console.log(`Writing updates for part ${partNumber} of chapter ${chapter.number} of book ${book.title}`);
     await writeBook(book);
 
     return chapterPart;
