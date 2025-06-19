@@ -10,11 +10,7 @@
     "watch": "run-p watch:tsc serve",
     "watch:tsc": "tsc --watch",
     "lint": "prettier src --check && eslint src",
-    "fix": "prettier src --write && eslint src --fix",
-    "create": "tsc && node dist/create.js",
-    "edit": "tsc && node dist/edit.js",
-    "edit:audio": "tsc && node dist/edit-audio.js",
-    "test": "tsc && node dist/services/make-book-outline.js"
+    "fix": "prettier src --write && eslint src --fix"
   },
   "author": "",
   "license": "ISC",
