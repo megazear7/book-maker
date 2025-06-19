@@ -1,4 +1,4 @@
-import { Book, BookId, Chapter, ChapterPart } from '../types/book.type.js';
+import { Book, BookId, BookMinimalInfo, Chapter, ChapterPart } from '../types/book.type.js';
 import { BookPage } from './page.book.js';
 import { HomePage } from './page.home.js';
 import { Page404 } from './page.404.js';
@@ -7,7 +7,7 @@ import { Page } from './page.interface.js';
 
 class ClientApp {
     rootElementId: string;
-    books: BookId[] = [];
+    books: BookMinimalInfo[] = [];
     bookId?: BookId;
     book?: Book;
     chapter?: Chapter;
@@ -23,7 +23,7 @@ class ClientApp {
     }
 
     async loadBooks() {
-        this.books = BookId.array().parse(await (await fetch('/api/books')).json());
+        this.books = BookMinimalInfo.array().parse(await (await fetch('/api/books')).json());
     }
 
     async loadBook() {
@@ -60,14 +60,13 @@ class ClientApp {
                     <li class="${pageName === 'home'}">
                         <a href="/">Home</a>
                     </li>
-                    ${this.books.map(bookId => `
-                        <li class="${bookId === this.book?.id ? 'active' : ''}">
-                            <a href="/book/${bookId}">${bookId}</a>
+                    ${this.books.map(book => `
+                        <li class="${book.id === this.book?.id ? 'active' : ''}">
+                            <a href="/book/${book.id}">${book.title}</a>
                         </li>
                     `).join('')}
                 </ul>
                 <div id="page"></div>
-                ${page}
             </div>
         `;
 
@@ -90,6 +89,7 @@ class ClientApp {
 
         textareas.forEach(textarea => {
             if (textarea) {
+                resizeTextarea(textarea);
                 textarea.addEventListener('input', () => resizeTextarea(textarea));
                 window.addEventListener('load', () => resizeTextarea(textarea));
             }

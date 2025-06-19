@@ -7,6 +7,12 @@ export type BookId = z.infer<typeof BookId>;
 export const BookTitle = z.string().min(1).describe("The title of the book");
 export type BookTitle = z.infer<typeof BookTitle>;
 
+export const BookMinimalInfo = z.object({
+    id: BookId,
+    title: BookTitle,
+});
+export type BookMinimalInfo = z.infer<typeof BookMinimalInfo>;
+
 export const BookReference = z.string().min(1).describe("Reference material to base writing style off of.");
 export type BookReference = z.infer<typeof BookReference>;
 
@@ -30,7 +36,7 @@ export type ChapterOutline = z.infer<typeof ChapterOutline>;
 
 export const ChapterPart = z.object({
     text: BookChapterPartText,
-    audio: BookChapterPartAudio,
+    audio: BookChapterPartAudio.optional(),
 });
 export type ChapterPart = z.infer<typeof ChapterPart>;
 
@@ -78,6 +84,9 @@ export type ChapterMaxParts = z.infer<typeof ChapterMaxParts>;
 
 export const ChapterPartLength = z.number().min(200).max(1200).describe("The the number of words of each part for the chapter. It should be short enough for the audio conversion to accurately transcribe the audio but long enough to be a significant portion of the chapter. A suggested number is 600.");
 export type ChapterPartLength = z.infer<typeof ChapterPartLength>;
+
+export const ChapterPartNumber = z.number().min(1).describe("The chapter part number starting from 1");
+export type ChapterPartNumber = z.infer<typeof ChapterPartNumber>;
 
 export const ChapterNumber = z.number().min(1).describe("The chapter number starting from 1");
 export type ChapterNumber = z.infer<typeof ChapterNumber>;

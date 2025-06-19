@@ -1,7 +1,7 @@
 import { Book, Chapter, ChapterPart } from "../types/book.type.js";
 import { aiIconLeft, aiIconRight } from "./icon.js";
 import { Page } from "./page.interface.js";
-import { createChapterOutline } from "./service.js";
+import { createChapter, createChapterOutline } from "./service.js";
 
 export class BookPage implements Page {
     book: Book;
@@ -18,9 +18,10 @@ export class BookPage implements Page {
         const book = this.book;
         const activeChapter = this.activeChapter;
         const activePart = this.activePart;
+
         root.innerHTML = `
         <div class="secondary-surface">
-            <h1>${book.title}</h1>
+            <textarea class="h1">${book.title}</textarea>
         </div>
 
         <div class="secondary-surface">
@@ -96,28 +97,41 @@ export class BookPage implements Page {
             ${ activeChapter.parts.length > 0 ? `
                 <ul class="pills">
                     ${activeChapter.parts.map((part, index) => `
-                        <li><a href="/book/${book.id}/chapter/${activeChapter.number}/part/${index}">Version ${index}</a></li>
+                        <li><a href="/book/${book.id}/chapter/${activeChapter.number}/part/${index+1}">Part ${index+1}</a></li>
                     `).join('')}
                 </ul>
             ` : `
             `}
+
+            ${ activePart ? `
+                <div class="secondary-surface">
+                    <textarea>${activePart.text}</textarea>
+                </div>
+            `: ''}
+
+            <button id="create-chapter">${aiIconLeft}<span>${activeChapter.parts.length > 0 ? 'Regenerate' : 'Generate'} Chapter</span>${aiIconRight}</button>
         `: ''}
         `
     }
 
     async addEventListeners() {
         const createChapterOutlineButton = document.getElementById("create-chapter-outline");
+        const createChapterButton = document.getElementById("create-chapter");
         const book = this.book;
         const activeChapter = this.activeChapter;
-        const activePart = this.activePart;
 
         if (createChapterOutlineButton && activeChapter) {
             createChapterOutlineButton.addEventListener('click', async () => {
-                const result = await createChapterOutline(book.id, activeChapter?.number);
+                await createChapterOutline(book.id, activeChapter?.number);
                 window.location.pathname = `/book/${book.id}/chapter/${activeChapter.number}`;
             });
-        } else {
-            throw new Error("Create chapter outline button not found");
+        }
+
+        if (createChapterButton && activeChapter) {
+            createChapterButton.addEventListener('click', async () => {
+                await createChapter(book.id, activeChapter?.number);
+                window.location.pathname = `/book/${book.id}/chapter/${activeChapter.number}`;
+            });
         }
     }
 }

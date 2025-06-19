@@ -1,5 +1,37 @@
-import { Book } from "../types/book.type.js";
+import { Book, Chapter } from "../types/book.type.js";
 import { ChatCompletionMessageParam } from "openai/resources";
+
+export const existingPartsPrompt = (chapter: Chapter): ChatCompletionMessageParam[] => [{
+    role: "user",
+    content: `
+${chapter.parts.map(part => part.text).join('\n')}
+`
+}];
+
+export const chapterDetailsPrompt = (chapter: Chapter): ChatCompletionMessageParam[] => [{
+    role: "user",
+    content: `
+${chapter.title}
+
+When:
+${chapter.when}
+
+Where
+${chapter.where}
+
+What
+${chapter.what}
+
+Why
+${chapter.why}
+
+How
+${chapter.how}
+
+Who
+${chapter.who}
+`
+}];
 
 export const referencesPrompt = (book: Book): ChatCompletionMessageParam[] => [{
     role: "user",
