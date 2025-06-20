@@ -4,12 +4,15 @@ import {
   BookMinimalInfo,
   Chapter,
   ChapterPart,
+  ChapterPartNumber,
 } from "../types/book.type.js";
 import { BookPage } from "./page.book.js";
 import { HomePage } from "./page.home.js";
 import { Page404 } from "./page.404.js";
 import "/example.js";
 import { Page } from "./page.interface.js";
+import { plusIcon } from "./icon.js";
+import { createBook } from "./service.js";
 
 class ClientApp {
   rootElementId: string;
@@ -18,6 +21,7 @@ class ClientApp {
   book?: Book;
   chapter?: Chapter;
   part?: ChapterPart;
+  partNumber?: ChapterPartNumber;
 
   constructor(rootElementId: string) {
     this.rootElementId = rootElementId;
@@ -86,6 +90,9 @@ class ClientApp {
                     `,
                       )
                       .join("")}
+                    <li>
+                      <button class="clean" id="new-book">${plusIcon}&nbsp;New Book</a>
+                    </li>
                 </ul>
                 <div id="page"></div>
             </div>
@@ -98,6 +105,20 @@ class ClientApp {
     }
 
     this.resizeTextAreas();
+    await this.addEventListeners();
+  }
+
+  async addEventListeners() {
+    const newBookButton = document.getElementById('new-book');
+
+    if (newBookButton) {
+      newBookButton.addEventListener('click', async () => {
+        const bookId = await createBook({
+          description: "A story about a space wizard",
+        });
+        window.location.pathname = `/book/${bookId}`;
+      });
+    }
   }
 
   resizeTextAreas() {
@@ -141,8 +162,9 @@ class ClientApp {
     if (!book) throw new Error("Chapter not loaded");
     await this.getPartFromRoute();
     const part = this.part;
-    if (!part) throw new Error("Part not loaded");
-    return new BookPage(book, chapter, part);
+    const partNumber = this.partNumber;
+    if (!part || !partNumber) throw new Error("Part not loaded");
+    return new BookPage(book, chapter, part, partNumber);
   }
 
   async chapterPageRouter(): Promise<Page> {
@@ -187,6 +209,7 @@ class ClientApp {
     const chapter = book.chapters[chapterIndex];
     if (!chapter) throw new Error("Chapter not found");
     this.part = chapter.parts[partIndex];
+    this.partNumber = partIndex + 1;
   }
 }
 
@@ -197,7 +220,7 @@ app.init();
 function navigate(event: Event) {
   const target = event.target as HTMLElement;
   const anchor = target as HTMLAnchorElement;
-  if (target.tagName === "A" && anchor.href) {
+  if (target.tagName === "A" && anchor.href && !target.hasAttribute("download")) {
     event.preventDefault();
     const url = new URL(anchor.href);
     const path = url.pathname;

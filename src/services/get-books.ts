@@ -11,7 +11,7 @@ export async function getBooks(): Promise<BookMinimalInfo[]> {
     const match = file.match(regex);
     const id = match ? match[1] : null;
 
-    if (id !== null && id !== "empty") {
+    if (id !== null && id !== "empty" && id !== "000") {
       const { title } = await getBook(id);
       books.push({ id, title });
     }

@@ -1,28 +1,41 @@
-import { Book, Chapter, ChapterPart } from "../types/book.type.js";
-import { aiIconLeft, aiIconRight } from "./icon.js";
+import { Book, Chapter, ChapterPart, ChapterPartNumber } from "../types/book.type.js";
+import { download } from "./download.js";
+import { aiIconLeft, aiIconRight, downloadIcon } from "./icon.js";
 import { Page } from "./page.interface.js";
-import { createChapter, createChapterOutline } from "./service.js";
+import { createChapter, createChapterOutline, createChapterPart } from "./service.js";
+import { formatNumber } from "./util.js";
 
 export class BookPage implements Page {
   book: Book;
   activeChapter?: Chapter;
   activePart?: ChapterPart;
+  activePartNumber?: ChapterPartNumber;
 
-  constructor(book: Book, activeChapter?: Chapter, activePart?: ChapterPart) {
+  constructor(book: Book, activeChapter?: Chapter, activePart?: ChapterPart, activePartNumber?: ChapterPartNumber) {
     this.book = book;
     this.activeChapter = activeChapter;
     this.activePart = activePart;
+    this.activePartNumber = activePartNumber;
   }
 
   render(root: HTMLElement) {
     const book = this.book;
     const activeChapter = this.activeChapter;
     const activePart = this.activePart;
+    const activePartNumber = this.activePartNumber;
+    const million = 1000000;
+    const tokens = formatNumber(book.model.text.usage.completion_tokens + book.model.text.usage.prompt_tokens);
+    const cost = formatNumber(book.model.text.usage.completion_tokens * (book.model.text.cost.outputTokenCost/million) + 
+    book.model.text.usage.prompt_tokens * (book.model.text.cost.inputTokenCost/million), { decimals: 2 })
+    const usage = `${tokens} tokens and $${cost}`;
 
     root.innerHTML = `
         <div class="secondary-surface">
-            <textarea class="h1">${book.title}</textarea>
+            <input value="${book.title}" class="h1"></textarea>
+            ${usage}
         </div>
+        
+        <button id="download-book">${downloadIcon}&nbsp;Download Book</button>
 
         <div class="secondary-surface">
             <h4>Overview</h4>
@@ -89,6 +102,7 @@ export class BookPage implements Page {
             </div>
 
             <button id="create-chapter-outline">${aiIconLeft}<span>${activeChapter.outline.length > 0 ? "Regenerate" : "Generate"} Chapter Outline</span>${aiIconRight}</button>
+            <button id="create-chapter">${aiIconLeft}<span>${activeChapter.parts.length > 0 ? "Regenerate" : "Generate"} Entire Chapter</span>${aiIconRight}</button>
 
             ${
               activeChapter.outline
@@ -115,7 +129,7 @@ export class BookPage implements Page {
                     ${activeChapter.parts
                       .map(
                         (part, index) => `
-                        <li><a href="/book/${book.id}/chapter/${activeChapter.number}/part/${index + 1}">Part ${index + 1}</a></li>
+                        <li class="${activePartNumber && index === activePartNumber-1 ? 'active' : ''}"><a href="/book/${book.id}/chapter/${activeChapter.number}/part/${index + 1}">Part ${index + 1}</a></li>
                     `,
                       )
                       .join("")}
@@ -128,14 +142,14 @@ export class BookPage implements Page {
             ${
               activePart
                 ? `
+                <button id="create-chapter-part">${aiIconLeft}<span>${activeChapter.parts.length > 0 ? "Regenerate" : "Generate"} Part</span>${aiIconRight}</button>
+
                 <div class="secondary-surface">
                     <textarea>${activePart.text}</textarea>
                 </div>
             `
                 : ""
             }
-
-            <button id="create-chapter">${aiIconLeft}<span>${activeChapter.parts.length > 0 ? "Regenerate" : "Generate"} Chapter</span>${aiIconRight}</button>
         `
             : ""
         }
@@ -147,8 +161,11 @@ export class BookPage implements Page {
       "create-chapter-outline",
     );
     const createChapterButton = document.getElementById("create-chapter");
+    const createChapterPartButton = document.getElementById("create-chapter-part");
+    const downloadBookButton = document.getElementById("download-book");
     const book = this.book;
     const activeChapter = this.activeChapter;
+    const activePartNumber = this.activePartNumber;
 
     if (createChapterOutlineButton && activeChapter) {
       createChapterOutlineButton.addEventListener("click", async () => {
@@ -161,6 +178,26 @@ export class BookPage implements Page {
       createChapterButton.addEventListener("click", async () => {
         await createChapter(book.id, activeChapter?.number);
         window.location.pathname = `/book/${book.id}/chapter/${activeChapter.number}`;
+      });
+    }
+
+    if (createChapterPartButton && activeChapter && activePartNumber) {
+      createChapterPartButton.addEventListener("click", async () => {
+        await createChapterPart(book.id, activeChapter?.number, activePartNumber);
+        window.location.pathname = `/book/${book.id}/chapter/${activeChapter?.number}/part/${activePartNumber}`;
+      });
+    }
+  
+    if (downloadBookButton) {
+      downloadBookButton.addEventListener("click", async () => {
+        const bookText = book.chapters
+          .map(chapter => {
+            const text = chapter.parts.map(part => part.text).join('\n');
+
+            return `Chapter ${chapter.number}: ${chapter.title}\n\n${text || 'Not written yet'}`;
+          })
+          .join('\n\n\n');
+          download(bookText, `${book.id}.txt`);
       });
     }
   }

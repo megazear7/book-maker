@@ -38,7 +38,7 @@ body {
 }
 
 h1,
-textarea.h1 {
+input.h1 {
   font-size: calc(var(--font-medium) * 1.75);
   margin: var(--size-xl) 0 0 0;
 }
@@ -182,21 +182,35 @@ button {
   margin: var(--size-large) 0 0 0;
   cursor: pointer;
   font-size: var(--font-medium);
-  font-size: var(--font-family);
+  font-family: var(--font-family);
   display: inline-flex;
   align-items: center;
   justify-content: center;
 }
 
 button svg {
-  width: 36px;
-  height: 36px;
+  width: var(--font-medium);
+  height: var(--font-medium);
   fill: currentColor;
 }
 
-button:hover {
+button:hover:not(.clean) {
   background-color: var(--color-tertiary-surface);
   color: var(--color-tertiary-text);
+}
+
+button.clean {
+  position: relative;
+  top: 2px;
+  background-color: transparent;
+  padding: 0;
+  margin: 0;
+  font-size: var(--font-medium);
+}
+
+button.clean svg {
+  width: var(--font-medium);
+  height: var(--font-medium);
 }
 
 .loading-overlay {

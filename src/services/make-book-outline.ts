@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 import { getJsonCompletion } from "./get-json-completion.js";
-import { Book, ModelTypeName } from "../types/book.type.js";
+import { Book, BookId, ModelTypeName } from "../types/book.type.js";
 import { Prompt, Role } from "../types/prompt.type.js";
 import { ChatCompletionMessageParam } from "openai/resources.js";
 import { promises as fs } from "fs";
@@ -16,7 +16,8 @@ There should be 5-8 chapters.
 Each reference should include multiple paragraphs of sample writing to esablish a writing tone and style.
 The book id should be less than 12 characters.
 The tokens and dollars in the usage section must be 0.
-The chapter parts and created fields should be empty.
+The part length should be 600, 800, or 1000.
+The chapter outline and part attributes should be empty arrays.
 
 The users next prompt will include a description of the book outline that needs written.
 `.trim();
@@ -26,7 +27,7 @@ export async function makeBookOutline(
   textModelTypeName: ModelTypeName,
   audioModelTypeName: ModelTypeName,
   prompt: Prompt,
-): Promise<void> {
+): Promise<BookId> {
   const tmpBook = createEmpty(Book);
   tmpBook.model.text.name = textModelTypeName;
   tmpBook.model.audio.name = audioModelTypeName;
@@ -46,10 +47,5 @@ export async function makeBookOutline(
   book.model.audio.name = audioModelTypeName;
   await writeBook(book);
   await fs.rm("books/book.000.json");
+  return book.id;
 }
-
-// const client = new OpenAI({
-//     baseURL: env(`GROK_BASE_URL`),
-//     apiKey: env(`GROK_API_KEY`),
-// });
-// await makeBookOutline(client, 'grok', 'gpt', "A story about a knight, a dragon, and a princess that needs rescued.");
