@@ -15,7 +15,6 @@ export async function createBook(
   body: PostBookRequest,
 ): Promise<BookId> {
   toggleLoading();
-  console.log(body);
   const res = await fetch(`/api/book`, {
     method: "POST",
     headers: {

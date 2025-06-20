@@ -13,6 +13,7 @@ import "/example.js";
 import { Page } from "./page.interface.js";
 import { plusIcon } from "./icon.js";
 import { createBook } from "./service.js";
+import { createModal, ModalSubmitDetail } from "./modal.js";
 
 class ClientApp {
   rootElementId: string;
@@ -30,6 +31,18 @@ class ClientApp {
   async init() {
     await this.loadBooks();
     this.render();
+
+    document.addEventListener('modalSubmit', async (e: CustomEvent<ModalSubmitDetail[]>) => {
+      const description = e.detail.find(entry => entry.name === "description");
+      if (description) {
+        const bookId = await createBook({
+          description: description.value,
+        });
+        window.location.pathname = `/book/${bookId}`;
+      } else {
+        throw new Error("No description provided");
+      }
+    }, false);
   }
 
   async loadBooks() {
@@ -113,10 +126,11 @@ class ClientApp {
 
     if (newBookButton) {
       newBookButton.addEventListener('click', async () => {
-        const bookId = await createBook({
-          description: "A story about a space wizard",
-        });
-        window.location.pathname = `/book/${bookId}`;
+        createModal("Create Book", "Create", [{
+          name: "description",
+          label: "Description",
+          placeholder: "A story about knights and dragons",
+        }]);
       });
     }
   }

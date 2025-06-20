@@ -23,6 +23,7 @@ html {
   --time-normal: 300ms;
   --transition-all: all var(--time-normal);
   --font-family: "Merriweather", serif;
+  --content-width: 1200px;
   margin: 0;
   padding: 0;
 }
@@ -66,7 +67,7 @@ h5 {
 }
 
 .container {
-  max-width: 1200px;
+  max-width: var(--content-width);
   padding: var(--size-medium);
   margin: auto;
 }
@@ -276,15 +277,53 @@ button.clean svg {
   }
 }
 
-/* Prevent scrolling when overlay is active */
 body.overlay-active {
   overflow: hidden;
 }
 
-/* Button for demo */
-.toggle-button {
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
-  margin: 20px;
+.custom-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: var(--color-secondary-surface);
+  padding: var(--size-large);
+  border-radius: var(--radius-medium);
+  width: calc(var(--content-width) / 2);
+  max-width: 90%;
+}
+
+.modal-title {
+  margin-top: 0;
+  margin-bottom: var(--size-large);
+  font-size: calc(var(--font-medium) * 2);
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-large);
+}
+
+.modal-input {
+  width: 100%;
+  padding: var(--size-medium);
+  border: 1px solid #ddd;
+  border-radius: var(--radius-medium);
+  font-size: var(--font-medium);
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--size-large);
 }
