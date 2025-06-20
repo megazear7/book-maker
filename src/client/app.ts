@@ -105,7 +105,7 @@ class ClientApp {
                       )
                       .join("")}
                     <li>
-                      <button class="clean" id="new-book">${plusIcon}&nbsp;New Book</a>
+                      <button class="clean" id="new-book">${plusIcon}New Book</a>
                     </li>
                 </ul>
                 <div id="page"></div>

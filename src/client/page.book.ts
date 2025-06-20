@@ -27,8 +27,9 @@ export class BookPage implements Page {
     const million = 1000000;
     const tokens = formatNumber(book.model.text.usage.completion_tokens + book.model.text.usage.prompt_tokens);
     const cost = formatNumber(book.model.text.usage.completion_tokens * (book.model.text.cost.outputTokenCost/million) + 
-    book.model.text.usage.prompt_tokens * (book.model.text.cost.inputTokenCost/million), { decimals: 2 })
-    const usage = `${tokens} tokens and $${cost}`;
+    book.model.text.usage.prompt_tokens * (book.model.text.cost.inputTokenCost/million), { decimals: 2 });
+    const wordCount = formatNumber(book.chapters.map(chapter => chapter.parts.map(part => part.text).join(' ')).join(' ').split(/\s+/).length);
+    const usage = `${tokens} tokens&nbsp;&nbsp;&nbsp;&nbsp;$${cost}&nbsp;&nbsp;&nbsp;&nbsp;${wordCount} words`;
 
     root.innerHTML = `
         <div class="secondary-surface">
@@ -39,7 +40,7 @@ export class BookPage implements Page {
             </div>
         </div>
         
-        <button id="download-book">${downloadIcon}&nbsp;Download Book</button>
+        <button id="download-book">${downloadIcon}Download Book</button>
 
         <div class="secondary-surface">
             <h4>Overview</h4>
@@ -64,7 +65,7 @@ export class BookPage implements Page {
             `,
               )
               .join("")}
-            <li><button class="clean" id="add-chapter">${plusIcon}&nbsp;Add Chapter</button>
+            <li><button class="clean" id="add-chapter">${plusIcon}Add Chapter</button>
         </ul>
 
         ${

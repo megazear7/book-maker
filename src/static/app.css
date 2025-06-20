@@ -8,7 +8,7 @@ html {
   --color-secondary-text: #ffffff; /* Pure white for contrast */
   --color-tertiary-surface: linear-gradient(135deg, var(--color-1), var(--color-2)); /* Gradient for interactive elements */
   --color-tertiary-text: #ffffff; /* White text on gradient */
-  --color-accent: #ff6f61; /* Coral accent for highlights */
+  --color-accent: rgb(255 111 97 / 80%); /* Coral accent for highlights */
 
   --size-xl: 32px;
   --size-large: 20px;
@@ -46,7 +46,7 @@ body {
 /* Headings */
 h1,
 input.h1 {
-  font-size: calc(var(--font-medium) * 2.5);
+  font-size: calc(var(--font-medium) * 2);
   font-weight: 700;
   margin: var(--size-xl) 0 var(--size-medium) 0;
   color: var(--color-primary-text);
@@ -55,29 +55,29 @@ input.h1 {
 
 h2,
 input.h2 {
-  font-size: calc(var(--font-medium) * 1.75);
+  font-size: calc(var(--font-medium) * 1.6);
   font-weight: 600;
-  margin: var(--size-large) 0 var(--size-medium) 0;
+  margin: var(--size-medium) 0 var(--size-small) 0;
   color: var(--color-primary-text);
 }
 
 h3 {
-  font-size: calc(var(--font-medium) * 1.5);
+  font-size: calc(var(--font-medium) * 1.4);
   font-weight: 500;
-  margin: var(--size-large) 0 var(--size-medium) 0;
+  margin: var(--size-medium) 0 var(--size-small) 0;
 }
 
 h4 {
-  font-size: calc(var(--font-medium) * 1.25);
+  font-size: calc(var(--font-medium) * 1.2);
   font-style: italic;
-  margin: var(--size-large) 0 var(--size-medium) 0;
+  margin: var(--size-large) 0 0 0;
   color: var(--color-accent);
 }
 
 h5 {
-  font-size: calc(var(--font-medium) * 0.9);
+  font-size: calc(var(--font-medium) * 0.85);
   font-style: italic;
-  margin: var(--size-small) 0 var(--size-medium) 0;
+  margin: var(--size-small) 0 0 0;
   color: var(--color-primary-text);
   opacity: 0.85;
 }
@@ -113,7 +113,6 @@ ul.pills li {
   background-color: var(--color-secondary-surface);
   color: var(--color-secondary-text);
   list-style: none;
-  padding: var(--size-medium) var(--size-large);
   border-radius: var(--radius-large);
   transition: var(--transition-all);
   cursor: pointer;
@@ -129,15 +128,18 @@ ul.pills li.active {
   transform: translateY(-2px);
 }
 
-ul.pills li a {
+ul.pills li a, ul.pills li button {
   color: inherit;
   transition: var(--transition-all);
+  display: flex;
+  padding: var(--size-medium) var(--size-large);
   text-decoration: none;
   font-size: calc(var(--font-medium) * 0.9);
 }
 
 ul.pills li:hover a,
-ul.pills li.active a {
+ul.pills li.active a,
+ul.pills li:hover button {
   color: var(--color-tertiary-text);
 }
 
@@ -176,7 +178,7 @@ textarea {
   font-family: var(--font-family);
   font-size: var(--font-medium);
   line-height: var(--line-height);
-  margin-top: var(--size-medium);
+  margin-top: var(--size-small);
   resize: vertical;
   border: none;
   overflow: hidden;
@@ -256,8 +258,8 @@ button.clean {
   color: var(--color-accent);
 }
 
-button.clean:hover {
-  color: var(--color-1);
+li:hover button.clean {
+  color: #fff;
 }
 
 button.clean svg {
