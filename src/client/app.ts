@@ -14,6 +14,7 @@ import { Page } from "./page.interface.js";
 import { plusIcon } from "./icon.js";
 import { createBook } from "./service.js";
 import { createModal, ModalSubmitDetail } from "./modal.js";
+import { showAlert } from "./show-alert.js";
 
 class ClientApp {
   rootElementId: string;

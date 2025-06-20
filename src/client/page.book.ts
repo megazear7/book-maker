@@ -10,6 +10,7 @@ export class BookPage implements Page {
   activeChapter?: Chapter;
   activePart?: ChapterPart;
   activePartNumber?: ChapterPartNumber;
+  hasChanges: boolean = false;
 
   constructor(book: Book, activeChapter?: Chapter, activePart?: ChapterPart, activePartNumber?: ChapterPartNumber) {
     this.book = book;
@@ -31,25 +32,28 @@ export class BookPage implements Page {
 
     root.innerHTML = `
         <div class="secondary-surface">
-            <input value="${book.title}" class="h1"></textarea>
-            ${usage}
+            <input name="book.title" value="${book.title}" class="h1"></textarea>
+            <div class="spread">
+              <span>${usage}</span>
+              <span class="save-status">${this.hasChanges ? "Saving" : "Saved"}</span>
+            </div>
         </div>
         
         <button id="download-book">${downloadIcon}&nbsp;Download Book</button>
 
         <div class="secondary-surface">
             <h4>Overview</h4>
-            <textarea>${book.overview}</textarea>
+            <textarea name="book.overview">${book.overview}</textarea>
         </div>
 
         <div class="secondary-surface">
             <h4>Edit Instructions</h4>
-            <textarea>${book.instructions.edit}</textarea>
+            <textarea name="book.instructions.edit">${book.instructions.edit}</textarea>
         </div>
 
         <div class="secondary-surface">
             <h4>Audio Instructions</h4>
-            <textarea>${book.instructions.audio}</textarea>
+            <textarea name="book.instructions.audio">${book.instructions.audio}</textarea>
         </div>
 
         <ul class="pills">
@@ -68,38 +72,38 @@ export class BookPage implements Page {
             ? `
             <div class="secondary-surface">
                 <h4>Chapter ${activeChapter.number}</h4>
-                <h2><textarea class="h2">${activeChapter.title}</textarea></h2>
+                <h2><input name="activeChapter.title" class="h2" value="${activeChapter.title}"></input></h2>
             </div>
 
             <div class="secondary-surface">
                 <h4>When</h4>
-                <textarea>${activeChapter.when}</textarea>
+                <textarea name="activeChapter.when">${activeChapter.when}</textarea>
 
                 <h4>Where</h4>
-                <textarea>${activeChapter.where}</textarea>
+                <textarea name="activeChapter.where">${activeChapter.where}</textarea>
 
                 <h4>What</h4>
-                <textarea>${activeChapter.what}</textarea>
+                <textarea name="activeChapter.what">${activeChapter.what}</textarea>
 
                 <h4>Why</h4>
-                <textarea>${activeChapter.why}</textarea>
+                <textarea name="activeChapter.why">${activeChapter.why}</textarea>
 
                 <h4>How</h4>
-                <textarea>${activeChapter.how}</textarea>
+                <textarea name="activeChapter.how">${activeChapter.how}</textarea>
 
                 <h4>Who</h4>
-                <textarea>${activeChapter.who}</textarea>
+                <textarea name="activeChapter.who">${activeChapter.who}</textarea>
             </div>
 
             <div class="secondary-surface">
                 <h4>Minimum Parts</h4>
-                <input type="text" value="${activeChapter.minParts}"></input>
+                <input name="activeChapter.minParts" type="text" value="${activeChapter.minParts}"></input>
 
                 <h4>Maximum Parts</h4>
-                <input type="text" value="${activeChapter.maxParts}"></input>
+                <input name="activeChapter.maxParts" type="text" value="${activeChapter.maxParts}"></input>
 
                 <h4>Estimated Part Length in Words</h4>
-                <input type="text" value="${activeChapter.partLength}"></input>
+                <input name="activeChapter.partLength" type="text" value="${activeChapter.partLength}"></input>
             </div>
 
             <button id="create-chapter-outline">${aiIconLeft}<span>${activeChapter.outline.length > 0 ? "Regenerate" : "Generate"} Chapter Outline</span>${aiIconRight}</button>
@@ -114,7 +118,7 @@ export class BookPage implements Page {
                       .map(
                         (partDescription, index) => `
                         <h5>Part ${index + 1}</h5>
-                        <textarea>${partDescription}</textarea>
+                        <textarea name="activeChapter.outline[index]">${partDescription}</textarea>
                     `,
                       )
                       .join("")}
@@ -146,7 +150,7 @@ export class BookPage implements Page {
                 <button id="create-chapter-part">${aiIconLeft}<span>${activeChapter.parts.length > 0 ? "Regenerate" : "Generate"} Part</span>${aiIconRight}</button>
 
                 <div class="secondary-surface">
-                    <textarea>${activePart.text}</textarea>
+                    <textarea name="activePart.text">${activePart.text}</textarea>
                 </div>
             `
                 : ""
@@ -209,5 +213,83 @@ export class BookPage implements Page {
           download(bookText, `${book.id}.txt`);
       });
     }
+
+    const textareas: NodeListOf<HTMLTextAreaElement> = document.querySelectorAll("textarea");
+    textareas.forEach((textarea) => {
+      if (textarea) {
+        textarea.addEventListener("input", () => {
+          this.handleChange(textarea);
+        });
+      }
+    });
+
+    const inputs: NodeListOf<HTMLInputElement> = document.querySelectorAll("input");
+    inputs.forEach((input) => {
+      if (input) {
+        input.addEventListener("input", () => {
+          this.handleChange(input);
+        });
+      }
+    });
+
+    setInterval(async () => {
+      if (this.hasChanges) {
+        await fetch(`/api/book/${this.book.id}/save`, {
+          method: "POST",
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(this.book),
+        });
+        this.hasChanges = false;
+        const saveStatus = document.querySelector(".save-status");
+        if (saveStatus) {
+          saveStatus.innerHTML = "Saved";
+        }
+      }
+    }, 2000);
   }
+
+  handleChange(elem: HTMLTextAreaElement | HTMLInputElement) {
+    const attributes = elem.name.split('.');
+    const first = attributes.shift();
+
+    if (first === "book") {
+      const book = this[first];
+      updateNestedProperty(book, attributes, elem.value);
+    } else if (first === "activeChapter") {
+      const activeChapter = this[first];
+      updateNestedProperty(activeChapter, attributes, elem.value);
+    } else if (first === "activePart") {
+      const activePart = this[first];
+      updateNestedProperty(activePart, attributes, elem.value);
+    } else {
+      throw new Error("Invalid first item");
+    }
+
+    this.hasChanges = true;
+    const saveStatus = document.querySelector(".save-status");
+    if (saveStatus) {
+      saveStatus.innerHTML = "Saving";
+    }
+  }
+}
+
+function updateNestedProperty(obj: any, properties: string[], value: any): void {
+  let current: any = obj;
+
+  for (let i = 0; i < properties.length - 1; i++) {
+    const prop = properties[i];
+    if (!(prop in current) || typeof current[prop] !== 'object' || current[prop] === null) {
+      throw new Error(`Property '${prop}' does not exist or is not an object`);
+    }
+    current = current[prop];
+  }
+
+  const lastProp = properties[properties.length - 1];
+  if (!(lastProp in current)) {
+    throw new Error(`Property '${lastProp}' does not exist`);
+  }
+
+  current[lastProp] = value;
 }

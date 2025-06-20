@@ -45,6 +45,8 @@ export async function makeBookOutline(
   const book = await getJsonCompletion(tmpBook, client, history, Book);
   book.model.text.name = textModelTypeName;
   book.model.audio.name = audioModelTypeName;
+  book.model.text.cost.inputTokenCost = 3;
+  book.model.text.cost.outputTokenCost = 15;
   await writeBook(book);
   await fs.rm("books/book.000.json");
   return book.id;

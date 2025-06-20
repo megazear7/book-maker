@@ -11,6 +11,8 @@ import OpenAI from "openai";
 import { env } from "../services/env.js";
 import { PostBookRequest } from "../types/requests.js";
 import { addEmptyChapter } from "../services/add-empty-chapter.js";
+import { Book } from "../types/book.type.js";
+import { writeBook } from "../services/write-book.js";
 
 const server = express();
 const port = 3000;
@@ -20,6 +22,11 @@ server.get("/api/books", async (req, res) => {
 });
 server.get("/api/book/:book", async (req, res) => {
   res.json(await getBook(req.params.book));
+});
+server.post("/api/book/:id/save", async (req, res) => {
+  const book = Book.parse(req.body);
+  await writeBook(book)
+  res.json({ success: true });
 });
 server.post("/api/book", async (req, res) => {
   const body = PostBookRequest.parse(req.body);
