@@ -95,19 +95,16 @@ export type ChapterTitle = z.infer<typeof ChapterTitle>;
 
 export const ChapterWhen = z
   .string()
-  .min(1)
   .describe("When the chapter takes place in the story.");
 export type ChapterWhen = z.infer<typeof ChapterWhen>;
 
 export const ChapterWhere = z
   .string()
-  .min(1)
   .describe("Where the chapter takes place in the setting of the book.");
 export type ChapterWhere = z.infer<typeof ChapterWhere>;
 
 export const ChapterWhat = z
   .string()
-  .min(1)
   .describe(
     "What happens in the chapter. This shoud be as detailed as possible.",
   );
@@ -115,19 +112,16 @@ export type ChapterWhat = z.infer<typeof ChapterWhat>;
 
 export const ChapterWhy = z
   .string()
-  .min(1)
   .describe("Why the chapter is included in the plot of the book.");
 export type ChapterWhy = z.infer<typeof ChapterWhy>;
 
 export const ChapterHow = z
   .string()
-  .min(1)
   .describe("Specify what characters perspective is the chapter written from.");
 export type ChapterHow = z.infer<typeof ChapterHow>;
 
 export const ChapterWho = z
   .string()
-  .min(1)
   .describe("Which characters are involved in the chapter.");
 export type ChapterWho = z.infer<typeof ChapterWho>;
 

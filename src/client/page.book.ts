@@ -1,8 +1,8 @@
 import { Book, Chapter, ChapterPart, ChapterPartNumber } from "../types/book.type.js";
 import { download } from "./download.js";
-import { aiIconLeft, aiIconRight, downloadIcon } from "./icon.js";
+import { aiIconLeft, aiIconRight, downloadIcon, plusIcon } from "./icon.js";
 import { Page } from "./page.interface.js";
-import { createChapter, createChapterOutline, createChapterPart } from "./service.js";
+import { addChapter, createChapter, createChapterOutline, createChapterPart } from "./service.js";
 import { formatNumber } from "./util.js";
 
 export class BookPage implements Page {
@@ -60,6 +60,7 @@ export class BookPage implements Page {
             `,
               )
               .join("")}
+            <li><button class="clean" id="add-chapter">${plusIcon}&nbsp;Add Chapter</button>
         </ul>
 
         ${
@@ -160,6 +161,7 @@ export class BookPage implements Page {
     const createChapterOutlineButton = document.getElementById(
       "create-chapter-outline",
     );
+    const addChapterButton = document.getElementById("add-chapter");
     const createChapterButton = document.getElementById("create-chapter");
     const createChapterPartButton = document.getElementById("create-chapter-part");
     const downloadBookButton = document.getElementById("download-book");
@@ -185,6 +187,13 @@ export class BookPage implements Page {
       createChapterPartButton.addEventListener("click", async () => {
         await createChapterPart(book.id, activeChapter?.number, activePartNumber);
         window.location.pathname = `/book/${book.id}/chapter/${activeChapter?.number}/part/${activePartNumber}`;
+      });
+    }
+
+    if (addChapterButton) {
+      addChapterButton.addEventListener("click", async () => {
+        const chapter = await addChapter(book.id);
+        window.location.pathname = `/book/${book.id}/chapter/${chapter.number}`;
       });
     }
   

@@ -1,6 +1,7 @@
 import {
   Book,
   BookId,
+  Chapter,
   ChapterNumber,
   ChapterOutline,
   ChapterPart,
@@ -25,6 +26,18 @@ export async function createBook(
   const json = await res.json();
   toggleLoading();
   return BookId.parse(json);
+}
+
+export async function addChapter(
+  book: BookId,
+): Promise<Chapter> {
+  toggleLoading();
+  const res = await fetch(`/api/book/${book}/chapter/add`, {
+    method: "POST",
+  });
+  const json = await res.json();
+  toggleLoading();
+  return Chapter.parse(json);
 }
 
 export async function createChapterOutline(

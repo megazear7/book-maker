@@ -10,6 +10,7 @@ import { makeBookOutline } from "../services/make-book-outline.js";
 import OpenAI from "openai";
 import { env } from "../services/env.js";
 import { PostBookRequest } from "../types/requests.js";
+import { addEmptyChapter } from "../services/add-empty-chapter.js";
 
 const server = express();
 const port = 3000;
@@ -17,8 +18,8 @@ server.use(express.json());
 server.get("/api/books", async (req, res) => {
   res.json(await getBooks());
 });
-server.get("/api/book/:id", async (req, res) => {
-  res.json(await getBook(req.params.id));
+server.get("/api/book/:book", async (req, res) => {
+  res.json(await getBook(req.params.book));
 });
 server.post("/api/book", async (req, res) => {
   const body = PostBookRequest.parse(req.body);
@@ -29,16 +30,21 @@ server.post("/api/book", async (req, res) => {
 
   res.json(await makeBookOutline(client, 'grok', 'gpt', body.description));
 });
-server.post("/api/book/:id/chapter/:chapter/outline", async (req, res) => {
+server.post("/api/book/:book/chapter/add", async (req, res) => {
   res.json(
-    await createChapterOutline(req.params.id, parseInt(req.params.chapter)),
+    await addEmptyChapter(req.params.book),
   );
 });
-server.post("/api/book/:id/chapter/:chapter", async (req, res) => {
-  res.json(await createChapter(req.params.id, parseInt(req.params.chapter)));
+server.post("/api/book/:book/chapter/:chapter/outline", async (req, res) => {
+  res.json(
+    await createChapterOutline(req.params.book, parseInt(req.params.chapter)),
+  );
 });
-server.post("/api/book/:id/chapter/:chapter/part/:part", async (req, res) => {
-  res.json(await createChapterPart(req.params.id, parseInt(req.params.chapter), parseInt(req.params.part)));
+server.post("/api/book/:book/chapter/:chapter", async (req, res) => {
+  res.json(await createChapter(req.params.book, parseInt(req.params.chapter)));
+});
+server.post("/api/book/:book/chapter/:chapter/part/:part", async (req, res) => {
+  res.json(await createChapterPart(req.params.book, parseInt(req.params.chapter), parseInt(req.params.part)));
 });
 server.use(express.static("dist/client"));
 server.use("/types", express.static("dist/types"));
