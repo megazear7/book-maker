@@ -2,26 +2,24 @@ import OpenAI from "openai";
 import { ChatCompletionMessageParam } from "openai/resources";
 import { ZodSchema } from "zod";
 import zodToJsonSchema from "zod-to-json-schema";
-import { Book } from "../types/book.type.js";
-import { getTextModelConfig } from "./get-model-config.js";
-import { writeBook } from "./write-book.js";
+import { env } from "./env.js";
 
-export async function getJsonCompletion<T>(
-  book: Book,
-  client: OpenAI,
+export async function getJsonCompletionNoBook<T>(
   history: ChatCompletionMessageParam[],
   zod: ZodSchema<T>,
 ): Promise<T> {
-  const modelConfig = getTextModelConfig(book);
+  const client = new OpenAI({
+      baseURL: env(`GROK_BASE_URL`),
+      apiKey: env(`GROK_API_KEY`),
+  });
   const innerSchema = zodToJsonSchema(zod);
   const jsonSchemaForOpenAI = {
     name: "schema",
     schema: innerSchema.definitions?.Article || innerSchema,
     strict: true,
   };
-
   const completion = await client.chat.completions.create({
-    model: modelConfig.modelName,
+    model: env(`GROK_MODEL_NAME`),
     messages: history,
     max_completion_tokens: 10000,
     response_format: {
@@ -32,13 +30,6 @@ export async function getJsonCompletion<T>(
 
   if (!completion.choices[0].message.content) {
     throw new Error("No response");
-  }
-
-  if (book.model.text.cost) {
-    book.model.text.usage.completion_tokens +=
-      completion.usage?.completion_tokens || 0;
-    book.model.text.usage.prompt_tokens += completion.usage?.prompt_tokens || 0;
-    await writeBook(book);
   }
 
   try {

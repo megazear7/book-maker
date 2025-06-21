@@ -12,9 +12,8 @@ import { Page404 } from "./page.404.js";
 import "/example.js";
 import { Page } from "./page.interface.js";
 import { plusIcon } from "./icon.js";
-import { createBook } from "./service.js";
-import { createModal, ModalSubmitDetail } from "./modal.js";
-import { showAlert } from "./show-alert.js";
+import { addEmptyBook, createBook } from "./service.js";
+import { createModal, getExpectedBooleanValue, getExpectedNumberValue, getExpectedStringValue, ModalSubmitDetail } from "./modal.js";
 
 class ClientApp {
   rootElementId: string;
@@ -34,14 +33,24 @@ class ClientApp {
     this.render();
 
     document.addEventListener('modalSubmit', async (e: CustomEvent<ModalSubmitDetail[]>) => {
-      const description = e.detail.find(entry => entry.name === "description");
-      if (description) {
+      const manual = getExpectedBooleanValue(e, "manual");
+
+      if (manual) {
+        const title = getExpectedStringValue(e, "title");
+        const book = await addEmptyBook({
+          title,
+        });
+        window.location.pathname = `/book/${book.id}`;
+      } else {
+        const description = getExpectedStringValue(e, "description");
+        const min = getExpectedNumberValue(e, "min");
+        const max = getExpectedNumberValue(e, "max");
         const bookId = await createBook({
-          description: description.value,
+          description,
+          min,
+          max,
         });
         window.location.pathname = `/book/${bookId}`;
-      } else {
-        throw new Error("No description provided");
       }
     }, false);
   }
@@ -96,14 +105,14 @@ class ClientApp {
                         <a href="/">Home</a>
                     </li>
                     ${this.books
-                      .map(
-                        (book) => `
+        .map(
+          (book) => `
                         <li class="${book.id === this.book?.id ? "active" : ""}">
                             <a href="/book/${book.id}">${book.title}</a>
                         </li>
                     `,
-                      )
-                      .join("")}
+        )
+        .join("")}
                     <li>
                       <button class="clean" id="new-book">${plusIcon}New Book</a>
                     </li>
@@ -128,9 +137,42 @@ class ClientApp {
     if (newBookButton) {
       newBookButton.addEventListener('click', async () => {
         createModal("Create Book", "Create", [{
+          name: "manual",
+          label: "Create Manually",
+          type: "boolean"
+        }, {
           name: "description",
           label: "Description",
+          type: "plaintext",
           placeholder: "A story about knights and dragons",
+          showIf: {
+            fieldName: "manual",
+            value: false,
+          }
+        }, {
+          name: "min",
+          label: "Minimum Chapters",
+          type: "plaintext",
+          showIf: {
+            fieldName: "manual",
+            value: false,
+          }
+        }, {
+          name: "max",
+          label: "Maximum Chapters",
+          type: "plaintext",
+          showIf: {
+            fieldName: "manual",
+            value: false,
+          }
+        }, {
+          name: "title",
+          label: "Title",
+          type: "plaintext",
+          showIf: {
+            fieldName: "manual",
+            value: true,
+          }
         }]);
       });
     }

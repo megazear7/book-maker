@@ -6,13 +6,14 @@ import { ChatCompletionMessageParam } from "openai/resources.js";
 import { promises as fs } from "fs";
 import { createEmpty } from "./util.js";
 import { writeBook } from "./write-book.js";
+import { MaximumChapters, MinimumChapters } from "../types/requests.js";
 
-const systemPrompt = `
+const systemPrompt = (min: MinimumChapters, max: MaximumChapters) => `
 You are a book config creator.
 Given instructions from the user, you create a book congif
 
 The model text should be grok and the model audio should be gpt.
-There should be 5-8 chapters.
+There should be ${min}-${max} chapters.
 Each reference should include multiple paragraphs of sample writing to esablish a writing tone and style.
 The book id should be less than 12 characters.
 The tokens and dollars in the usage section must be 0.
@@ -27,6 +28,8 @@ export async function makeBookOutline(
   textModelTypeName: ModelTypeName,
   audioModelTypeName: ModelTypeName,
   prompt: Prompt,
+  min: MinimumChapters,
+  max: MaximumChapters,
 ): Promise<BookId> {
   const tmpBook = createEmpty(Book);
   tmpBook.model.text.name = textModelTypeName;
@@ -35,7 +38,7 @@ export async function makeBookOutline(
   const history: ChatCompletionMessageParam[] = [
     {
       role: Role.enum.system,
-      content: systemPrompt,
+      content: systemPrompt(min, max),
     },
     {
       role: Role.enum.user,

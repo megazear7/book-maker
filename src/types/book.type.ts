@@ -27,7 +27,6 @@ export type BookReference = z.infer<typeof BookReference>;
 
 export const BookOverview = z
   .string()
-  .min(1)
   .describe(
     "Overview of the book to write. This should contain the story, an overview of the plot, character summaries, plot devices, key moments, background information, and anything else to help set the stage for writing the book.",
   );
@@ -35,7 +34,6 @@ export type BookOverview = z.infer<typeof BookOverview>;
 
 export const BookChapterPartText = z
   .string()
-  .min(1)
   .describe("A written part of a chapter of the book.");
 export type BookChapterPartText = z.infer<typeof BookChapterPartText>;
 
@@ -53,7 +51,6 @@ export type ChapterPartTitle = z.infer<typeof ChapterPartTitle>;
 
 export const ChapterPartDescription = z
   .string()
-  .min(1)
   .describe("Details about the events that take place");
 export type ChapterPartDescription = z.infer<typeof ChapterPartDescription>;
 
@@ -71,7 +68,6 @@ export type ChapterParts = z.infer<typeof ChapterParts>;
 
 export const BookChapterText = z
   .string()
-  .min(1)
   .describe("A written part of a chapter of the book.");
 export type BookChapterText = z.infer<typeof BookChapterText>;
 
@@ -89,7 +85,6 @@ export type CreatedChapter = z.infer<typeof CreatedChapter>;
 
 export const ChapterTitle = z
   .string()
-  .min(1)
   .describe("The title of the chapter.");
 export type ChapterTitle = z.infer<typeof ChapterTitle>;
 
@@ -253,3 +248,12 @@ export const Book = z.object({
   model: BookModelConfigs,
 });
 export type Book = z.infer<typeof Book>;
+
+export const LoadingMessageContent = z.string();
+export type LoadingMessageContent = z.infer<typeof LoadingMessageContent>;
+
+export const LoadingMessage = z.string();
+export type LoadingMessage = z.infer<typeof LoadingMessage>;
+
+export const LoadingMessages = LoadingMessage.array();
+export type LoadingMessages = z.infer<typeof LoadingMessages>;

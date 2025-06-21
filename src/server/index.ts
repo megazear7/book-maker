@@ -9,10 +9,12 @@ import { createChapterPart } from "../services/create-chapter-part.js";
 import { makeBookOutline } from "../services/make-book-outline.js";
 import OpenAI from "openai";
 import { env } from "../services/env.js";
-import { PostBookRequest } from "../types/requests.js";
+import { CreateEmptyBookRequest, GetLoadingMessagesRequest, PostBookRequest } from "../types/requests.js";
 import { addEmptyChapter } from "../services/add-empty-chapter.js";
 import { Book } from "../types/book.type.js";
 import { writeBook } from "../services/write-book.js";
+import { createEmpty } from "../services/util.js";
+import { getLoadingMessages } from "../services/get-loading-messages.js";
 
 const server = express();
 const port = 3000;
@@ -28,6 +30,14 @@ server.post("/api/book/:id/save", async (req, res) => {
   await writeBook(book)
   res.json({ success: true });
 });
+server.post("/api/book/empty", async (req, res) => {
+  const body = CreateEmptyBookRequest.parse(req.body);
+  const book = createEmpty(Book);
+  book.title = body.title;
+  book.id = book.title.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
+  writeBook(book);
+  res.json(book);
+});
 server.post("/api/book", async (req, res) => {
   const body = PostBookRequest.parse(req.body);
   const client = new OpenAI({
@@ -35,7 +45,11 @@ server.post("/api/book", async (req, res) => {
       apiKey: env(`GROK_API_KEY`),
   });
 
-  res.json(await makeBookOutline(client, 'grok', 'gpt', body.description));
+  res.json(await makeBookOutline(client, 'grok', 'gpt', body.description, body.min, body.max));
+});
+server.post("/api/loading/messages", async (req, res) => {
+  const body = GetLoadingMessagesRequest.parse(req.body);
+  res.json(await getLoadingMessages(body.content));
 });
 server.post("/api/book/:book/chapter/add", async (req, res) => {
   res.json(

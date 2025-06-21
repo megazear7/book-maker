@@ -176,28 +176,28 @@ export class BookPage implements Page {
 
     if (createChapterOutlineButton && activeChapter) {
       createChapterOutlineButton.addEventListener("click", async () => {
-        await createChapterOutline(book.id, activeChapter?.number);
+        await createChapterOutline(book, activeChapter);
         window.location.pathname = `/book/${book.id}/chapter/${activeChapter.number}`;
       });
     }
 
     if (createChapterButton && activeChapter) {
       createChapterButton.addEventListener("click", async () => {
-        await createChapter(book.id, activeChapter?.number);
+        await createChapter(book, activeChapter);
         window.location.pathname = `/book/${book.id}/chapter/${activeChapter.number}`;
       });
     }
 
     if (createChapterPartButton && activeChapter && activePartNumber) {
       createChapterPartButton.addEventListener("click", async () => {
-        await createChapterPart(book.id, activeChapter?.number, activePartNumber);
+        await createChapterPart(book, activeChapter, activePartNumber);
         window.location.pathname = `/book/${book.id}/chapter/${activeChapter?.number}/part/${activePartNumber}`;
       });
     }
 
     if (addChapterButton) {
       addChapterButton.addEventListener("click", async () => {
-        const chapter = await addChapter(book.id);
+        const chapter = await addChapter(book);
         window.location.pathname = `/book/${book.id}/chapter/${chapter.number}`;
       });
     }
