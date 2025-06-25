@@ -15,6 +15,7 @@ import { Book } from "../types/book.type.js";
 import { writeBook } from "../services/write-book.js";
 import { createEmpty } from "../services/util.js";
 import { getLoadingMessages } from "../services/get-loading-messages.js";
+import { deleteBook } from "../services/delete-book.js";
 
 const server = express();
 const port = 3000;
@@ -24,6 +25,9 @@ server.get("/api/books", async (req, res) => {
 });
 server.get("/api/book/:book", async (req, res) => {
   res.json(await getBook(req.params.book));
+});
+server.delete("/api/book/:book", async (req, res) => {
+  res.json(await deleteBook(req.params.book));
 });
 server.post("/api/book/:id/save", async (req, res) => {
   const book = Book.parse(req.body);

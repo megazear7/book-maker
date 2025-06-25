@@ -174,7 +174,6 @@ export type Chapter = z.infer<typeof Chapter>;
 
 export const EditInstructions = z
   .string()
-  .min(1)
   .describe(
     "Instructions to follow when editing the book. These instructions should not include changes to the plot, storyline, or the order of events. The AI will edit each paragraph individually. These edits should be for things like tone, words to use or not use, and other changes that can be made one paragraph at a time.",
   );
@@ -182,7 +181,6 @@ export type EditInstructions = z.infer<typeof EditInstructions>;
 
 export const AudioInstructions = z
   .string()
-  .min(1)
   .describe(
     "Instructions to follow when creating the book audio. You can include here things like speed, tone, and speaking style.",
   );

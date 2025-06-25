@@ -31,28 +31,6 @@ class ClientApp {
   async init() {
     await this.loadBooks();
     this.render();
-
-    document.addEventListener('modalSubmit', async (e: CustomEvent<ModalSubmitDetail[]>) => {
-      const manual = getExpectedBooleanValue(e, "manual");
-
-      if (manual) {
-        const title = getExpectedStringValue(e, "title");
-        const book = await addEmptyBook({
-          title,
-        });
-        window.location.pathname = `/book/${book.id}`;
-      } else {
-        const description = getExpectedStringValue(e, "description");
-        const min = getExpectedNumberValue(e, "min");
-        const max = getExpectedNumberValue(e, "max");
-        const bookId = await createBook({
-          description,
-          min,
-          max,
-        });
-        window.location.pathname = `/book/${bookId}`;
-      }
-    }, false);
   }
 
   async loadBooks() {
@@ -173,8 +151,30 @@ class ClientApp {
             fieldName: "manual",
             value: true,
           }
-        }]);
+        }], this.handleCreateBookModalSubmit.bind(this));
       });
+    }
+  }
+
+  async handleCreateBookModalSubmit(result: ModalSubmitDetail[]) {
+    const manual = getExpectedBooleanValue(result, "manual");
+
+    if (manual) {
+      const title = getExpectedStringValue(result, "title");
+      const book = await addEmptyBook({
+        title,
+      });
+      window.location.pathname = `/book/${book.id}`;
+    } else {
+      const description = getExpectedStringValue(result, "description");
+      const min = getExpectedNumberValue(result, "min");
+      const max = getExpectedNumberValue(result, "max");
+      const bookId = await createBook({
+        description,
+        min,
+        max,
+      });
+      window.location.pathname = `/book/${bookId}`;
     }
   }
 

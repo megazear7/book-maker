@@ -9,6 +9,7 @@ html {
   --color-tertiary-surface: linear-gradient(135deg, var(--color-1), var(--color-2)); /* Gradient for interactive elements */
   --color-tertiary-text: #ffffff; /* White text on gradient */
   --color-accent: rgb(255 111 97 / 80%); /* Coral accent for highlights */
+  --color-warning: rgba(255, 97, 97, 0.8); /* Coral accent for highlights */
 
   --size-xl: 32px;
   --size-large: 20px;
@@ -407,4 +408,17 @@ body.overlay-active {
 
 .hidden {
   display: none;
+}
+
+#delete-book {
+  float: right;
+}
+
+button.secondary {
+  background: none;
+  box-shadow: none;
+}
+
+button.warning:hover {
+  background: var(--color-warning);
 }

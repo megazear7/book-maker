@@ -1,6 +1,7 @@
 import { Book, Chapter, ChapterPart, ChapterPartNumber } from "../types/book.type.js";
 import { download } from "./download.js";
-import { aiIconLeft, aiIconRight, downloadIcon, plusIcon } from "./icon.js";
+import { aiIconLeft, aiIconRight, downloadIcon, plusIcon, trashIcon } from "./icon.js";
+import { createModal, ModalSubmitDetail } from "./modal.js";
 import { Page } from "./page.interface.js";
 import { addChapter, createChapter, createChapterOutline, createChapterPart } from "./service.js";
 import { formatNumber } from "./util.js";
@@ -41,6 +42,8 @@ export class BookPage implements Page {
         </div>
         
         <button id="download-book">${downloadIcon}Download Book</button>
+        <button id="download-audio">${downloadIcon}Download Audio</button>
+        <button class="secondary warning" id="delete-book">${trashIcon}Delete Book</button>
 
         <div class="secondary-surface">
             <h4>Overview</h4>
@@ -170,6 +173,8 @@ export class BookPage implements Page {
     const createChapterButton = document.getElementById("create-chapter");
     const createChapterPartButton = document.getElementById("create-chapter-part");
     const downloadBookButton = document.getElementById("download-book");
+    const downloadAudioButton = document.getElementById("download-audio");
+    const deleteBookButton = document.getElementById("delete-book");
     const book = this.book;
     const activeChapter = this.activeChapter;
     const activePartNumber = this.activePartNumber;
@@ -202,6 +207,22 @@ export class BookPage implements Page {
       });
     }
   
+    if (downloadAudioButton) {
+      downloadAudioButton.addEventListener("click", async () => {
+        alert("TODO");
+      });
+    }
+
+    if (deleteBookButton) {
+      deleteBookButton.addEventListener("click", async () => {
+        createModal("Delete Book", "Delete", [{
+          name: 'are_you_sure',
+          type: 'paragraph',
+          text: 'Are you sure you want to permanently delete this book?'
+      }], this.handleDeleteBookModalSubmit.bind(this));
+      });
+    }
+
     if (downloadBookButton) {
       downloadBookButton.addEventListener("click", async () => {
         const bookText = book.chapters
@@ -249,6 +270,13 @@ export class BookPage implements Page {
         }
       }
     }, 2000);
+  }
+
+  async handleDeleteBookModalSubmit() {
+    await fetch(`/api/book/${this.book.id}`, {
+      method: "DELETE"
+    });
+    window.location.pathname = `/`;
   }
 
   handleChange(elem: HTMLTextAreaElement | HTMLInputElement) {

@@ -1,4 +1,4 @@
-export interface InputField {
+export interface ModalPartInput {
     name: string;
     label: string;
     placeholder?: string;
@@ -9,18 +9,29 @@ export interface InputField {
     };
 }
 
+export interface ModalPartParagraph {
+    name: string;
+    text: string;
+    type: 'paragraph';
+    showIf?: {
+        fieldName: string;
+        value: string | boolean | number;
+    };
+}
+
+export type ModalPart = ModalPartInput | ModalPartParagraph;
+
 export interface ModalSubmitDetail {
     name: string;
     value: string | boolean | number;
 }
 
-declare global {
-    interface DocumentEventMap {
-        modalSubmit: CustomEvent<ModalSubmitDetail[]>;
-    }
-}
-
-export function createModal(title: string, buttonLabel: string, inputFields: InputField[]): void {
+export function createModal(
+    title: string,
+    buttonLabel: string,
+    parts: ModalPart[],
+    onSubmit: (details: ModalSubmitDetail[]) => void
+): void {
     // Create modal container
     const modal: HTMLDivElement = document.createElement('div');
     modal.id = 'customModal';
@@ -40,7 +51,7 @@ export function createModal(title: string, buttonLabel: string, inputFields: Inp
     const form: HTMLFormElement = document.createElement('form');
     form.className = 'modal-form';
 
-    // Add styles for the switch
+    // Add styles for the switch and paragraph
     const style: HTMLStyleElement = document.createElement('style');
     style.textContent = `
         .switch-container {
@@ -87,27 +98,32 @@ export function createModal(title: string, buttonLabel: string, inputFields: Inp
         input:checked + .slider:before {
             transform: translateX(26px);
         }
+        .paragraph {
+            margin: 10px 0;
+        }
     `;
     document.head.appendChild(style);
 
-    // Map to store input elements for easy access
-    const inputElements: Map<string, { input: HTMLInputElement; container: HTMLDivElement }> = new Map();
+    // Map to store all part containers (inputs and paragraphs)
+    const partElements: Map<string, { input?: HTMLInputElement; container: HTMLDivElement }> = new Map();
 
     // Function to update field visibility
     const updateVisibility = () => {
-        inputFields.forEach((field) => {
-            const { container } = inputElements.get(field.name)!;
-            if (field.showIf) {
-                const dependentField = inputElements.get(field.showIf.fieldName);
-                if (dependentField) {
+        parts.forEach((part) => {
+            const partData = partElements.get(part.name);
+            if (!partData) return; // Skip if no container found
+            const { container } = partData;
+
+            if (part.showIf) {
+                const dependentField = partElements.get(part.showIf.fieldName);
+                if (dependentField && dependentField.input) {
                     let dependentValue: string | boolean | number = dependentField.input.value;
                     if (dependentField.input.type === 'checkbox') {
                         dependentValue = dependentField.input.checked;
                     } else if (dependentField.input.type === 'number') {
                         dependentValue = dependentField.input.value ? Number(dependentField.input.value) : 0;
                     }
-
-                    container.classList.toggle('hidden', dependentValue !== field.showIf.value);
+                    container.classList.toggle('hidden', dependentValue !== part.showIf.value);
                 } else {
                     container.classList.add('hidden');
                 }
@@ -117,74 +133,85 @@ export function createModal(title: string, buttonLabel: string, inputFields: Inp
         });
     };
 
-    // Add input fields with labels
-    inputFields.forEach((field: InputField) => {
-        const inputContainer: HTMLDivElement = document.createElement('div');
-        inputContainer.className = 'input-container';
+    // Add parts (inputs or paragraphs) with labels
+    parts.forEach((part: ModalPart) => {
+        const partContainer: HTMLDivElement = document.createElement('div');
+        partContainer.className = 'part-container';
+        partContainer.dataset.name = part.name;
 
         // Add label
         const label: HTMLLabelElement = document.createElement('label');
-        label.textContent = field.label.toUpperCase();
+        label.textContent = part.type === 'paragraph' ? '' : (part as ModalPartInput).label.toUpperCase();
         label.className = 'field-label';
-        label.htmlFor = field.name;
-        inputContainer.appendChild(label);
+        label.htmlFor = part.name;
+        partContainer.appendChild(label);
 
-        // Add input based on type
-        let input: HTMLInputElement;
-        if (field.type === 'boolean') {
-            const switchContainer: HTMLDivElement = document.createElement('div');
-            switchContainer.className = 'switch-container';
-
-            const switchWrapper: HTMLLabelElement = document.createElement('label');
-            switchWrapper.className = 'switch';
-
-            input = document.createElement('input');
-            input.type = 'checkbox';
-            input.name = field.name;
-            input.id = field.name;
-
-            const slider: HTMLSpanElement = document.createElement('span');
-            slider.className = 'slider';
-
-            switchWrapper.appendChild(input);
-            switchWrapper.appendChild(slider);
-
-            const switchLabel: HTMLSpanElement = document.createElement('span');
-            switchLabel.className = 'switch-label';
-            switchLabel.textContent = input.checked ? 'ON' : 'OFF';
-
-            input.addEventListener('change', () => {
-                switchLabel.textContent = input.checked ? 'ON' : 'OFF';
-                updateVisibility();
-            });
-
-            switchContainer.appendChild(switchWrapper);
-            switchContainer.appendChild(switchLabel);
-            inputContainer.appendChild(switchContainer);
+        if (part.type === 'paragraph') {
+            const paragraph: HTMLParagraphElement = document.createElement('p');
+            paragraph.className = 'paragraph';
+            paragraph.textContent = (part as ModalPartParagraph).text || '';
+            partContainer.appendChild(paragraph);
+            partElements.set(part.name, { container: partContainer });
         } else {
-            input = document.createElement('input');
-            input.type = field.type === 'number' ? 'number' : 'text';
-            input.name = field.name;
-            input.id = field.name;
-            if (field.placeholder && (field.type === 'plaintext' || field.type === 'number')) {
-                input.placeholder = field.placeholder;
-            }
-            input.className = 'modal-input';
-            if (field.type === 'number') {
-                // Prevent non-numeric input
-                input.addEventListener('input', (e: Event) => {
-                    const target = e.target as HTMLInputElement;
-                    target.value = target.value.replace(/[^0-9.-]/g, '');
+            // Add input based on type
+            const inputPart = part as ModalPartInput;
+            let input: HTMLInputElement;
+            if (inputPart.type === 'boolean') {
+                const switchContainer: HTMLDivElement = document.createElement('div');
+                switchContainer.className = 'switch-container';
+
+                const switchWrapper: HTMLLabelElement = document.createElement('label');
+                switchWrapper.className = 'switch';
+
+                input = document.createElement('input');
+                input.type = 'checkbox';
+                input.name = inputPart.name;
+                input.id = inputPart.name;
+
+                const slider: HTMLSpanElement = document.createElement('span');
+                slider.className = 'slider';
+
+                switchWrapper.appendChild(input);
+                switchWrapper.appendChild(slider);
+
+                const switchLabel: HTMLSpanElement = document.createElement('span');
+                switchLabel.className = 'switch-label';
+                switchLabel.textContent = input.checked ? 'ON' : 'OFF';
+
+                input.addEventListener('change', () => {
+                    switchLabel.textContent = input.checked ? 'ON' : 'OFF';
                     updateVisibility();
                 });
+
+                switchContainer.appendChild(switchWrapper);
+                switchContainer.appendChild(switchLabel);
+                partContainer.appendChild(switchContainer);
             } else {
-                input.addEventListener('input', updateVisibility);
+                input = document.createElement('input');
+                input.type = inputPart.type === 'number' ? 'number' : 'text';
+                input.name = inputPart.name;
+                input.id = inputPart.name;
+                if (inputPart.placeholder && (inputPart.type === 'plaintext' || inputPart.type === 'number')) {
+                    input.placeholder = inputPart.placeholder;
+                }
+                input.className = 'modal-input';
+                if (inputPart.type === 'number') {
+                    // Prevent non-numeric input
+                    input.addEventListener('input', (e: Event) => {
+                        const target = e.target as HTMLInputElement;
+                        target.value = target.value.replace(/[^0-9.-]/g, '');
+                        updateVisibility();
+                    });
+                } else {
+                    input.addEventListener('input', updateVisibility);
+                }
+                partContainer.appendChild(input);
             }
-            inputContainer.appendChild(input);
+
+            partElements.set(inputPart.name, { input, container: partContainer });
         }
 
-        form.appendChild(inputContainer);
-        inputElements.set(field.name, { input, container: inputContainer });
+        form.appendChild(partContainer);
     });
 
     // Initial visibility update
@@ -211,7 +238,7 @@ export function createModal(title: string, buttonLabel: string, inputFields: Inp
     submitButton.addEventListener('click', () => {
         const inputs: NodeListOf<HTMLInputElement> = form.querySelectorAll('input');
         const result: ModalSubmitDetail[] = Array.from(inputs)
-            .filter((input) => !input.closest('.input-container')?.classList.contains('hidden'))
+            .filter((input) => !input.closest('.part-container')?.classList.contains('hidden'))
             .map((input: HTMLInputElement) => {
                 let value: string | boolean | number = input.value;
                 if (input.type === 'checkbox') {
@@ -225,13 +252,8 @@ export function createModal(title: string, buttonLabel: string, inputFields: Inp
                 };
             });
 
-        // Dispatch custom event
-        const event: CustomEvent<ModalSubmitDetail[]> = new CustomEvent('modalSubmit', {
-            detail: result,
-            bubbles: true,
-            cancelable: true
-        });
-        document.dispatchEvent(event);
+        // Call the provided callback
+        onSubmit(result);
 
         // Remove modal
         modal.remove();
@@ -245,8 +267,8 @@ export function createModal(title: string, buttonLabel: string, inputFields: Inp
     });
 }
 
-export function getExpectedStringValue(e: CustomEvent<ModalSubmitDetail[]>, fieldName: string): string {
-    const field = e.detail.find(entry => entry.name === fieldName);
+export function getExpectedStringValue(result: ModalSubmitDetail[], fieldName: string): string {
+    const field = result.find(entry => entry.name === fieldName);
 
     if (field != undefined && typeof field.value === "string") {
         return field.value
@@ -255,8 +277,8 @@ export function getExpectedStringValue(e: CustomEvent<ModalSubmitDetail[]>, fiel
     }
 }
 
-export function getExpectedBooleanValue(e: CustomEvent<ModalSubmitDetail[]>, fieldName: string): boolean {
-    const field = e.detail.find(entry => entry.name === fieldName);
+export function getExpectedBooleanValue(result: ModalSubmitDetail[], fieldName: string): boolean {
+    const field = result.find(entry => entry.name === fieldName);
 
     if (field != undefined && typeof field.value === "boolean") {
         return field.value
@@ -265,8 +287,8 @@ export function getExpectedBooleanValue(e: CustomEvent<ModalSubmitDetail[]>, fie
     }
 }
 
-export function getExpectedNumberValue(e: CustomEvent<ModalSubmitDetail[]>, fieldName: string): number {
-    const field = e.detail.find(entry => entry.name === fieldName);
+export function getExpectedNumberValue(result: ModalSubmitDetail[], fieldName: string): number {
+    const field = result.find(entry => entry.name === fieldName);
 
     if (field != undefined && typeof field.value === "string") {
         return parseInt(field.value);

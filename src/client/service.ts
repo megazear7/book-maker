@@ -2,13 +2,10 @@ import {
   Book,
   BookId,
   Chapter,
-  ChapterNumber,
   ChapterOutline,
   ChapterPart,
   ChapterPartNumber,
   ChapterParts,
-  LoadingMessageContent,
-  LoadingMessages,
 } from "../types/book.type.js";
 import { CreateEmptyBookRequest, PostBookRequest } from "../types/requests.js";
 import { toggleLoading } from "./loading.js";
