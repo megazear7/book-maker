@@ -154,7 +154,7 @@ export async function createChapterPart(
   return post({
     path: `/api/book/${book.id}/chapter/${chapter.number}/part/${part}`,
     responseType: ChapterPart,
-    loading: chapter.outline[part-1],
+    loading: chapter.outline[part - 1],
   });
 }
 
@@ -166,6 +166,33 @@ export async function createChapterPartAudio(
   return post({
     path: `/api/book/${book.id}/chapter/${chapter.number}/part/${part}/audio`,
     responseType: ChapterPart,
-    loading: chapter.outline[part-1],
+    loading: chapter.outline[part - 1],
   });
+}
+
+export async function downloadFullAudio(
+  book: Book,
+): Promise<void> {
+  const cleanup = await toggleLoading("Messages about creating audio book mp3 file");
+  try {
+    const response = await fetch(`/api/book/${book.id}/audio.mp3`);
+    if (!response.ok) {
+      throw new Error('Failed to download audio');
+    }
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${book.id}.mp3`;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    }, 100);
+    cleanup();
+  } catch {
+    cleanup();
+    throw new Error("API failed");
+  }
 }

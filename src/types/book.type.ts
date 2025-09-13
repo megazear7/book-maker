@@ -37,6 +37,12 @@ export const BookChapterPartText = z
   .describe("A written part of a chapter of the book.");
 export type BookChapterPartText = z.infer<typeof BookChapterPartText>;
 
+export const BookAudio = z
+  .string()
+  .uuid()
+  .describe("The audio for a part of a chapter of the book.");
+export type BookAudio = z.infer<typeof BookAudio>;
+
 export const BookChapterPartAudio = z
   .string()
   .uuid()

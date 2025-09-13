@@ -3,7 +3,7 @@ import { download } from "./download.js";
 import { aiIconLeft, aiIconRight, audioIcon, downloadIcon, plusIcon, trashIcon } from "./icon.js";
 import { createModal, ModalSubmitDetail } from "./modal.js";
 import { Page } from "./page.interface.js";
-import { addChapter, createChapter, createChapterAudio, createChapterOutline, createChapterPart, createChapterPartAudio } from "./service.js";
+import { addChapter, createChapter, createChapterAudio, createChapterOutline, createChapterPart, createChapterPartAudio, downloadFullAudio } from "./service.js";
 import { formatNumber } from "./util.js";
 
 export class BookPage implements Page {
@@ -244,7 +244,7 @@ export class BookPage implements Page {
   
     if (downloadAudioButton) {
       downloadAudioButton.addEventListener("click", async () => {
-        alert("TODO");
+        await downloadFullAudio(book);
       });
     }
 

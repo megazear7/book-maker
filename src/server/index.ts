@@ -20,6 +20,7 @@ import { createChapterAudio } from "../services/create-chapter-audio.js";
 import { getChapterPartAudioId } from "../services/get-chapter-part-audio-id.js";
 import { promises as fs, createReadStream } from "fs";
 import { createChapterPartAudio } from "../services/create-chapter-part-audio.js";
+import { getBookAudio } from "../services/get-book-audio.js";
 
 const server = express();
 const port = 3000;
@@ -82,8 +83,6 @@ server.get("/api/book/:book/chapter/:chapter/part/:part/audio", async (req, res)
   const audioId = await getChapterPartAudioId(req.params.book, parseInt(req.params.chapter), parseInt(req.params.part));
   const audioPath = `books/book.${req.params.book}.audio/${audioId}.mp3`;
 
-  console.log(audioPath);
-  
   try {
     await fs.stat(audioPath);
     res.setHeader('Content-Type', 'audio/mpeg');
@@ -92,6 +91,12 @@ server.get("/api/book/:book/chapter/:chapter/part/:part/audio", async (req, res)
   } catch (error) {
     res.status(404).send('Audio file not found');
   }
+});
+server.get("/api/book/:book/audio.mp3", async (req, res) => {
+  res.setHeader('Content-Type', 'audio/mpeg');
+  res.setHeader('Content-Disposition', `attachment; filename="${req.params.book}.mp3"`);
+  const stream = await getBookAudio(req.params.book);
+  stream.pipe(res);
 });
 server.post("/api/book/:book/chapter/:chapter/part/:part/audio", async (req, res) => {
   res.json(await createChapterPartAudio(req.params.book, parseInt(req.params.chapter), parseInt(req.params.part)));
