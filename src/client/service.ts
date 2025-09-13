@@ -1,3 +1,4 @@
+import { ZodSchema } from "zod";
 import {
   Book,
   BookId,
@@ -6,83 +7,143 @@ import {
   ChapterPart,
   ChapterPartNumber,
   ChapterParts,
+  LoadingMessageContent,
 } from "../types/book.type.js";
-import { CreateEmptyBookRequest, PostBookRequest } from "../types/requests.js";
+import { CreateEmptyBookRequest, PostBookRequest, RequestMethod, RequestPath } from "../types/requests.js";
 import { toggleLoading } from "./loading.js";
 
-export async function createBook(
-  body: PostBookRequest,
-): Promise<BookId> {
-  const cleanup = await toggleLoading(body.description);
+async function request<A, B>({
+  path,
+  method,
+  body,
+  loading,
+  responseType,
+}: {
+  path: RequestPath;
+  method: RequestMethod;
+  responseType: ZodSchema<B>;
+  loading: LoadingMessageContent;
+  body?: A;
+}): Promise<B> {
+  const cleanup = await toggleLoading(loading);
   try {
-    const res = await fetch(`/api/book`, {
-      method: "POST",
+    const config: RequestInit = {
+      method: method,
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(body),
-    });
+    };
+    if (body) config.body = JSON.stringify(body);
+    const res = await fetch(path, config);
     const json = await res.json();
     cleanup();
-    return BookId.parse(json);
+    return responseType.parse(json);
   } catch {
     cleanup();
     throw new Error("API failed");
   }
 }
 
+async function get<A, B>({
+  path,
+  responseType,
+  loading,
+}: {
+  path: RequestPath;
+  responseType: ZodSchema<B>;
+  loading: LoadingMessageContent;
+}): Promise<B> {
+  return request({
+    path: path,
+    method: RequestMethod.enum.GET,
+    responseType,
+    loading,
+  });
+}
+
+async function post<A, B>({
+  path,
+  responseType,
+  loading,
+  body,
+}: {
+  path: RequestPath;
+  responseType: ZodSchema<B>;
+  loading: LoadingMessageContent;
+  body?: A;
+}): Promise<B> {
+  return request({
+    path: path,
+    method: RequestMethod.enum.POST,
+    responseType,
+    loading,
+    body,
+  });
+}
+
+export async function createBook(
+  body: PostBookRequest,
+): Promise<BookId> {
+  return post({
+    path: `/api/book`,
+    responseType: BookId,
+    loading: body.description,
+    body,
+  });
+}
+
 export async function addEmptyBook(
   body: CreateEmptyBookRequest,
 ): Promise<Book> {
-  const cleanup = await toggleLoading(body.title);
-  const res = await fetch(`/api/book/empty`, {
-    method: "POST",
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body),
+  return post({
+    path: `/api/book/empty`,
+    responseType: Book,
+    loading: body.title,
+    body,
   });
-  const json = await res.json();
-  cleanup();
-  return Book.parse(json);
 }
 
 export async function addChapter(
   book: Book,
 ): Promise<Chapter> {
-  const cleanup = await toggleLoading(book.overview);
-  const res = await fetch(`/api/book/${book.id}/chapter/add`, {
-    method: "POST",
+  return post({
+    path: `/api/book/${book.id}/chapter/add`,
+    responseType: Chapter,
+    loading: book.overview,
   });
-  const json = await res.json();
-  cleanup();
-  return Chapter.parse(json);
 }
 
 export async function createChapterOutline(
   book: Book,
   chapter: Chapter,
 ): Promise<ChapterOutline> {
-  const cleanup = await toggleLoading(chapter.what + '\n' + chapter.who);
-  const res = await fetch(`/api/book/${book.id}/chapter/${chapter.number}/outline`, {
-    method: "POST",
+  return post({
+    path: `/api/book/${book.id}/chapter/${chapter.number}/outline`,
+    responseType: ChapterOutline,
+    loading: chapter.what + '\n' + chapter.who,
   });
-  const json = await res.json();
-  cleanup();
-  return ChapterOutline.parse(json);
 }
 
 export async function createChapter(
   book: Book,
   chapter: Chapter,
 ): Promise<ChapterParts> {
-  const cleanup = await toggleLoading(chapter.outline.join('\n'));
-  const res = await fetch(`/api/book/${book.id}/chapter/${chapter.number}`, {
-    method: "POST",
+  return post({
+    path: `/api/book/${book.id}/chapter/${chapter.number}`,
+    responseType: ChapterParts,
+    loading: chapter.outline.join('\n'),
   });
-  const json = await res.json();
-  cleanup();
-  return ChapterParts.parse(json);
+}
+
+export async function createChapterAudio(
+  book: Book,
+  chapter: Chapter,
+): Promise<ChapterParts> {
+  return post({
+    path: `/api/book/${book.id}/chapter/${chapter.number}/audio`,
+    responseType: ChapterParts,
+    loading: chapter.outline.join('\n'),
+  });
 }
 
 export async function createChapterPart(
@@ -90,11 +151,9 @@ export async function createChapterPart(
   chapter: Chapter,
   part: ChapterPartNumber,
 ): Promise<ChapterPart> {
-  const cleanup = await toggleLoading(chapter.outline[part-1]);
-  const res = await fetch(`/api/book/${book.id}/chapter/${chapter.number}/part/${part}`, {
-    method: "POST",
+  return post({
+    path: `/api/book/${book.id}/chapter/${chapter.number}/part/${part}`,
+    responseType: ChapterPart,
+    loading: chapter.outline[part-1],
   });
-  const json = await res.json();
-  cleanup();
-  return ChapterPart.parse(json);
 }

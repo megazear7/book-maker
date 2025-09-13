@@ -3,7 +3,6 @@ import {
   BookId,
   Chapter,
   ChapterNumber,
-  ChapterPartDescription,
   ChapterPartNumber,
   ChapterParts,
 } from "../types/book.type.js";

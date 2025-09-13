@@ -64,3 +64,11 @@ export const trashIcon = `
   <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
 </svg>
 `;
+
+export const audioIcon = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <polygon points="4 9 8 9 13 5 13 19 8 15 4 15 4 9" />
+  <path d="M16 8c1.333 1.333 1.333 6.667 0 8" />
+  <path d="M19 5c2.667 2.667 2.667 11.333 0 14" />
+</svg>
+`;

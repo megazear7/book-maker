@@ -1,6 +1,12 @@
 import z from "zod";
 import { BookTitle, LoadingMessageContent } from "./book.type.js";
 
+export const RequestPath = z.string();
+export type RequestPath = z.infer<typeof RequestPath>;
+
+export const RequestMethod = z.enum(["GET", "POST", "DELETE"]);
+export type RequestMethod = z.infer<typeof RequestMethod>;
+
 export const MinimumChapters = z.number();
 export type MinimumChapters = z.infer<typeof MinimumChapters>;
 

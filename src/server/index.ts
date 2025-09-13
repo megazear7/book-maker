@@ -16,6 +16,9 @@ import { writeBook } from "../services/write-book.js";
 import { createEmpty } from "../services/util.js";
 import { getLoadingMessages } from "../services/get-loading-messages.js";
 import { deleteBook } from "../services/delete-book.js";
+import { createChapterAudio } from "../services/create-chapter-audio.js";
+import { getChapterPartAudioId } from "../services/get-chapter-part-audio-id.js";
+import { promises as fs, createReadStream } from "fs";
 
 const server = express();
 const port = 3000;
@@ -68,8 +71,26 @@ server.post("/api/book/:book/chapter/:chapter/outline", async (req, res) => {
 server.post("/api/book/:book/chapter/:chapter", async (req, res) => {
   res.json(await createChapter(req.params.book, parseInt(req.params.chapter)));
 });
+server.post("/api/book/:book/chapter/:chapter/audio", async (req, res) => {
+  res.json(await createChapterAudio(req.params.book, parseInt(req.params.chapter)));
+});
 server.post("/api/book/:book/chapter/:chapter/part/:part", async (req, res) => {
   res.json(await createChapterPart(req.params.book, parseInt(req.params.chapter), parseInt(req.params.part)));
+});
+server.get("/api/book/:book/chapter/:chapter/part/:part/audio", async (req, res) => {
+  const audioId = await getChapterPartAudioId(req.params.book, parseInt(req.params.chapter), parseInt(req.params.part));
+  const audioPath = `books/book.${req.params.book}.audio/${audioId}.mp3`;
+
+  console.log(audioPath);
+  
+  try {
+    await fs.stat(audioPath);
+    res.setHeader('Content-Type', 'audio/mpeg');
+    const stream = createReadStream(audioPath);
+    stream.pipe(res);
+  } catch (error) {
+    res.status(404).send('Audio file not found');
+  }
 });
 server.use(express.static("dist/client"));
 server.use("/types", express.static("dist/types"));

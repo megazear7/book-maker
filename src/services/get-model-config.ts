@@ -9,3 +9,12 @@ export function getTextModelConfig(book: Book) {
     deployment: envOptional(`${book.model.text.name.toUpperCase()}_DEPLOYMENT`),
   };
 }
+
+export function getAudioModelConfig(book: Book) {
+  return {
+    endpoint: env(`${book.model.audio.name.toUpperCase()}_BASE_URL`),
+    apiKey: env(`${book.model.audio.name.toUpperCase()}_API_KEY`),
+    modelName: env(`${book.model.audio.name.toUpperCase()}_MODEL_NAME`),
+    deployment: envOptional(`${book.model.audio.name.toUpperCase()}_DEPLOYMENT`),
+  };
+}

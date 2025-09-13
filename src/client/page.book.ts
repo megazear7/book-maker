@@ -1,9 +1,9 @@
 import { Book, Chapter, ChapterPart, ChapterPartNumber } from "../types/book.type.js";
 import { download } from "./download.js";
-import { aiIconLeft, aiIconRight, downloadIcon, plusIcon, trashIcon } from "./icon.js";
+import { aiIconLeft, aiIconRight, audioIcon, downloadIcon, plusIcon, trashIcon } from "./icon.js";
 import { createModal, ModalSubmitDetail } from "./modal.js";
 import { Page } from "./page.interface.js";
-import { addChapter, createChapter, createChapterOutline, createChapterPart } from "./service.js";
+import { addChapter, createChapter, createChapterAudio, createChapterOutline, createChapterPart } from "./service.js";
 import { formatNumber } from "./util.js";
 
 export class BookPage implements Page {
@@ -110,8 +110,9 @@ export class BookPage implements Page {
                 <input name="activeChapter.partLength" type="text" value="${activeChapter.partLength}"></input>
             </div>
 
-            <button id="create-chapter-outline">${aiIconLeft}<span>${activeChapter.outline.length > 0 ? "Regenerate" : "Generate"} Chapter Outline</span>${aiIconRight}</button>
-            <button id="create-chapter">${aiIconLeft}<span>${activeChapter.parts.length > 0 ? "Regenerate" : "Generate"} Entire Chapter</span>${aiIconRight}</button>
+            <button id="create-chapter-outline">${aiIconLeft}<span>${activeChapter.outline.length > 0 ? "Regenerate" : "Generate"} Outline</span>${aiIconRight}</button>
+            <button id="create-chapter">${aiIconLeft}<span>${activeChapter.parts.length > 0 ? "Regenerate" : "Generate"} Chapter</span>${aiIconRight}</button>
+            <button id="create-chapter-audio">${aiIconLeft}<span>${activeChapter.parts[0].audio ? "Regenerate" : "Generate"} Audio</span>${aiIconRight}</button>
 
             ${
               activeChapter.outline
@@ -152,8 +153,15 @@ export class BookPage implements Page {
               activePart
                 ? `
                 <button id="create-chapter-part">${aiIconLeft}<span>${activeChapter.parts.length > 0 ? "Regenerate" : "Generate"} Part</span>${aiIconRight}</button>
+                ${ activePart.audio ? `
+                  <button id="create-chapter-part-audio">${aiIconLeft}<span>${activeChapter.parts.length > 0 ? "Regenerate" : "Generate"} Audio</span>${aiIconRight}</button>
+                  <audio id="audio-player"></audio>
+                `: ''}
 
                 <div class="secondary-surface">
+                    ${ activePart.audio ? `
+                      <button class="secondary" id="play-audio">${audioIcon} Play Audio</button>
+                    `: '' }
                     <textarea name="activePart.text">${activePart.text}</textarea>
                 </div>
             `
@@ -171,13 +179,18 @@ export class BookPage implements Page {
     );
     const addChapterButton = document.getElementById("add-chapter");
     const createChapterButton = document.getElementById("create-chapter");
+    const createChapterAudioButton = document.getElementById("create-chapter-audio");
     const createChapterPartButton = document.getElementById("create-chapter-part");
+    const createChapterPartAudioButton = document.getElementById("create-chapter-part-audio");
+    const audioPlayer = document.getElementById("audio-player") as HTMLAudioElement;
+    const playAudioButton = document.getElementById("play-audio");
     const downloadBookButton = document.getElementById("download-book");
     const downloadAudioButton = document.getElementById("download-audio");
     const deleteBookButton = document.getElementById("delete-book");
     const book = this.book;
     const activeChapter = this.activeChapter;
     const activePartNumber = this.activePartNumber;
+    const activePart = this.activePart;
 
     if (createChapterOutlineButton && activeChapter) {
       createChapterOutlineButton.addEventListener("click", async () => {
@@ -193,10 +206,32 @@ export class BookPage implements Page {
       });
     }
 
+    if (createChapterAudioButton && activeChapter) {
+      createChapterAudioButton.addEventListener("click", async () => {
+        await createChapterAudio(book, activeChapter);
+        window.location.pathname = `/book/${book.id}/chapter/${activeChapter.number}`;
+      });
+    }
+
     if (createChapterPartButton && activeChapter && activePartNumber) {
       createChapterPartButton.addEventListener("click", async () => {
         await createChapterPart(book, activeChapter, activePartNumber);
         window.location.pathname = `/book/${book.id}/chapter/${activeChapter?.number}/part/${activePartNumber}`;
+      });
+    }
+
+    if (createChapterPartAudioButton && activeChapter && activePartNumber) {
+      createChapterPartAudioButton.addEventListener("click", async () => {
+        alert("TODO");
+      });
+    }
+
+    if (playAudioButton && activeChapter && activePart) {
+      playAudioButton.addEventListener("click", async () => {
+        audioPlayer.src = `/api/book/${this.book.id}/chapter/${activeChapter.number}/part/${activePartNumber}/audio`;
+        audioPlayer.play().catch(error => {
+            console.error('Error playing audio:', error);
+        });
       });
     }
 

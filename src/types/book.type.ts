@@ -39,7 +39,7 @@ export type BookChapterPartText = z.infer<typeof BookChapterPartText>;
 
 export const BookChapterPartAudio = z
   .string()
-  .base64()
+  .uuid()
   .describe("The audio for a part of a chapter of the book.");
 export type BookChapterPartAudio = z.infer<typeof BookChapterPartAudio>;
 
