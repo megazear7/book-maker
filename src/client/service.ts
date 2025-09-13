@@ -157,3 +157,15 @@ export async function createChapterPart(
     loading: chapter.outline[part-1],
   });
 }
+
+export async function createChapterPartAudio(
+  book: Book,
+  chapter: Chapter,
+  part: ChapterPartNumber,
+): Promise<ChapterPart> {
+  return post({
+    path: `/api/book/${book.id}/chapter/${chapter.number}/part/${part}/audio`,
+    responseType: ChapterPart,
+    loading: chapter.outline[part-1],
+  });
+}

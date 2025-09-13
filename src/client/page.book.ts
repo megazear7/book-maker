@@ -3,7 +3,7 @@ import { download } from "./download.js";
 import { aiIconLeft, aiIconRight, audioIcon, downloadIcon, plusIcon, trashIcon } from "./icon.js";
 import { createModal, ModalSubmitDetail } from "./modal.js";
 import { Page } from "./page.interface.js";
-import { addChapter, createChapter, createChapterAudio, createChapterOutline, createChapterPart } from "./service.js";
+import { addChapter, createChapter, createChapterAudio, createChapterOutline, createChapterPart, createChapterPartAudio } from "./service.js";
 import { formatNumber } from "./util.js";
 
 export class BookPage implements Page {
@@ -112,7 +112,7 @@ export class BookPage implements Page {
 
             <button id="create-chapter-outline">${aiIconLeft}<span>${activeChapter.outline.length > 0 ? "Regenerate" : "Generate"} Outline</span>${aiIconRight}</button>
             <button id="create-chapter">${aiIconLeft}<span>${activeChapter.parts.length > 0 ? "Regenerate" : "Generate"} Chapter</span>${aiIconRight}</button>
-            <button id="create-chapter-audio">${aiIconLeft}<span>${activeChapter.parts[0].audio ? "Regenerate" : "Generate"} Audio</span>${aiIconRight}</button>
+            <button id="create-chapter-audio">${aiIconLeft}<span>${activeChapter.parts[0]?.audio ? "Regenerate" : "Generate"} Audio</span>${aiIconRight}</button>
 
             ${
               activeChapter.outline
@@ -222,7 +222,7 @@ export class BookPage implements Page {
 
     if (createChapterPartAudioButton && activeChapter && activePartNumber) {
       createChapterPartAudioButton.addEventListener("click", async () => {
-        alert("TODO");
+        await createChapterPartAudio(book, activeChapter, activePartNumber);
       });
     }
 

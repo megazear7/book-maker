@@ -19,6 +19,7 @@ import { deleteBook } from "../services/delete-book.js";
 import { createChapterAudio } from "../services/create-chapter-audio.js";
 import { getChapterPartAudioId } from "../services/get-chapter-part-audio-id.js";
 import { promises as fs, createReadStream } from "fs";
+import { createChapterPartAudio } from "../services/create-chapter-part-audio.js";
 
 const server = express();
 const port = 3000;
@@ -91,6 +92,9 @@ server.get("/api/book/:book/chapter/:chapter/part/:part/audio", async (req, res)
   } catch (error) {
     res.status(404).send('Audio file not found');
   }
+});
+server.post("/api/book/:book/chapter/:chapter/part/:part/audio", async (req, res) => {
+  res.json(await createChapterPartAudio(req.params.book, parseInt(req.params.chapter), parseInt(req.params.part)));
 });
 server.use(express.static("dist/client"));
 server.use("/types", express.static("dist/types"));
