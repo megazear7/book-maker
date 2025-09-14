@@ -35,6 +35,16 @@ export class BookPage implements Page {
 
     root.innerHTML = `
         ${new CompletionBar(book).render()}
+        <div class="spread">
+          <div>
+            <button id="download-book" class="secondary">${downloadIcon} Download Book</button>
+            <button id="download-audio" class="secondary">${downloadIcon} Download Audio</button>
+          </div>
+
+          <div>
+            <button id="delete-book" class="tertiary warning">${trashIcon} Delete Book</button>
+          </div>
+        </div>
         <div data-section="book" class="secondary-surface">
             <input name="book.title" value="${book.title}" class="h1"></textarea>
             <div class="spread">
@@ -172,9 +182,9 @@ export class BookPage implements Page {
     const createChapterAudioButton = document.getElementById("create-chapter-audio");
     const createChapterPartButton = document.getElementById("create-chapter-part");
     const createChapterPartAudioButton = document.getElementById("create-chapter-part-audio");
-  const audioPlayer = document.getElementById("audio-player") as HTMLAudioElement;
-  const playAudioButton = document.getElementById("play-audio");
-  const pauseAudioButton = document.getElementById("pause-audio");
+    const audioPlayer = document.getElementById("audio-player") as HTMLAudioElement;
+    const playAudioButton = document.getElementById("play-audio");
+    const pauseAudioButton = document.getElementById("pause-audio");
     const downloadBookButton = document.getElementById("download-book");
     const downloadAudioButton = document.getElementById("download-audio");
     const deleteBookButton = document.getElementById("delete-book");

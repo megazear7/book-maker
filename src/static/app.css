@@ -415,8 +415,21 @@ body.overlay-active {
 }
 
 button.secondary {
+  background: var(--color-secondary-surface);
+}
+
+button.secondary:hover {
+  background: linear-gradient(135deg, var(--color-1), var(--color-2));
+}
+
+button.tertiary {
   background: none;
+  color: var(--color-primary-text);
   box-shadow: none;
+}
+
+button.tertiary:hover {
+  background: linear-gradient(135deg, var(--color-1), var(--color-2));
 }
 
 button.warning:hover {
