@@ -35,7 +35,7 @@ export class BookPage implements Page {
 
     root.innerHTML = `
         ${new CompletionBar(book).render()}
-        <div class="secondary-surface">
+        <div data-section="book" class="secondary-surface">
             <input name="book.title" value="${book.title}" class="h1"></textarea>
             <div class="spread">
               <span>${usage}</span>
@@ -63,7 +63,7 @@ export class BookPage implements Page {
 
         ${activeChapter
         ? `
-            <div data-scroll-priority="1"></div>
+            <div data-section="chapter" data-scroll-priority="1"></div>
             <div class="secondary-surface">
                 <h4 >Chapter ${activeChapter.number}</h4>
                 <h2><input name="activeChapter.title" class="h2" value="${activeChapter.title}"></input></h2>
@@ -123,7 +123,7 @@ export class BookPage implements Page {
 
             ${activeChapter.parts.length > 0
           ? `
-                <ul data-scroll-priority="${activePart ? 2 : 0}" class="pills">
+                <ul data-section="part" data-scroll-priority="${activePart ? 2 : 0}" class="pills">
                     ${activeChapter.parts
             .map(
               (part, index) => `

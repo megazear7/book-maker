@@ -77,33 +77,77 @@ class ClientApp {
     }
 
     this.root.innerHTML = `
-            <div class="container">
-                <ul class="pills">
-                    <li class="${pageName === "home"}">
-                        <a href="/">Home</a>
-                    </li>
-                    ${this.books
-        .map(
-          (book) => `
-                        <li class="${book.id === this.book?.id ? "active" : ""}">
-                            <a href="/book/${book.id}">${book.title}</a>
-                        </li>
-                    `,
-        )
-        .join("")}
-                    <li>
-                      <button class="clean" id="new-book">${plusIcon}New Book</a>
-                    </li>
-                </ul>
-                <div id="page"></div>
-            </div>
-        `;
+      <div class="bookmark-tabs">
+        <div class="bookmark-tab" data-tab="book">Book</div>
+        <div class="bookmark-tab" data-tab="chapter">Chapter</div>
+        <div class="bookmark-tab" data-tab="part">Part</div>
+      </div>
+      <div class="container">
+        <ul class="pills">
+          <li class="${pageName === "home"}">
+            <a href="/">Home</a>
+          </li>
+          ${this.books
+            .map(
+              (book) => `
+                <li class="${book.id === this.book?.id ? "active" : ""}">
+                  <a href="/book/${book.id}">${book.title}</a>
+                </li>
+              `,
+            )
+            .join("")}
+          <li>
+            <button class="clean" id="new-book">${plusIcon}New Book</button>
+          </li>
+        </ul>
+        <div id="page"></div>
+      </div>
+    `;
 
     const pageRoot = document.getElementById("page");
     if (pageRoot) {
       page.render(pageRoot);
       page.addEventListeners();
     }
+
+    // Bookmark tab highlight logic
+    setTimeout(() => {
+      const tabs = Array.from(document.querySelectorAll('.bookmark-tab')) as HTMLElement[];
+      const bookSection = document.querySelector('[data-section="book"]') as HTMLElement;
+      const chapterSection = document.querySelector('[data-section="chapter"]') as HTMLElement;
+      const partSection = document.querySelector('[data-section="part"]') as HTMLElement;
+      function highlightTab() {
+        let active = 'book';
+        if (partSection && partSection.getBoundingClientRect().top < window.innerHeight/2) {
+          active = 'part';
+        } else if (chapterSection && chapterSection.getBoundingClientRect().top < window.innerHeight/2) {
+          active = 'chapter';
+        }
+        tabs.forEach(tab => {
+          if (tab.dataset.tab === active) tab.classList.add('active');
+          else tab.classList.remove('active');
+        });
+      }
+      window.addEventListener('scroll', highlightTab);
+      window.addEventListener('resize', highlightTab);
+      highlightTab();
+
+      // Make tabs clickable to scroll to their section
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          if (tab.dataset.tab === 'book') {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          } else {
+            let section: HTMLElement | null = null;
+            if (tab.dataset.tab === 'chapter') section = chapterSection;
+            else if (tab.dataset.tab === 'part') section = partSection;
+            if (section) {
+              section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        });
+      });
+    }, 0);
 
     // Find the element with the highest data-scroll-priority and scroll to it
     setTimeout(() => {
