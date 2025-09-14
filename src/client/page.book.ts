@@ -1,4 +1,5 @@
 import { Book, Chapter, ChapterPart, ChapterPartNumber } from "../types/book.type.js";
+import { CompletionBar } from "./completion-bar.js";
 import { download } from "./download.js";
 import { aiIconLeft, aiIconRight, audioIcon, downloadIcon, plusIcon, trashIcon } from "./icon.js";
 import { createModal, ModalSubmitDetail } from "./modal.js";
@@ -27,30 +28,19 @@ export class BookPage implements Page {
     const activePartNumber = this.activePartNumber;
     const million = 1000000;
     const tokens = formatNumber(book.model.text.usage.completion_tokens + book.model.text.usage.prompt_tokens);
-    const cost = formatNumber(book.model.text.usage.completion_tokens * (book.model.text.cost.outputTokenCost/million) + 
-    book.model.text.usage.prompt_tokens * (book.model.text.cost.inputTokenCost/million), { decimals: 2 });
+    const cost = formatNumber(book.model.text.usage.completion_tokens * (book.model.text.cost.outputTokenCost / million) +
+      book.model.text.usage.prompt_tokens * (book.model.text.cost.inputTokenCost / million), { decimals: 2 });
     const wordCount = formatNumber(book.chapters.map(chapter => chapter.parts.map(part => part.text).join(' ')).join(' ').split(/\s+/).length);
     const usage = `${tokens} tokens&nbsp;&nbsp;&nbsp;&nbsp;$${cost}&nbsp;&nbsp;&nbsp;&nbsp;${wordCount} words`;
 
     root.innerHTML = `
+        ${new CompletionBar(book).render()}
         <div class="secondary-surface">
             <input name="book.title" value="${book.title}" class="h1"></textarea>
             <div class="spread">
               <span>${usage}</span>
               <span class="save-status">${this.hasChanges ? "Saving" : "Saved"}</span>
             </div>
-        </div>
-        
-        <button id="download-book">${downloadIcon}Download Book</button>
-        <button id="download-audio">${downloadIcon}Download Audio</button>
-        <button class="secondary warning" id="delete-book">${trashIcon}Delete Book</button>
-
-        <div class="secondary-surface">
-            <h4>Overview</h4>
-            <textarea name="book.overview">${book.overview}</textarea>
-        </div>
-
-        <div class="secondary-surface">
             <h4>Edit Instructions</h4>
             <textarea name="book.instructions.edit">${book.instructions.edit}</textarea>
         </div>
@@ -62,18 +52,17 @@ export class BookPage implements Page {
 
         <ul class="pills">
             ${book.chapters
-              .map(
-                (chapter) => `
+        .map(
+          (chapter) => `
                 <li class="${chapter.number === activeChapter?.number ? "active" : ""}"><a href="/book/${book.id}/chapter/${chapter.number}">Chapter ${chapter.number}: ${chapter.title}</a></li>
             `,
-              )
-              .join("")}
+        )
+        .join("")}
             <li><button class="clean" id="add-chapter">${plusIcon}Add Chapter</button>
         </ul>
 
-        ${
-          activeChapter
-            ? `
+        ${activeChapter
+        ? `
             <div class="secondary-surface">
                 <h4>Chapter ${activeChapter.number}</h4>
                 <h2><input name="activeChapter.title" class="h2" value="${activeChapter.title}"></input></h2>
@@ -114,62 +103,59 @@ export class BookPage implements Page {
             <button id="create-chapter">${aiIconLeft}<span>${activeChapter.parts.length > 0 ? "Regenerate" : "Generate"} Chapter</span>${aiIconRight}</button>
             <button id="create-chapter-audio">${aiIconLeft}<span>${activeChapter.parts[0]?.audio ? "Regenerate" : "Generate"} Audio</span>${aiIconRight}</button>
 
-            ${
-              activeChapter.outline
-                ? `
+            ${activeChapter.outline
+          ? `
                 <div class="secondary-surface">
                     <h4>Chapter Outline</h4>
                     ${activeChapter.outline
-                      .map(
-                        (partDescription, index) => `
+            .map(
+              (partDescription, index) => `
                         <h5>Part ${index + 1}</h5>
                         <textarea name="activeChapter.outline[index]">${partDescription}</textarea>
                     `,
-                      )
-                      .join("")}
+            )
+            .join("")}
                 </div>
             `
-                : ""
-            }
+          : ""
+        }
 
-            ${
-              activeChapter.parts.length > 0
-                ? `
+            ${activeChapter.parts.length > 0
+          ? `
                 <ul class="pills">
                     ${activeChapter.parts
-                      .map(
-                        (part, index) => `
-                        <li class="${activePartNumber && index === activePartNumber-1 ? 'active' : ''}"><a href="/book/${book.id}/chapter/${activeChapter.number}/part/${index + 1}">Part ${index + 1}</a></li>
+            .map(
+              (part, index) => `
+                        <li class="${activePartNumber && index === activePartNumber - 1 ? 'active' : ''}"><a href="/book/${book.id}/chapter/${activeChapter.number}/part/${index + 1}">Part ${index + 1}</a></li>
                     `,
-                      )
-                      .join("")}
+            )
+            .join("")}
                 </ul>
             `
-                : `
+          : `
             `
-            }
+        }
 
-            ${
-              activePart
-                ? `
+            ${activePart
+          ? `
                 <button id="create-chapter-part">${aiIconLeft}<span>${activeChapter.parts.length > 0 ? "Regenerate" : "Generate"} Part</span>${aiIconRight}</button>
-                ${ activePart.audio ? `
+                ${activePart.audio ? `
                   <button id="create-chapter-part-audio">${aiIconLeft}<span>${activeChapter.parts.length > 0 ? "Regenerate" : "Generate"} Audio</span>${aiIconRight}</button>
                   <audio id="audio-player"></audio>
                 `: ''}
 
                 <div class="secondary-surface">
-                    ${ activePart.audio ? `
+                    ${activePart.audio ? `
                       <button class="secondary" id="play-audio">${audioIcon} Play Audio</button>
-                    `: '' }
+                    `: ''}
                     <textarea name="activePart.text">${activePart.text}</textarea>
                 </div>
             `
-                : ""
-            }
-        `
-            : ""
+          : ""
         }
+        `
+        : ""
+      }
         `;
   }
 
@@ -230,7 +216,7 @@ export class BookPage implements Page {
       playAudioButton.addEventListener("click", async () => {
         audioPlayer.src = `/api/book/${this.book.id}/chapter/${activeChapter.number}/part/${activePartNumber}/audio`;
         audioPlayer.play().catch(error => {
-            console.error('Error playing audio:', error);
+          console.error('Error playing audio:', error);
         });
       });
     }
@@ -241,7 +227,7 @@ export class BookPage implements Page {
         window.location.pathname = `/book/${book.id}/chapter/${chapter.number}`;
       });
     }
-  
+
     if (downloadAudioButton) {
       downloadAudioButton.addEventListener("click", async () => {
         await downloadFullAudio(book);
@@ -254,7 +240,7 @@ export class BookPage implements Page {
           name: 'are_you_sure',
           type: 'paragraph',
           text: 'Are you sure you want to permanently delete this book?'
-      }], this.handleDeleteBookModalSubmit.bind(this));
+        }], this.handleDeleteBookModalSubmit.bind(this));
       });
     }
 
@@ -267,7 +253,7 @@ export class BookPage implements Page {
             return `Chapter ${chapter.number}: ${chapter.title}\n\n${text || 'Not written yet'}`;
           })
           .join('\n\n\n');
-          download(bookText, `${book.id}.txt`);
+        download(bookText, `${book.id}.txt`);
       });
     }
 

@@ -422,3 +422,78 @@ button.secondary {
 button.warning:hover {
   background: var(--color-warning);
 }
+
+.completion-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--size-small) var(--size-medium);
+  margin: var(--size-small) 0;
+  align-items: flex-end;
+}
+
+.completion-bar-chapter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 40px;
+}
+
+.completion-bar-chapter-label {
+  font-size: calc(var(--font-medium) * 0.6);
+  color: #666;
+  margin-bottom: 2px;
+  text-decoration: none;
+}
+
+.completion-bar-parts {
+  display: flex;
+  gap: 1px;
+}
+
+.completion-bar-segment {
+  flex: 1;
+  height: 18px;
+  width: 18px;
+  border: 1px solid var(--color-secondary-surface);
+  position: relative;
+  margin-right: 1px;
+  background: var(--color-secondary-surface);
+  opacity: 1;
+  transition: background var(--time-normal), opacity var(--time-normal);
+}
+
+.completion-bar-segment:first-child {
+  border-radius: var(--size-small) 0 0 var(--size-small);
+}
+
+.completion-bar-segment:last-child {
+  border-radius: 0 var(--size-small) var(--size-small) 0;
+}
+
+.completion-bar-segment-label {
+  cursor: default;
+  position: absolute;
+  left: 0; right: 0; top: 0; bottom: 0;
+  font-size: calc(var(--font-medium) * 0.55);
+  color: var(--color-primary-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.completion-bar-segment.written-audio {
+  background: linear-gradient(to top, var(--color-2) 50%, var(--color-1) 50%);
+}
+
+.completion-bar-segment.written {
+  background: linear-gradient(to top, var(--color-secondary-surface) 50%, var(--color-1) 50%);
+}
+
+.completion-bar-segment.audio {
+  background: linear-gradient(to top, var(--color-2) 50%, #eee 50%);
+}
+
+.completion-bar-segment.empty {
+  background: repeating-linear-gradient(135deg, #eee, #eee 6px, #ddd 6px, #ddd 12px);
+  opacity: 0.5;
+}
