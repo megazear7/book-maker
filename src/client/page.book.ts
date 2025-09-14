@@ -1,10 +1,11 @@
 import { Book, Chapter, ChapterPart, ChapterPartNumber } from "../types/book.type.js";
 import { CompletionBar } from "./component.completion-bar.js";
 import { download } from "./download.js";
+import { Document, Packer, Paragraph, TextRun } from 'docx';
 import { aiIconLeft, aiIconRight, audioIcon, downloadIcon, plusIcon, trashIcon } from "./icon.js";
-import { createModal, ModalSubmitDetail } from "./modal.js";
+import { createModal } from "./modal.js";
 import { Page } from "./page.interface.js";
-import { addChapter, createChapter, createChapterAudio, createChapterOutline, createChapterPart, createChapterPartAudio, downloadFullAudio } from "./service.js";
+import { createChapter, createChapterAudio, createChapterOutline, createChapterPart, createChapterPartAudio } from "./service.js";
 import { formatNumber } from "./util.js";
 
 export class BookPage implements Page {
@@ -255,29 +256,6 @@ export class BookPage implements Page {
       });
     }
 
-    if (addChapterButton) {
-      addChapterButton.addEventListener("click", async () => {
-        const chapter = await addChapter(book);
-        window.location.pathname = `/book/${book.id}/chapter/${chapter.number}`;
-      });
-    }
-
-    if (downloadAudioButton) {
-      downloadAudioButton.addEventListener("click", async () => {
-        await downloadFullAudio(book);
-      });
-    }
-
-    if (deleteBookButton) {
-      deleteBookButton.addEventListener("click", async () => {
-        createModal("Delete Book", "Delete", [{
-          name: 'are_you_sure',
-          type: 'paragraph',
-          text: 'Are you sure you want to permanently delete this book?'
-        }], this.handleDeleteBookModalSubmit.bind(this));
-      });
-    }
-
     if (downloadBookButton) {
       downloadBookButton.addEventListener("click", async () => {
         createModal(
@@ -289,10 +267,10 @@ export class BookPage implements Page {
               label: "File Format",
               type: "dropdown",
               options: [
-                { label: "Plain Text", value: "txt" },
-                { label: "MS Word", value: "docx" }
+                { label: "MS Word", value: "docx" },
+                { label: "Plain Text", value: "txt" }
               ],
-              default: "txt"
+              default: "docx"
             }
           ],
           async (result) => {
@@ -306,7 +284,41 @@ export class BookPage implements Page {
                 .join('\n\n\n');
               download(bookText, `${book.id}.txt`);
             } else if (format === "docx") {
-              alert("TODO");
+              const doc = new Document({
+                sections: [
+                  {
+                    children: book.chapters.flatMap(chapter => [
+                      new Paragraph({
+                        children: [
+                          new TextRun({ text: `Chapter ${chapter.number}: ${chapter.title}`, bold: true, size: 28 }),
+                        ],
+                        spacing: { after: 200 },
+                      }),
+                      ...chapter.parts.map(part =>
+                        new Paragraph({
+                          children: [
+                            new TextRun({ text: part.text || '', size: 24 }),
+                          ],
+                          spacing: { after: 100 },
+                        })
+                      ),
+                      new Paragraph({ text: '' })
+                    ])
+                  }
+                ]
+              });
+              Packer.toBlob(doc).then((blob) => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${book.id}.docx`;
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(() => {
+                  document.body.removeChild(a);
+                  URL.revokeObjectURL(url);
+                }, 100);
+              });
             }
           }
         );

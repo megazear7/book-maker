@@ -103,6 +103,7 @@ server.post("/api/book/:book/chapter/:chapter/part/:part/audio", async (req, res
 });
 server.use(express.static("dist/client"));
 server.use("/types", express.static("dist/types"));
+server.use("/node_modules/docx/dist/index.mjs", express.static("node_modules/docx/dist/index.mjs"));
 server.use(express.static("src/static"));
 server.get("/*", async (req, res) => {
   res.send(page(body()));

@@ -9,7 +9,8 @@ export default (body: string) => `
         <script type="importmap">
             {
                 "imports": {
-                    "zod": "https://cdn.jsdelivr.net/npm/zod@3.23.8/+esm"
+                    "zod": "https://cdn.jsdelivr.net/npm/zod@3.23.8/+esm",
+                    "docx": "/node_modules/docx/dist/index.mjs"
                 }
             }
         </script>
