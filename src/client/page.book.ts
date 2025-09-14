@@ -280,14 +280,36 @@ export class BookPage implements Page {
 
     if (downloadBookButton) {
       downloadBookButton.addEventListener("click", async () => {
-        const bookText = book.chapters
-          .map(chapter => {
-            const text = chapter.parts.map(part => part.text).join('\n');
-
-            return `Chapter ${chapter.number}: ${chapter.title}\n\n${text || 'Not written yet'}`;
-          })
-          .join('\n\n\n');
-        download(bookText, `${book.id}.txt`);
+        createModal(
+          "Download Book",
+          "Download",
+          [
+            {
+              name: "format",
+              label: "File Format",
+              type: "dropdown",
+              options: [
+                { label: "Plain Text", value: "txt" },
+                { label: "MS Word", value: "docx" }
+              ],
+              default: "txt"
+            }
+          ],
+          async (result) => {
+            const format = result.find((r) => r.name === "format")?.value || "txt";
+            if (format === "txt") {
+              const bookText = book.chapters
+                .map(chapter => {
+                  const text = chapter.parts.map(part => part.text).join('\n');
+                  return `Chapter ${chapter.number}: ${chapter.title}\n\n${text || 'Not written yet'}`;
+                })
+                .join('\n\n\n');
+              download(bookText, `${book.id}.txt`);
+            } else if (format === "docx") {
+              alert("TODO");
+            }
+          }
+        );
       });
     }
 

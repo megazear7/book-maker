@@ -2,7 +2,9 @@ export interface ModalPartInput {
     name: string;
     label: string;
     placeholder?: string;
-    type: 'plaintext' | 'boolean' | 'number';
+    type: 'plaintext' | 'boolean' | 'number' | 'dropdown';
+    options?: { label: string; value: string }[];
+    default?: string;
     showIf?: {
         fieldName: string;
         value: string | boolean | number;
@@ -105,7 +107,7 @@ export function createModal(
     document.head.appendChild(style);
 
     // Map to store all part containers (inputs and paragraphs)
-    const partElements: Map<string, { input?: HTMLInputElement; container: HTMLDivElement }> = new Map();
+    const partElements: Map<string, { input?: HTMLInputElement | HTMLSelectElement; container: HTMLDivElement }> = new Map();
 
     // Function to update field visibility
     const updateVisibility = () => {
@@ -155,7 +157,7 @@ export function createModal(
         } else {
             // Add input based on type
             const inputPart = part as ModalPartInput;
-            let input: HTMLInputElement;
+            let input: HTMLInputElement | HTMLSelectElement;
             if (inputPart.type === 'boolean') {
                 const switchContainer: HTMLDivElement = document.createElement('div');
                 switchContainer.className = 'switch-container';
@@ -176,16 +178,38 @@ export function createModal(
 
                 const switchLabel: HTMLSpanElement = document.createElement('span');
                 switchLabel.className = 'switch-label';
-                switchLabel.textContent = input.checked ? 'ON' : 'OFF';
-
-                input.addEventListener('change', () => {
+                if (input instanceof HTMLInputElement) {
                     switchLabel.textContent = input.checked ? 'ON' : 'OFF';
-                    updateVisibility();
-                });
+                    input.addEventListener('change', () => {
+                        if (input instanceof HTMLInputElement) {
+                            switchLabel.textContent = input.checked ? 'ON' : 'OFF';
+                        }
+                        updateVisibility();
+                    });
+                }
 
                 switchContainer.appendChild(switchWrapper);
                 switchContainer.appendChild(switchLabel);
                 partContainer.appendChild(switchContainer);
+            } else if (inputPart.type === 'dropdown') {
+                const select = document.createElement('select');
+                select.name = inputPart.name;
+                select.id = inputPart.name;
+                select.className = 'modal-input';
+                if (inputPart.options) {
+                    inputPart.options.forEach(opt => {
+                        const option = document.createElement('option');
+                        option.value = opt.value;
+                        option.textContent = opt.label;
+                        if (inputPart.default && inputPart.default === opt.value) {
+                            option.selected = true;
+                        }
+                        select.appendChild(option);
+                    });
+                }
+                select.addEventListener('change', updateVisibility);
+                input = select;
+                partContainer.appendChild(select);
             } else {
                 input = document.createElement('input');
                 input.type = inputPart.type === 'number' ? 'number' : 'text';
@@ -236,14 +260,14 @@ export function createModal(
 
     // Handle button click
     submitButton.addEventListener('click', () => {
-        const inputs: NodeListOf<HTMLInputElement> = form.querySelectorAll('input');
+        const inputs: NodeListOf<HTMLInputElement | HTMLSelectElement> = form.querySelectorAll('input, select');
         const result: ModalSubmitDetail[] = Array.from(inputs)
             .filter((input) => !input.closest('.part-container')?.classList.contains('hidden'))
-            .map((input: HTMLInputElement) => {
+            .map((input: HTMLInputElement | HTMLSelectElement) => {
                 let value: string | boolean | number = input.value;
-                if (input.type === 'checkbox') {
+                if (input instanceof HTMLInputElement && input.type === 'checkbox') {
                     value = input.checked;
-                } else if (input.type === 'number') {
+                } else if (input instanceof HTMLInputElement && input.type === 'number') {
                     value = input.value ? Number(input.value) : 0;
                 }
                 return {
