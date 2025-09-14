@@ -443,6 +443,11 @@ button.warning:hover {
   color: #666;
   margin-bottom: 2px;
   text-decoration: none;
+  transition: color var(--time-normal) ease-in-out;
+}
+
+.completion-bar-chapter-label:hover {
+  color: var(--color-secondary-text);;
 }
 
 .completion-bar-parts {
@@ -450,11 +455,20 @@ button.warning:hover {
   gap: 1px;
 }
 
+.completion-bar-parts a {
+  cursor: pointer;
+  transition: background var(--time-normal) ease-in-out;
+}
+
+.completion-bar-parts a:hover {
+  background: var(--color-1);
+}
+
 .completion-bar-segment {
   flex: 1;
   height: 18px;
   width: 18px;
-  border: 1px solid var(--color-secondary-surface);
+  border: 0px solid var(--color-secondary-surface);
   position: relative;
   margin-right: 1px;
   background: var(--color-secondary-surface);
@@ -470,8 +484,11 @@ button.warning:hover {
   border-radius: 0 var(--size-small) var(--size-small) 0;
 }
 
-.completion-bar-segment-label {
+.completion-bar-segment.empty .completion-bar-segment-label {
   cursor: default;
+}
+
+.completion-bar-segment-label {
   position: absolute;
   left: 0; right: 0; top: 0; bottom: 0;
   font-size: calc(var(--font-medium) * 0.55);

@@ -32,7 +32,12 @@ export class CompletionBar implements Component {
                     else if (written && audio) partClass += ' written-audio';
                     else if (written) partClass += ' written';
                     else if (audio) partClass += ' audio';
-                    completionBar += `<div title="Chapter ${chapter.number} part ${idx + 1} ${msg}" class="${partClass}"><span class="completion-bar-segment-label">${idx + 1}</span></div>`;
+
+                    if (isEmpty) {
+                        completionBar += `<div title="Chapter ${chapter.number} part ${idx + 1} ${msg}" class="${partClass}"><span class="completion-bar-segment-label">${idx + 1}</span></div>`;
+                    } else {
+                        completionBar += `<a href="/book/${book.id}/chapter/${chapter.number}/part/${idx + 1}" title="Chapter ${chapter.number} part ${idx + 1} ${msg}" class="${partClass}"><span class="completion-bar-segment-label">${idx + 1}</span></a>`;
+                    }
                 }
                 completionBar += '</div>';
                 completionBar += '</div>';

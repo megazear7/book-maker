@@ -105,6 +105,25 @@ class ClientApp {
       page.addEventListeners();
     }
 
+    // Find the element with the highest data-scroll-priority and scroll to it
+    setTimeout(() => {
+      const elements = Array.from(document.querySelectorAll('[data-scroll-priority]')) as HTMLElement[];
+      if (elements.length > 0) {
+        let maxPriority = -Infinity;
+        let target: HTMLElement | null = null;
+        for (const el of elements) {
+          const val = Number(el.getAttribute('data-scroll-priority'));
+          if (!isNaN(val) && val > maxPriority) {
+            maxPriority = val;
+            target = el;
+          }
+        }
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+    }, 0);
+
     this.resizeTextAreas();
     await this.addEventListeners();
   }

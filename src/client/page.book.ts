@@ -1,5 +1,5 @@
 import { Book, Chapter, ChapterPart, ChapterPartNumber } from "../types/book.type.js";
-import { CompletionBar } from "./completion-bar.js";
+import { CompletionBar } from "./component.completion-bar.js";
 import { download } from "./download.js";
 import { aiIconLeft, aiIconRight, audioIcon, downloadIcon, plusIcon, trashIcon } from "./icon.js";
 import { createModal, ModalSubmitDetail } from "./modal.js";
@@ -63,8 +63,9 @@ export class BookPage implements Page {
 
         ${activeChapter
         ? `
+            <div data-scroll-priority="1"></div>
             <div class="secondary-surface">
-                <h4>Chapter ${activeChapter.number}</h4>
+                <h4 >Chapter ${activeChapter.number}</h4>
                 <h2><input name="activeChapter.title" class="h2" value="${activeChapter.title}"></input></h2>
             </div>
 
@@ -122,7 +123,7 @@ export class BookPage implements Page {
 
             ${activeChapter.parts.length > 0
           ? `
-                <ul class="pills">
+                <ul data-scroll-priority="${activePart ? 2 : 0}" class="pills">
                     ${activeChapter.parts
             .map(
               (part, index) => `
