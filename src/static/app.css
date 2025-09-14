@@ -423,6 +423,10 @@ button.warning:hover {
   background: var(--color-warning);
 }
 
+.audio-button {
+  margin-top: 0;
+}
+
 .completion-bar {
   display: flex;
   flex-wrap: wrap;

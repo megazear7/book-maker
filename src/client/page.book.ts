@@ -146,9 +146,12 @@ export class BookPage implements Page {
                 `: ''}
 
                 <div class="secondary-surface">
-                    ${activePart.audio ? `
-                      <button class="secondary" id="play-audio">${audioIcon} Play Audio</button>
-                    `: ''}
+                    <div>
+                      ${activePart.audio ? `
+                        <button class="secondary audio-button" id="play-audio" style="display:inline-block;">${audioIcon} Play Audio</button>
+                        <button class="secondary audio-button" id="pause-audio" style="display:none;">⏸ Pause Audio</button>
+                      `: ''}
+                    </div>
                     <textarea name="activePart.text">${activePart.text}</textarea>
                 </div>
             `
@@ -169,8 +172,9 @@ export class BookPage implements Page {
     const createChapterAudioButton = document.getElementById("create-chapter-audio");
     const createChapterPartButton = document.getElementById("create-chapter-part");
     const createChapterPartAudioButton = document.getElementById("create-chapter-part-audio");
-    const audioPlayer = document.getElementById("audio-player") as HTMLAudioElement;
-    const playAudioButton = document.getElementById("play-audio");
+  const audioPlayer = document.getElementById("audio-player") as HTMLAudioElement;
+  const playAudioButton = document.getElementById("play-audio");
+  const pauseAudioButton = document.getElementById("pause-audio");
     const downloadBookButton = document.getElementById("download-book");
     const downloadAudioButton = document.getElementById("download-audio");
     const deleteBookButton = document.getElementById("delete-book");
@@ -213,12 +217,31 @@ export class BookPage implements Page {
       });
     }
 
-    if (playAudioButton && activeChapter && activePart) {
+    if (playAudioButton && audioPlayer && activeChapter && activePart) {
       playAudioButton.addEventListener("click", async () => {
         audioPlayer.src = `/api/book/${this.book.id}/chapter/${activeChapter.number}/part/${activePartNumber}/audio`;
         audioPlayer.play().catch(error => {
           console.error('Error playing audio:', error);
         });
+      });
+    }
+    if (pauseAudioButton && audioPlayer) {
+      pauseAudioButton.addEventListener("click", () => {
+        audioPlayer.pause();
+      });
+    }
+    if (audioPlayer && playAudioButton && pauseAudioButton) {
+      audioPlayer.addEventListener('play', () => {
+        playAudioButton.style.display = 'none';
+        pauseAudioButton.style.display = 'inline-block';
+      });
+      audioPlayer.addEventListener('pause', () => {
+        playAudioButton.style.display = 'inline-block';
+        pauseAudioButton.style.display = 'none';
+      });
+      audioPlayer.addEventListener('ended', () => {
+        playAudioButton.style.display = 'inline-block';
+        pauseAudioButton.style.display = 'none';
       });
     }
 
