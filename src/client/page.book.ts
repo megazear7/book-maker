@@ -3,8 +3,9 @@ import { CompletionBar } from "./component.completion-bar.js";
 import { download } from "./download.js";
 import { Document, Packer, Paragraph, TextRun } from 'docx';
 import { aiIconLeft, aiIconRight, audioIcon, downloadIcon, plusIcon, trashIcon } from "./icon.js";
-import { createModal } from "./modal.js";
+import { createModal, ModalPartInput } from "./modal.js";
 import { Page } from "./page.interface.js";
+import { KnownModelTypeName } from "../types/book.type.js";
 import { addChapter, createChapter, createChapterAudio, createChapterOutline, createChapterPart, createChapterPartAudio, downloadFullAudio } from "./service.js";
 import { formatNumber } from "./util.js";
 
@@ -40,6 +41,7 @@ export class BookPage implements Page {
           <div>
             <button id="download-book" class="secondary">${downloadIcon} Download Book</button>
             <button id="download-audio" class="secondary">${downloadIcon} Download Audio</button>
+            <button id="configure-model" class="secondary">Configure</button>
           </div>
 
           <div>
@@ -175,6 +177,50 @@ export class BookPage implements Page {
   }
 
   async addEventListeners() {
+    const configureModelButton = document.getElementById("configure-model");
+    if (configureModelButton) {
+      configureModelButton.addEventListener("click", async () => {
+        const book = this.book;
+        // Only allow editing model names (string type)
+        // Get known model names from statically imported KnownModelTypeName enum
+        const knownModelNames = KnownModelTypeName.options;
+        const fields: ModalPartInput[] = [
+          {
+            name: "textModelName",
+            label: "Text Model Name",
+            type: "dropdown",
+            options: knownModelNames.map(n => ({ label: n, value: n })),
+            default: typeof book.model.text.name === "string" ? book.model.text.name : ""
+          },
+          {
+            name: "audioModelName",
+            label: "Audio Model Name",
+            type: "dropdown",
+            options: knownModelNames.map(n => ({ label: n, value: n })),
+            default: typeof book.model.audio.name === "string" ? book.model.audio.name : ""
+          }
+        ];
+        createModal(
+          "Configure Model",
+          "Save",
+          fields,
+          async (result) => {
+            // Update book.model with new values
+            const textModelName = String(result.find(r => r.name === "textModelName")?.value ?? "");
+            const audioModelName = String(result.find(r => r.name === "audioModelName")?.value ?? "");
+            book.model.text.name = textModelName;
+            book.model.audio.name = audioModelName;
+            // Save changes
+            await fetch(`/api/book/${book.id}/save`, {
+              method: "POST",
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(book)
+            });
+            window.location.reload();
+          }
+        );
+      });
+    }
     const createChapterOutlineButton = document.getElementById(
       "create-chapter-outline",
     );
