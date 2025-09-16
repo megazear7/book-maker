@@ -5,7 +5,7 @@ import { Document, Packer, Paragraph, TextRun } from 'docx';
 import { aiIconLeft, aiIconRight, audioIcon, downloadIcon, plusIcon, trashIcon } from "./icon.js";
 import { createModal } from "./modal.js";
 import { Page } from "./page.interface.js";
-import { createChapter, createChapterAudio, createChapterOutline, createChapterPart, createChapterPartAudio } from "./service.js";
+import { addChapter, createChapter, createChapterAudio, createChapterOutline, createChapterPart, createChapterPartAudio, downloadFullAudio } from "./service.js";
 import { formatNumber } from "./util.js";
 
 export class BookPage implements Page {
@@ -253,6 +253,29 @@ export class BookPage implements Page {
       audioPlayer.addEventListener('ended', () => {
         playAudioButton.style.display = 'inline-block';
         pauseAudioButton.style.display = 'none';
+      });
+    }
+
+    if (addChapterButton) {
+      addChapterButton.addEventListener("click", async () => {
+        const chapter = await addChapter(book);
+        window.location.pathname = `/book/${book.id}/chapter/${chapter.number}`;
+      });
+    }
+
+    if (downloadAudioButton) {
+      downloadAudioButton.addEventListener("click", async () => {
+        await downloadFullAudio(book);
+      });
+    }
+
+    if (deleteBookButton) {
+      deleteBookButton.addEventListener("click", async () => {
+        createModal("Delete Book", "Delete", [{
+          name: 'are_you_sure',
+          type: 'paragraph',
+          text: 'Are you sure you want to permanently delete this book?'
+        }], this.handleDeleteBookModalSubmit.bind(this));
       });
     }
 
