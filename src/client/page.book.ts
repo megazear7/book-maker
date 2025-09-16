@@ -2,7 +2,7 @@ import { Book, Chapter, ChapterPart, ChapterPartNumber } from "../types/book.typ
 import { CompletionBar } from "./component.completion-bar.js";
 import { download } from "./download.js";
 import { Document, Packer, Paragraph, TextRun } from 'docx';
-import { aiIconLeft, aiIconRight, audioIcon, downloadIcon, plusIcon, trashIcon } from "./icon.js";
+import { aiIconLeft, aiIconRight, audioIcon, downloadIcon, gearIcon, plusIcon, trashIcon } from "./icon.js";
 import { createModal, ModalPartInput } from "./modal.js";
 import { Page } from "./page.interface.js";
 import { KnownModelTypeName } from "../types/book.type.js";
@@ -39,13 +39,13 @@ export class BookPage implements Page {
         ${new CompletionBar(book).render()}
         <div class="spread">
           <div>
-            <button id="download-book" class="secondary">${downloadIcon} Download Book</button>
-            <button id="download-audio" class="secondary">${downloadIcon} Download Audio</button>
-            <button id="configure-model" class="secondary">Configure</button>
+            <button id="download-book" class="secondary"><span class="button-inner">${downloadIcon} Download Book</span></button>
+            <button id="download-audio" class="secondary"><span class="button-inner">${downloadIcon} Download Audio</span></button>
+            <button id="configure-model" class="secondary"><span class="button-inner">${gearIcon} Configure</span></button>
           </div>
 
           <div>
-            <button id="delete-book" class="tertiary warning">${trashIcon} Delete Book</button>
+            <button id="delete-book" class="tertiary warning"><span class="button-inner">${trashIcon} Delete Book</span></button>
           </div>
         </div>
         <div data-section="book" class="secondary-surface">
@@ -71,7 +71,7 @@ export class BookPage implements Page {
             `,
         )
         .join("")}
-            <li><button class="clean" id="add-chapter">${plusIcon}Add Chapter</button>
+            <li><button class="clean" id="add-chapter"><span class="button-inner">${plusIcon}Add Chapter</span></button>
         </ul>
 
         ${activeChapter
@@ -113,9 +113,9 @@ export class BookPage implements Page {
                 <input name="activeChapter.partLength" type="text" value="${activeChapter.partLength}"></input>
             </div>
 
-            <button id="create-chapter-outline">${aiIconLeft}<span>${activeChapter.outline.length > 0 ? "Regenerate" : "Generate"} Outline</span>${aiIconRight}</button>
-            <button id="create-chapter">${aiIconLeft}<span>${activeChapter.parts.length > 0 ? "Regenerate" : "Generate"} Chapter</span>${aiIconRight}</button>
-            <button id="create-chapter-audio">${aiIconLeft}<span>${activeChapter.parts[0]?.audio ? "Regenerate" : "Generate"} Audio</span>${aiIconRight}</button>
+            <button id="create-chapter-outline"><span class="button-inner">${aiIconLeft}<span>${activeChapter.outline.length > 0 ? "Regenerate" : "Generate"} Outline</span>${aiIconRight}</span></button>
+            <button id="create-chapter"><span class="button-inner">${aiIconLeft}<span>${activeChapter.parts.length > 0 ? "Regenerate" : "Generate"} Chapter</span>${aiIconRight}</span></button>
+            <button id="create-chapter-audio"><span class="button-inner">${aiIconLeft}<span>${activeChapter.parts[0]?.audio ? "Regenerate" : "Generate"} Audio</span>${aiIconRight}</span></button>
 
             ${activeChapter.outline
           ? `
@@ -152,17 +152,17 @@ export class BookPage implements Page {
 
             ${activePart
           ? `
-                <button id="create-chapter-part">${aiIconLeft}<span>${activeChapter.parts.length > 0 ? "Regenerate" : "Generate"} Part</span>${aiIconRight}</button>
+                <button id="create-chapter-part"><span class="button-inner">${aiIconLeft}<span>${activeChapter.parts.length > 0 ? "Regenerate" : "Generate"} Part</span>${aiIconRight}</span></button>
                 ${activePart.audio ? `
-                  <button id="create-chapter-part-audio">${aiIconLeft}<span>${activeChapter.parts.length > 0 ? "Regenerate" : "Generate"} Audio</span>${aiIconRight}</button>
+                  <button id="create-chapter-part-audio"><span class="button-inner">${aiIconLeft}<span>${activeChapter.parts.length > 0 ? "Regenerate" : "Generate"} Audio</span>${aiIconRight}</span></button>
                   <audio id="audio-player"></audio>
                 `: ''}
 
                 <div class="secondary-surface">
                     <div>
                       ${activePart.audio ? `
-                        <button class="secondary audio-button" id="play-audio" style="display:inline-block;">${audioIcon} Play Audio</button>
-                        <button class="secondary audio-button" id="pause-audio" style="display:none;">⏸ Pause Audio</button>
+                        <button class="secondary audio-button" id="play-audio" style="display:inline-block;"><span class="button-inner">${audioIcon} Play Audio</span></button>
+                        <button class="secondary audio-button" id="pause-audio" style="display:none;"><span class="button-inner">⏸ Pause Audio</span></button>
                       `: ''}
                     </div>
                     <textarea name="activePart.text">${activePart.text}</textarea>

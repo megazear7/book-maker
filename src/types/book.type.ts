@@ -220,7 +220,7 @@ export const Pronunciation = z.object({
 });
 export type Pronunciation = z.infer<typeof Pronunciation>;
 
-export const KnownModelTypeName = z.enum(["grok", "gpt", "azure", "openai", "anthropic", "cohere"]).describe(
+export const KnownModelTypeName = z.enum(["grok", "gpt", "azure", "openai", "anthropic"]).describe(
   "Known model types. Any selected model needs preconfigured environment variables as described in the ModelTypeName description.",
 );
 export type KnownModelTypeName = z.infer<typeof KnownModelTypeName>;

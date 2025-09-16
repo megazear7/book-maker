@@ -64,23 +64,23 @@ class ClientApp {
         /^\/book\/([^\/]+)\/chapter\/([^\/]+)\/part\/([^\/]+)/,
       )
     ) {
-      pageName = "book";
+      pageName = "part";
       page = await this.partPageRouter();
     } else if (
       location.pathname.match(/^\/book\/([^\/]+)\/chapter\/([^\/]+)/)
     ) {
-      pageName = "book";
+      pageName = "chapter";
       page = await this.chapterPageRouter();
     } else if (location.pathname.match(/^\/book\/([^\/]+)/)) {
-      pageName = "chapter";
+      pageName = "book";
       page = await this.bookPageRouter();
     }
 
     this.root.innerHTML = `
       <div class="bookmark-tabs">
-        <div class="bookmark-tab" data-tab="book">Book</div>
-        <div class="bookmark-tab" data-tab="chapter">Chapter</div>
-        <div class="bookmark-tab" data-tab="part">Part</div>
+        <div class="bookmark-tab${["book", "chapter", "part"].includes(pageName) ? '' : ' disabled'}" data-tab="book"><span class="bookmark-tab-inner">Book</span></div>
+        <div class="bookmark-tab${["chapter", "part"].includes(pageName) ? '' : ' disabled'}" data-tab="chapter"><span class="bookmark-tab-inner">Chapter</span></div>
+        <div class="bookmark-tab${["part"].includes(pageName) ? '' : ' disabled'}" data-tab="part"><span class="bookmark-tab-inner">Part</span></div>
       </div>
       <div class="container">
         <ul class="pills">
@@ -97,7 +97,7 @@ class ClientApp {
             )
             .join("")}
           <li>
-            <button class="clean" id="new-book">${plusIcon}New Book</button>
+            <button class="clean" id="new-book"><span class="button-inner">${plusIcon}New Book</span></button>
           </li>
         </ul>
         <div id="page"></div>
@@ -117,11 +117,13 @@ class ClientApp {
       const chapterSection = document.querySelector('[data-section="chapter"]') as HTMLElement;
       const partSection = document.querySelector('[data-section="part"]') as HTMLElement;
       function highlightTab() {
-        let active = 'book';
+        let active = '';
         if (partSection && partSection.getBoundingClientRect().top < window.innerHeight/2) {
           active = 'part';
         } else if (chapterSection && chapterSection.getBoundingClientRect().top < window.innerHeight/2) {
           active = 'chapter';
+        } else if (bookSection && bookSection.getBoundingClientRect().top < window.innerHeight/2) {
+          active = 'book';
         }
         tabs.forEach(tab => {
           if (tab.dataset.tab === active) tab.classList.add('active');

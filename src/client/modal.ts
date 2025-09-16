@@ -197,15 +197,25 @@ export function createModal(
                 select.id = inputPart.name;
                 select.className = 'modal-input';
                 if (inputPart.options) {
+                    let hasDefault = false;
                     inputPart.options.forEach(opt => {
                         const option = document.createElement('option');
                         option.value = opt.value;
                         option.textContent = opt.label;
                         if (inputPart.default && inputPart.default === opt.value) {
                             option.selected = true;
+                            hasDefault = true;
                         }
                         select.appendChild(option);
                     });
+                    // If default value is set and not in options, add it as an extra option
+                    if (inputPart.default && !hasDefault) {
+                        const option = document.createElement('option');
+                        option.value = inputPart.default;
+                        option.textContent = inputPart.default + ' (current)';
+                        option.selected = true;
+                        select.appendChild(option);
+                    }
                 }
                 select.addEventListener('change', updateVisibility);
                 input = select;
