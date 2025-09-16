@@ -1,3 +1,5 @@
+import { saveIcon } from "./icon.js";
+
 export interface ModalPartInput {
     name: string;
     label: string;
@@ -228,6 +230,12 @@ export function createModal(
                 if (inputPart.placeholder && (inputPart.type === 'plaintext' || inputPart.type === 'number')) {
                     input.placeholder = inputPart.placeholder;
                 }
+                if (inputPart.type === 'plaintext' && inputPart.default !== undefined) {
+                    input.value = inputPart.default;
+                }
+                if (inputPart.type === 'number' && inputPart.default !== undefined) {
+                    input.value = inputPart.default;
+                }
                 input.className = 'modal-input';
                 if (inputPart.type === 'number') {
                     // Prevent non-numeric input
@@ -251,20 +259,22 @@ export function createModal(
     // Initial visibility update
     updateVisibility();
 
-    // Create button container
-    const buttonContainer: HTMLDivElement = document.createElement('div');
-    buttonContainer.className = 'button-container';
-
+    // Create modal footer for save button
+    const modalFooter: HTMLDivElement = document.createElement('div');
+    modalFooter.className = 'modal-footer';
     // Add submit button
     const submitButton: HTMLButtonElement = document.createElement('button');
     submitButton.type = 'button';
-    submitButton.textContent = buttonLabel;
-    submitButton.className = 'submit-button';
-    buttonContainer.appendChild(submitButton);
+    submitButton.className = 'submit-button primary';
+    const submitSpan: HTMLSpanElement = document.createElement('span');
+    submitSpan.innerHTML = saveIcon + ' ' + buttonLabel;
+    submitSpan.className = 'button-inner';
+    submitButton.appendChild(submitSpan);
+    modalFooter.appendChild(submitButton);
 
     // Assemble modal
-    form.appendChild(buttonContainer);
     modalContent.appendChild(form);
+    modalContent.appendChild(modalFooter);
     modal.appendChild(modalContent);
     document.body.appendChild(modal);
 

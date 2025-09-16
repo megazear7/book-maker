@@ -11,6 +11,7 @@ html {
   --color-accent: rgb(255 111 97 / 80%); /* Coral accent for highlights */
   --color-warning: rgba(255, 97, 97, 0.8); /* Coral accent for highlights */
 
+  --size-xxl:  48px;
   --size-xl: 32px;
   --size-large: 20px;
   --size-medium: 12px;
@@ -419,6 +420,11 @@ body.overlay-active {
   border-radius: var(--radius-medium);
   width: calc(var(--content-width) / 2);
   max-width: 90%;
+  max-height: 80vh;
+  overflow-y: visible;
+  display: flex;
+  flex-direction: column;
+  position: relative;
   box-shadow: var(--shadow-active);
   transform: scale(0.95);
   transition: transform var(--time-normal) ease;
@@ -440,6 +446,9 @@ body.overlay-active {
   display: flex;
   flex-direction: column;
   gap: var(--size-large);
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding-bottom: 100px;
 }
 
 .modal-input {
@@ -456,6 +465,29 @@ body.overlay-active {
 .modal-input:focus {
   border-color: var(--color-1);
   outline: none;
+}
+
+.modal-footer {
+  width: auto;
+  max-width: 100%;
+  width: 100%;
+  background: var(--color-secondary-surface);
+  padding: var(--size-medium) var(--size-xl);
+  border: 1px solid var(--color-primary-surface);
+  border-radius: 0 0 var(--radius-medium) var(--radius-medium);
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.08);
+  display: flex;
+  justify-content: flex-end;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  z-index: 2;
+  box-sizing: border-box;
+}
+
+.modal-footer button {
+  margin-top: 0;
+  padding: var(--size-medium) var(--size-large);
 }
 
 .button-container {
@@ -476,6 +508,10 @@ body.overlay-active {
 
 #delete-book {
   float: right;
+}
+
+button.primary {
+  background: var(--color-tertiary-surface);
 }
 
 button.secondary {
