@@ -84,3 +84,9 @@ export const saveIcon = `
   <path d="M20.3 6.7a1 1 0 0 0-1.4 0L10 15.6l-4.9-4.9a1 1 0 0 0-1.4 1.4l5.6 5.6a1 1 0 0 0 1.4 0l9.6-9.6a1 1 0 0 0 0-1.4z"/>
 </svg>
 `;
+
+export const homeIcon = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">
+  <path d="M12 3 2 12h3v9h6v-6h2v6h6v-9h3L12 3z"/>
+</svg>
+`;

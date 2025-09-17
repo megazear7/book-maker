@@ -277,6 +277,8 @@ export function createModal(
     modalContent.appendChild(modalFooter);
     modal.appendChild(modalContent);
     document.body.appendChild(modal);
+    // Add open class after modal is in DOM for transition
+    setTimeout(() => modal.classList.add('open'), 10);
 
     // Handle button click
     submitButton.addEventListener('click', () => {
@@ -299,14 +301,16 @@ export function createModal(
         // Call the provided callback
         onSubmit(result);
 
-        // Remove modal
-        modal.remove();
+        // Remove modal and open class
+        modal.classList.remove('open');
+        setTimeout(() => modal.remove(), 300);
     });
 
     // Close modal on click outside
     modal.addEventListener('click', (e: MouseEvent) => {
         if (e.target === modal) {
-            modal.remove();
+            modal.classList.remove('open');
+            setTimeout(() => modal.remove(), 300);
         }
     });
 }

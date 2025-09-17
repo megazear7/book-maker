@@ -48,7 +48,7 @@ export class BookPage implements Page {
             <button id="delete-book" class="tertiary warning"><span class="button-inner">${trashIcon} Delete Book</span></button>
           </div>
         </div>
-        <div data-section="book" class="secondary-surface">
+        <div class="secondary-surface">
             <input name="book.title" value="${book.title}" class="h1"></textarea>
             <div class="spread">
               <span>${usage}</span>
@@ -63,6 +63,8 @@ export class BookPage implements Page {
             <textarea name="book.instructions.audio">${book.instructions.audio}</textarea>
         </div>
 
+        <div data-section="chapter" data-scroll-priority="${activeChapter ? 2 : 1}"></div>
+
         <ul class="pills">
             ${book.chapters
         .map(
@@ -76,7 +78,6 @@ export class BookPage implements Page {
 
         ${activeChapter
         ? `
-            <div data-section="chapter" data-scroll-priority="1"></div>
             <div class="secondary-surface">
                 <h4 >Chapter ${activeChapter.number}</h4>
                 <h2><input name="activeChapter.title" class="h2" value="${activeChapter.title}"></input></h2>
@@ -136,7 +137,7 @@ export class BookPage implements Page {
 
             ${activeChapter.parts.length > 0
           ? `
-                <ul data-section="part" data-scroll-priority="${activePart ? 2 : 0}" class="pills">
+                <ul data-section="part" data-scroll-priority="${activePart ? 3 : 0}" class="pills">
                     ${activeChapter.parts
             .map(
               (part, index) => `
@@ -298,8 +299,8 @@ export class BookPage implements Page {
               label: "File Format",
               type: "dropdown",
               options: [
-                { label: "MS Word", value: "docx" },
-                { label: "Plain Text", value: "txt" }
+                { label: "Microsoft Word (.docx)", value: "docx" },
+                { label: "Plain Text (.txt)", value: "txt" }
               ],
               default: "docx"
             }

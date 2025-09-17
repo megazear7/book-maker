@@ -12,6 +12,7 @@ import { Page404 } from "./page.404.js";
 import "/example.js";
 import { Page } from "./page.interface.js";
 import { plusIcon } from "./icon.js";
+import { homeIcon } from "./icon.js";
 import { addEmptyBook, createBook } from "./service.js";
 import { createModal, getExpectedBooleanValue, getExpectedNumberValue, getExpectedStringValue, ModalSubmitDetail } from "./modal.js";
 
@@ -77,6 +78,7 @@ class ClientApp {
     }
 
     this.root.innerHTML = `
+      <div data-section="book" data-scroll-priority="1"></div>
       <div class="bookmark-tabs">
         <div class="bookmark-tab${["book", "chapter", "part"].includes(pageName) ? '' : ' disabled'}" data-tab="book"><span class="bookmark-tab-inner">Book</span></div>
         <div class="bookmark-tab${["chapter", "part"].includes(pageName) ? '' : ' disabled'}" data-tab="chapter"><span class="bookmark-tab-inner">Chapter</span></div>
@@ -85,7 +87,7 @@ class ClientApp {
       <div class="container">
         <ul class="pills">
           <li class="${pageName === "home"}">
-            <a href="/">Home</a>
+            <a href="/">${homeIcon}</a>
           </li>
           ${this.books
             .map(
@@ -136,6 +138,7 @@ class ClientApp {
 
       // Make tabs clickable to scroll to their section
       tabs.forEach(tab => {
+        if (tab.classList.contains('disabled')) return;
         tab.addEventListener('click', () => {
           if (tab.dataset.tab === 'book') {
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -153,21 +156,46 @@ class ClientApp {
 
     // Find the element with the highest data-scroll-priority and scroll to it
     setTimeout(() => {
-      const elements = Array.from(document.querySelectorAll('[data-scroll-priority]')) as HTMLElement[];
-      if (elements.length > 0) {
-        let maxPriority = -Infinity;
-        let target: HTMLElement | null = null;
-        for (const el of elements) {
-          const val = Number(el.getAttribute('data-scroll-priority'));
-          if (!isNaN(val) && val > maxPriority) {
-            maxPriority = val;
-            target = el;
+      // Use sessionStorage to compare current and previous URLs
+      const currentUrl = window.location.pathname + window.location.search + window.location.hash;
+      const previousUrl = sessionStorage.getItem('previousUrl');
+      // Only scroll if the URL has changed
+      if (currentUrl !== previousUrl) {
+        const elements = Array.from(document.querySelectorAll('[data-scroll-priority]')) as HTMLElement[];
+        if (elements.length > 0) {
+          let maxPriority = -Infinity;
+          let target: HTMLElement | null = null;
+          for (const el of elements) {
+            const val = Number(el.getAttribute('data-scroll-priority'));
+            if (!isNaN(val) && val > maxPriority) {
+              maxPriority = val;
+              target = el;
+            }
+          }
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
           }
         }
-        if (target) {
-          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        // Scroll to the "currentScrollPosition" if it exists in sessionStorage
+        const scrollY = sessionStorage.getItem('currentScrollPosition');
+        if (scrollY !== null) {
+          window.scrollTo({ top: parseInt(scrollY, 10), behavior: 'instant' });
         }
       }
+      sessionStorage.setItem('previousUrl', window.location.pathname + window.location.search + window.location.hash);
+    }, 0);
+
+    setTimeout(() => {
+      let scrollTimeout: number | null = null;
+      window.addEventListener('scroll', () => {
+        if (scrollTimeout) {
+          clearTimeout(scrollTimeout);
+        }
+        scrollTimeout = window.setTimeout(() => {
+          sessionStorage.setItem('currentScrollPosition', window.scrollY.toString());
+        }, 100);
+      });
     }, 0);
 
     this.resizeTextAreas();
@@ -343,6 +371,7 @@ function navigate(event: Event) {
   const target = event.target as HTMLElement;
   const anchor = target as HTMLAnchorElement;
   if (target.tagName === "A" && anchor.href && !target.hasAttribute("download")) {
+    sessionStorage.setItem('previousUrl', '');
     event.preventDefault();
     const url = new URL(anchor.href);
     const path = url.pathname;
