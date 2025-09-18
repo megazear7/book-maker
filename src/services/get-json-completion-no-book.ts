@@ -9,8 +9,8 @@ export async function getJsonCompletionNoBook<T>(
   zod: ZodSchema<T>,
 ): Promise<T> {
   const client = new OpenAI({
-      baseURL: env(`GROK_BASE_URL`),
-      apiKey: env(`GROK_API_KEY`),
+    baseURL: env(`GROK_BASE_URL`),
+    apiKey: env(`GROK_API_KEY`),
   });
   const innerSchema = zodToJsonSchema(zod);
   const jsonSchemaForOpenAI = {

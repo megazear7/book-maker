@@ -1,8 +1,8 @@
 export function showAlert(message: string): void {
-    // Create alert element
-    const alert: HTMLDivElement = document.createElement('div');
-    alert.textContent = message;
-    alert.style.cssText = `
+  // Create alert element
+  const alert: HTMLDivElement = document.createElement("div");
+  alert.textContent = message;
+  alert.style.cssText = `
       position: fixed;
       bottom: var(--size-large);
       right: 50%;
@@ -17,19 +17,19 @@ export function showAlert(message: string): void {
       transition: opacity 0.3s ease;
     `;
 
-    // Add to document
-    document.body.appendChild(alert);
+  // Add to document
+  document.body.appendChild(alert);
 
-    // Fade in animation
-    setTimeout(() => {
-        alert.style.opacity = '1';
-    }, 10);
+  // Fade in animation
+  setTimeout(() => {
+    alert.style.opacity = "1";
+  }, 10);
 
-    // Remove after 3 seconds
+  // Remove after 3 seconds
+  setTimeout(() => {
+    alert.style.opacity = "0";
     setTimeout(() => {
-        alert.style.opacity = '0';
-        setTimeout(() => {
-            document.body.removeChild(alert);
-        }, 300);
-    }, 1500);
+      document.body.removeChild(alert);
+    }, 300);
+  }, 1500);
 }

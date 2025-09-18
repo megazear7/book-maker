@@ -14,7 +14,13 @@ import { Page } from "./page.interface.js";
 import { plusIcon } from "./icon.js";
 import { homeIcon } from "./icon.js";
 import { addEmptyBook, createBook } from "./service.js";
-import { createModal, getExpectedBooleanValue, getExpectedNumberValue, getExpectedStringValue, ModalSubmitDetail } from "./modal.js";
+import {
+  createModal,
+  getExpectedBooleanValue,
+  getExpectedNumberValue,
+  getExpectedStringValue,
+  ModalSubmitDetail,
+} from "./modal.js";
 
 class ClientApp {
   rootElementId: string;
@@ -80,9 +86,9 @@ class ClientApp {
     this.root.innerHTML = `
       <div data-section="book" data-scroll-priority="1"></div>
       <div class="bookmark-tabs">
-        <div class="bookmark-tab${["book", "chapter", "part"].includes(pageName) ? '' : ' disabled'}" data-tab="book"><span class="bookmark-tab-inner">Book</span></div>
-        <div class="bookmark-tab${["chapter", "part"].includes(pageName) ? '' : ' disabled'}" data-tab="chapter"><span class="bookmark-tab-inner">Chapter</span></div>
-        <div class="bookmark-tab${["part"].includes(pageName) ? '' : ' disabled'}" data-tab="part"><span class="bookmark-tab-inner">Part</span></div>
+        <div class="bookmark-tab${["book", "chapter", "part"].includes(pageName) ? "" : " disabled"}" data-tab="book"><span class="bookmark-tab-inner">Book</span></div>
+        <div class="bookmark-tab${["chapter", "part"].includes(pageName) ? "" : " disabled"}" data-tab="chapter"><span class="bookmark-tab-inner">Chapter</span></div>
+        <div class="bookmark-tab${["part"].includes(pageName) ? "" : " disabled"}" data-tab="part"><span class="bookmark-tab-inner">Part</span></div>
       </div>
       <div class="container">
         <ul class="pills">
@@ -114,40 +120,57 @@ class ClientApp {
 
     // Bookmark tab highlight logic
     setTimeout(() => {
-      const tabs = Array.from(document.querySelectorAll('.bookmark-tab')) as HTMLElement[];
-      const bookSection = document.querySelector('[data-section="book"]') as HTMLElement;
-      const chapterSection = document.querySelector('[data-section="chapter"]') as HTMLElement;
-      const partSection = document.querySelector('[data-section="part"]') as HTMLElement;
+      const tabs = Array.from(
+        document.querySelectorAll(".bookmark-tab"),
+      ) as HTMLElement[];
+      const bookSection = document.querySelector(
+        '[data-section="book"]',
+      ) as HTMLElement;
+      const chapterSection = document.querySelector(
+        '[data-section="chapter"]',
+      ) as HTMLElement;
+      const partSection = document.querySelector(
+        '[data-section="part"]',
+      ) as HTMLElement;
       function highlightTab() {
-        let active = '';
-        if (partSection && partSection.getBoundingClientRect().top < window.innerHeight/2) {
-          active = 'part';
-        } else if (chapterSection && chapterSection.getBoundingClientRect().top < window.innerHeight/2) {
-          active = 'chapter';
-        } else if (bookSection && bookSection.getBoundingClientRect().top < window.innerHeight/2) {
-          active = 'book';
+        let active = "";
+        if (
+          partSection &&
+          partSection.getBoundingClientRect().top < window.innerHeight / 2
+        ) {
+          active = "part";
+        } else if (
+          chapterSection &&
+          chapterSection.getBoundingClientRect().top < window.innerHeight / 2
+        ) {
+          active = "chapter";
+        } else if (
+          bookSection &&
+          bookSection.getBoundingClientRect().top < window.innerHeight / 2
+        ) {
+          active = "book";
         }
-        tabs.forEach(tab => {
-          if (tab.dataset.tab === active) tab.classList.add('active');
-          else tab.classList.remove('active');
+        tabs.forEach((tab) => {
+          if (tab.dataset.tab === active) tab.classList.add("active");
+          else tab.classList.remove("active");
         });
       }
-      window.addEventListener('scroll', highlightTab);
-      window.addEventListener('resize', highlightTab);
+      window.addEventListener("scroll", highlightTab);
+      window.addEventListener("resize", highlightTab);
       highlightTab();
 
       // Make tabs clickable to scroll to their section
-      tabs.forEach(tab => {
-        if (tab.classList.contains('disabled')) return;
-        tab.addEventListener('click', () => {
-          if (tab.dataset.tab === 'book') {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+      tabs.forEach((tab) => {
+        if (tab.classList.contains("disabled")) return;
+        tab.addEventListener("click", () => {
+          if (tab.dataset.tab === "book") {
+            window.scrollTo({ top: 0, behavior: "smooth" });
           } else {
             let section: HTMLElement | null = null;
-            if (tab.dataset.tab === 'chapter') section = chapterSection;
-            else if (tab.dataset.tab === 'part') section = partSection;
+            if (tab.dataset.tab === "chapter") section = chapterSection;
+            else if (tab.dataset.tab === "part") section = partSection;
             if (section) {
-              section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              section.scrollIntoView({ behavior: "smooth", block: "start" });
             }
           }
         });
@@ -157,43 +180,56 @@ class ClientApp {
     // Find the element with the highest data-scroll-priority and scroll to it
     setTimeout(() => {
       // Use sessionStorage to compare current and previous URLs
-      const currentUrl = window.location.pathname + window.location.search + window.location.hash;
-      const previousUrl = sessionStorage.getItem('previousUrl');
+      const currentUrl =
+        window.location.pathname +
+        window.location.search +
+        window.location.hash;
+      const previousUrl = sessionStorage.getItem("previousUrl");
       // Only scroll if the URL has changed
       if (currentUrl !== previousUrl) {
-        const elements = Array.from(document.querySelectorAll('[data-scroll-priority]')) as HTMLElement[];
+        const elements = Array.from(
+          document.querySelectorAll("[data-scroll-priority]"),
+        ) as HTMLElement[];
         if (elements.length > 0) {
           let maxPriority = -Infinity;
           let target: HTMLElement | null = null;
           for (const el of elements) {
-            const val = Number(el.getAttribute('data-scroll-priority'));
+            const val = Number(el.getAttribute("data-scroll-priority"));
             if (!isNaN(val) && val > maxPriority) {
               maxPriority = val;
               target = el;
             }
           }
           if (target) {
-            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            target.scrollIntoView({ behavior: "smooth", block: "start" });
           }
         }
       } else {
         // Scroll to the "currentScrollPosition" if it exists in sessionStorage
-        const scrollY = sessionStorage.getItem('currentScrollPosition');
+        const scrollY = sessionStorage.getItem("currentScrollPosition");
         if (scrollY !== null) {
-          window.scrollTo({ top: parseInt(scrollY, 10), behavior: 'instant' });
+          window.scrollTo({ top: parseInt(scrollY, 10), behavior: "instant" });
         }
       }
-      sessionStorage.setItem('previousUrl', window.location.pathname + window.location.search + window.location.hash);
+      sessionStorage.setItem(
+        "previousUrl",
+        window.location.pathname +
+          window.location.search +
+          window.location.hash,
+      );
     }, 0);
 
     setTimeout(() => {
       let scrollTimeout: number | null = null;
-      window.addEventListener('scroll', () => {
+      window.addEventListener("scroll", () => {
         if (scrollTimeout) {
           clearTimeout(scrollTimeout);
         }
         scrollTimeout = window.setTimeout(() => {
-          sessionStorage.setItem('currentScrollPosition', window.scrollY.toString());
+          sessionStorage.setItem(
+            "currentScrollPosition",
+            window.scrollY.toString(),
+          );
         }, 100);
       });
     }, 0);
@@ -203,48 +239,59 @@ class ClientApp {
   }
 
   async addEventListeners() {
-    const newBookButton = document.getElementById('new-book');
+    const newBookButton = document.getElementById("new-book");
 
     if (newBookButton) {
-      newBookButton.addEventListener('click', async () => {
-        createModal("Create Book", "Create", [{
-          name: "manual",
-          label: "Create Manually",
-          type: "boolean"
-        }, {
-          name: "description",
-          label: "Description",
-          type: "plaintext",
-          placeholder: "A story about knights and dragons",
-          showIf: {
-            fieldName: "manual",
-            value: false,
-          }
-        }, {
-          name: "min",
-          label: "Minimum Chapters",
-          type: "plaintext",
-          showIf: {
-            fieldName: "manual",
-            value: false,
-          }
-        }, {
-          name: "max",
-          label: "Maximum Chapters",
-          type: "plaintext",
-          showIf: {
-            fieldName: "manual",
-            value: false,
-          }
-        }, {
-          name: "title",
-          label: "Title",
-          type: "plaintext",
-          showIf: {
-            fieldName: "manual",
-            value: true,
-          }
-        }], this.handleCreateBookModalSubmit.bind(this));
+      newBookButton.addEventListener("click", async () => {
+        createModal(
+          "Create Book",
+          "Create",
+          [
+            {
+              name: "manual",
+              label: "Create Manually",
+              type: "boolean",
+            },
+            {
+              name: "description",
+              label: "Description",
+              type: "plaintext",
+              placeholder: "A story about knights and dragons",
+              showIf: {
+                fieldName: "manual",
+                value: false,
+              },
+            },
+            {
+              name: "min",
+              label: "Minimum Chapters",
+              type: "plaintext",
+              showIf: {
+                fieldName: "manual",
+                value: false,
+              },
+            },
+            {
+              name: "max",
+              label: "Maximum Chapters",
+              type: "plaintext",
+              showIf: {
+                fieldName: "manual",
+                value: false,
+              },
+            },
+            {
+              name: "title",
+              label: "Title",
+              type: "plaintext",
+              showIf: {
+                fieldName: "manual",
+                value: true,
+              },
+            },
+          ],
+          this.handleCreateBookModalSubmit.bind(this),
+        );
       });
     }
   }
@@ -370,8 +417,12 @@ app.init();
 function navigate(event: Event) {
   const target = event.target as HTMLElement;
   const anchor = target as HTMLAnchorElement;
-  if (target.tagName === "A" && anchor.href && !target.hasAttribute("download")) {
-    sessionStorage.setItem('previousUrl', '');
+  if (
+    target.tagName === "A" &&
+    anchor.href &&
+    !target.hasAttribute("download")
+  ) {
+    sessionStorage.setItem("previousUrl", "");
     event.preventDefault();
     const url = new URL(anchor.href);
     const path = url.pathname;

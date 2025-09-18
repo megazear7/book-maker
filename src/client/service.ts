@@ -9,7 +9,12 @@ import {
   ChapterParts,
   LoadingMessageContent,
 } from "../types/book.type.js";
-import { CreateEmptyBookRequest, PostBookRequest, RequestMethod, RequestPath } from "../types/requests.js";
+import {
+  CreateEmptyBookRequest,
+  PostBookRequest,
+  RequestMethod,
+  RequestPath,
+} from "../types/requests.js";
 import { toggleLoading } from "./loading.js";
 
 async function request<A, B>({
@@ -30,7 +35,7 @@ async function request<A, B>({
     const config: RequestInit = {
       method: method,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     };
     if (body) config.body = JSON.stringify(body);
@@ -81,9 +86,7 @@ async function post<A, B>({
   });
 }
 
-export async function createBook(
-  body: PostBookRequest,
-): Promise<BookId> {
+export async function createBook(body: PostBookRequest): Promise<BookId> {
   return post({
     path: `/api/book`,
     responseType: BookId,
@@ -103,9 +106,7 @@ export async function addEmptyBook(
   });
 }
 
-export async function addChapter(
-  book: Book,
-): Promise<Chapter> {
+export async function addChapter(book: Book): Promise<Chapter> {
   return post({
     path: `/api/book/${book.id}/chapter/add`,
     responseType: Chapter,
@@ -120,7 +121,7 @@ export async function createChapterOutline(
   return post({
     path: `/api/book/${book.id}/chapter/${chapter.number}/outline`,
     responseType: ChapterOutline,
-    loading: chapter.what + '\n' + chapter.who,
+    loading: chapter.what + "\n" + chapter.who,
   });
 }
 
@@ -131,7 +132,7 @@ export async function createChapter(
   return post({
     path: `/api/book/${book.id}/chapter/${chapter.number}`,
     responseType: ChapterParts,
-    loading: chapter.outline.join('\n'),
+    loading: chapter.outline.join("\n"),
   });
 }
 
@@ -142,7 +143,7 @@ export async function createChapterAudio(
   return post({
     path: `/api/book/${book.id}/chapter/${chapter.number}/audio`,
     responseType: ChapterParts,
-    loading: chapter.outline.join('\n'),
+    loading: chapter.outline.join("\n"),
   });
 }
 
@@ -170,18 +171,18 @@ export async function createChapterPartAudio(
   });
 }
 
-export async function downloadFullAudio(
-  book: Book,
-): Promise<void> {
-  const cleanup = await toggleLoading("Messages about creating audio book mp3 file");
+export async function downloadFullAudio(book: Book): Promise<void> {
+  const cleanup = await toggleLoading(
+    "Messages about creating audio book mp3 file",
+  );
   try {
     const response = await fetch(`/api/book/${book.id}/audio.mp3`);
     if (!response.ok) {
-      throw new Error('Failed to download audio');
+      throw new Error("Failed to download audio");
     }
     const blob = await response.blob();
     const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
     a.download = `${book.id}.mp3`;
     document.body.appendChild(a);
@@ -197,9 +198,7 @@ export async function downloadFullAudio(
   }
 }
 
-export async function saveBook(
-  book: Book,
-): Promise<Book> {
+export async function saveBook(book: Book): Promise<Book> {
   return post({
     path: `/api/book/${book.id}/save`,
     responseType: Book,

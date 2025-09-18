@@ -15,6 +15,8 @@ export function getAudioModelConfig(book: Book) {
     endpoint: env(`${book.model.audio.name.toUpperCase()}_BASE_URL`),
     apiKey: env(`${book.model.audio.name.toUpperCase()}_API_KEY`),
     modelName: env(`${book.model.audio.name.toUpperCase()}_MODEL_NAME`),
-    deployment: envOptional(`${book.model.audio.name.toUpperCase()}_DEPLOYMENT`),
+    deployment: envOptional(
+      `${book.model.audio.name.toUpperCase()}_DEPLOYMENT`,
+    ),
   };
 }

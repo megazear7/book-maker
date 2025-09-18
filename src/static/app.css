@@ -6,12 +6,16 @@ html {
   --color-primary-text: #e0e6ed; /* Softer white for text */
   --color-secondary-surface: #3a3f47; /* Slightly lighter secondary surface */
   --color-secondary-text: #ffffff; /* Pure white for contrast */
-  --color-tertiary-surface: linear-gradient(135deg, var(--color-1), var(--color-2)); /* Gradient for interactive elements */
+  --color-tertiary-surface: linear-gradient(
+    135deg,
+    var(--color-1),
+    var(--color-2)
+  ); /* Gradient for interactive elements */
   --color-tertiary-text: #ffffff; /* White text on gradient */
   --color-accent: rgb(255 111 97 / 80%); /* Coral accent for highlights */
   --color-warning: rgba(255, 97, 97, 0.8); /* Coral accent for highlights */
 
-  --size-xxl:  48px;
+  --size-xxl: 48px;
   --size-xl: 32px;
   --size-large: 20px;
   --size-medium: 12px;
@@ -151,7 +155,8 @@ ul.pills li.active::after {
   opacity: 1;
 }
 
-ul.pills li a, ul.pills li button {
+ul.pills li a,
+ul.pills li button {
   color: inherit;
   transition: var(--transition-all);
   display: flex;
@@ -485,7 +490,7 @@ body.overlay-active {
   padding: var(--size-medium) var(--size-xl);
   border: 1px solid var(--color-primary-surface);
   border-radius: 0 0 var(--radius-medium) var(--radius-medium);
-  box-shadow: 0 -2px 8px rgba(0,0,0,0.08);
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
   display: flex;
   justify-content: flex-end;
   position: absolute;
@@ -562,7 +567,7 @@ button.tertiary {
 }
 
 .completion-bar-chapter-label:hover {
-  color: var(--color-secondary-text);;
+  color: var(--color-secondary-text);
 }
 
 .completion-bar-parts {
@@ -600,7 +605,7 @@ a.completion-bar-segment {
 }
 
 a.completion-bar-segment::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -642,7 +647,11 @@ a.completion-bar-segment:hover::after {
 }
 
 .completion-bar-segment.written {
-  background: linear-gradient(to top, var(--color-secondary-surface) 50%, var(--color-1) 50%);
+  background: linear-gradient(
+    to top,
+    var(--color-secondary-surface) 50%,
+    var(--color-1) 50%
+  );
 }
 
 .completion-bar-segment.audio {
@@ -650,7 +659,13 @@ a.completion-bar-segment:hover::after {
 }
 
 .completion-bar-segment.empty {
-  background: repeating-linear-gradient(135deg, #eee, #eee 6px, #ddd 6px, #ddd 12px);
+  background: repeating-linear-gradient(
+    135deg,
+    #eee,
+    #eee 6px,
+    #ddd 6px,
+    #ddd 12px
+  );
   opacity: 0.5;
 }
 
@@ -667,7 +682,8 @@ a.completion-bar-segment:hover::after {
 .bookmark-tab {
   background: var(--color-secondary-surface);
   color: var(--color-primary-text);
-  padding: var(--size-small) var(--size-medium) var(--size-small) var(--size-small);
+  padding: var(--size-small) var(--size-medium) var(--size-small)
+    var(--size-small);
   border-radius: 0 var(--radius-medium) var(--radius-medium) 0;
   font-size: var(--font-medium);
   margin-bottom: 2px;

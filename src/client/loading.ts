@@ -4,7 +4,7 @@ async function getLoadingMessages(content: LoadingMessageContent) {
   const res = await fetch(`/api/loading/messages`, {
     method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({ content }),
   });
@@ -15,26 +15,31 @@ async function getLoadingMessages(content: LoadingMessageContent) {
 let isLoading = false;
 let cleanupFunction: (() => void) | null = null;
 
-export async function toggleLoading(content: LoadingMessageContent, messageDelay: number = 10000): Promise<() => void> {
+export async function toggleLoading(
+  content: LoadingMessageContent,
+  messageDelay: number = 10000,
+): Promise<() => void> {
   // If already loading, trigger cleanup with animation
   if (isLoading && cleanupFunction) {
-      const loadingDiv = document.querySelector('.loading-container') as HTMLDivElement;
-      if (loadingDiv) {
-          loadingDiv.style.animation = 'fadeOut 0.5s ease-out forwards';
-          loadingDiv.style.transformOrigin = 'center';
-          await new Promise(resolve => setTimeout(resolve, 500)); // Wait for animation
-          cleanupFunction();
-      }
-      isLoading = false;
-      cleanupFunction = null;
-      return () => {};
+    const loadingDiv = document.querySelector(
+      ".loading-container",
+    ) as HTMLDivElement;
+    if (loadingDiv) {
+      loadingDiv.style.animation = "fadeOut 0.5s ease-out forwards";
+      loadingDiv.style.transformOrigin = "center";
+      await new Promise((resolve) => setTimeout(resolve, 500)); // Wait for animation
+      cleanupFunction();
+    }
+    isLoading = false;
+    cleanupFunction = null;
+    return () => {};
   }
 
   isLoading = true;
 
   // Create loading container
-  const loadingDiv: HTMLDivElement = document.createElement('div');
-  loadingDiv.className = 'loading-container';
+  const loadingDiv: HTMLDivElement = document.createElement("div");
+  loadingDiv.className = "loading-container";
   loadingDiv.style.cssText = `
       position: fixed;
       top: 0;
@@ -51,7 +56,7 @@ export async function toggleLoading(content: LoadingMessageContent, messageDelay
   `;
 
   // Create spinner
-  const spinner: HTMLDivElement = document.createElement('div');
+  const spinner: HTMLDivElement = document.createElement("div");
   spinner.style.cssText = `
       width: 50px;
       height: 50px;
@@ -63,7 +68,7 @@ export async function toggleLoading(content: LoadingMessageContent, messageDelay
   `;
 
   // Create message container
-  const messageDiv: HTMLDivElement = document.createElement('div');
+  const messageDiv: HTMLDivElement = document.createElement("div");
   messageDiv.style.cssText = `
       color: white;
       font-family: Arial, sans-serif;
@@ -71,10 +76,10 @@ export async function toggleLoading(content: LoadingMessageContent, messageDelay
       text-align: center;
       max-width: 80%;
   `;
-  messageDiv.textContent = 'Working';
+  messageDiv.textContent = "Working";
 
   // Add spinner and fade animations keyframes
-  const styleSheet: HTMLStyleElement = document.createElement('style');
+  const styleSheet: HTMLStyleElement = document.createElement("style");
   styleSheet.textContent = `
       @keyframes spin {
           0% { transform: rotate(0deg); }
@@ -101,26 +106,26 @@ export async function toggleLoading(content: LoadingMessageContent, messageDelay
   let messageInterval: NodeJS.Timeout | null = null;
 
   try {
-      const messages: string[] = await getLoadingMessages(content);
-      if (messages.length > 0) {
-          messageDiv.textContent = messages[currentMessageIndex];
-          messageInterval = setInterval(() => {
-              currentMessageIndex = (currentMessageIndex + 1) % messages.length;
-              messageDiv.textContent = messages[currentMessageIndex];
-          }, messageDelay);
-      }
+    const messages: string[] = await getLoadingMessages(content);
+    if (messages.length > 0) {
+      messageDiv.textContent = messages[currentMessageIndex];
+      messageInterval = setInterval(() => {
+        currentMessageIndex = (currentMessageIndex + 1) % messages.length;
+        messageDiv.textContent = messages[currentMessageIndex];
+      }, messageDelay);
+    }
   } catch (error) {
-      console.error('Failed to load messages:', error);
-      messageDiv.textContent = 'Working...';
+    console.error("Failed to load messages:", error);
+    messageDiv.textContent = "Working...";
   }
 
   // Store cleanup function
   cleanupFunction = function cleanup(): void {
-      if (messageInterval) clearInterval(messageInterval);
-      loadingDiv.remove();
-      styleSheet.remove();
-      isLoading = false;
-      cleanupFunction = null;
+    if (messageInterval) clearInterval(messageInterval);
+    loadingDiv.remove();
+    styleSheet.remove();
+    isLoading = false;
+    cleanupFunction = null;
   };
 
   return cleanupFunction;

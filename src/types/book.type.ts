@@ -89,9 +89,7 @@ export const CreatedChapter = z.object({
 });
 export type CreatedChapter = z.infer<typeof CreatedChapter>;
 
-export const ChapterTitle = z
-  .string()
-  .describe("The title of the chapter.");
+export const ChapterTitle = z.string().describe("The title of the chapter.");
 export type ChapterTitle = z.infer<typeof ChapterTitle>;
 
 export const ChapterWhen = z
@@ -218,9 +216,11 @@ export const Pronunciation = z.object({
 });
 export type Pronunciation = z.infer<typeof Pronunciation>;
 
-export const KnownModelTypeName = z.enum(["grok", "gpt", "azure", "openai", "anthropic"]).describe(
-  "Known model types. Any selected model needs preconfigured environment variables as described in the ModelTypeName description.",
-);
+export const KnownModelTypeName = z
+  .enum(["grok", "gpt", "azure", "openai", "anthropic"])
+  .describe(
+    "Known model types. Any selected model needs preconfigured environment variables as described in the ModelTypeName description.",
+  );
 export type KnownModelTypeName = z.infer<typeof KnownModelTypeName>;
 
 export const ModelTypeName = KnownModelTypeName.or(z.string()).describe(

@@ -1,11 +1,32 @@
-import { Book, Chapter, ChapterPart, ChapterPartNumber } from "../types/book.type.js";
+import {
+  Book,
+  Chapter,
+  ChapterPart,
+  ChapterPartNumber,
+} from "../types/book.type.js";
 import { CompletionBar } from "./component.completion-bar.js";
 import { download } from "./download.js";
-import { Document, Packer, Paragraph, TextRun } from 'docx';
-import { aiIconLeft, aiIconRight, audioIcon, downloadIcon, gearIcon, plusIcon, trashIcon } from "./icon.js";
+import { Document, Packer, Paragraph, TextRun } from "docx";
+import {
+  aiIconLeft,
+  aiIconRight,
+  audioIcon,
+  downloadIcon,
+  gearIcon,
+  plusIcon,
+  trashIcon,
+} from "./icon.js";
 import { createModal } from "./modal.js";
 import { Page } from "./page.interface.js";
-import { addChapter, createChapter, createChapterAudio, createChapterOutline, createChapterPart, createChapterPartAudio, downloadFullAudio } from "./service.js";
+import {
+  addChapter,
+  createChapter,
+  createChapterAudio,
+  createChapterOutline,
+  createChapterPart,
+  createChapterPartAudio,
+  downloadFullAudio,
+} from "./service.js";
 import { formatNumber } from "./util.js";
 import { openConfigurationModal } from "./configure-modal.modal.js";
 
@@ -16,7 +37,12 @@ export class BookPage implements Page {
   activePartNumber?: ChapterPartNumber;
   hasChanges: boolean = false;
 
-  constructor(book: Book, activeChapter?: Chapter, activePart?: ChapterPart, activePartNumber?: ChapterPartNumber) {
+  constructor(
+    book: Book,
+    activeChapter?: Chapter,
+    activePart?: ChapterPart,
+    activePartNumber?: ChapterPartNumber,
+  ) {
     this.book = book;
     this.activeChapter = activeChapter;
     this.activePart = activePart;
@@ -29,10 +55,23 @@ export class BookPage implements Page {
     const activePart = this.activePart;
     const activePartNumber = this.activePartNumber;
     const million = 1000000;
-    const tokens = formatNumber(book.model.text.usage.completion_tokens + book.model.text.usage.prompt_tokens);
-    const cost = formatNumber(book.model.text.usage.completion_tokens * (book.model.text.cost.outputTokenCost / million) +
-      book.model.text.usage.prompt_tokens * (book.model.text.cost.inputTokenCost / million), { decimals: 2 });
-    const wordCount = formatNumber(book.chapters.map(chapter => chapter.parts.map(part => part.text).join(' ')).join(' ').split(/\s+/).length);
+    const tokens = formatNumber(
+      book.model.text.usage.completion_tokens +
+        book.model.text.usage.prompt_tokens,
+    );
+    const cost = formatNumber(
+      book.model.text.usage.completion_tokens *
+        (book.model.text.cost.outputTokenCost / million) +
+        book.model.text.usage.prompt_tokens *
+          (book.model.text.cost.inputTokenCost / million),
+      { decimals: 2 },
+    );
+    const wordCount = formatNumber(
+      book.chapters
+        .map((chapter) => chapter.parts.map((part) => part.text).join(" "))
+        .join(" ")
+        .split(/\s+/).length,
+    );
     const usage = `${tokens} tokens&nbsp;&nbsp;&nbsp;&nbsp;$${cost}&nbsp;&nbsp;&nbsp;&nbsp;${wordCount} words`;
 
     root.innerHTML = `
@@ -67,13 +106,17 @@ export class BookPage implements Page {
         <div class="secondary-surface">
             <h4>Pronunciations</h4>
             <div id="pronunciations-list">
-                ${book.pronunciation.map((p, index) => `
+                ${book.pronunciation
+                  .map(
+                    (p, index) => `
                     <div class="pronunciation-item" data-index="${index}">
                         <input type="text" placeholder="Match" value="${p.match}" class="pronunciation-match">
                         <input type="text" placeholder="Replace" value="${p.replace}" class="pronunciation-replace">
                         <button class="clean remove-pronunciation"><span class="button-inner">Remove</span></button>
                     </div>
-                `).join('')}
+                `,
+                  )
+                  .join("")}
             </div>
             <button class="clean" id="add-pronunciation"><span class="button-inner">Add Pronunciation</span></button>
         </div>
@@ -82,17 +125,18 @@ export class BookPage implements Page {
 
         <ul class="pills">
             ${book.chapters
-        .map(
-          (chapter) => `
+              .map(
+                (chapter) => `
                 <li class="${chapter.number === activeChapter?.number ? "active" : ""}"><a href="/book/${book.id}/chapter/${chapter.number}">Chapter ${chapter.number}: ${chapter.title}</a></li>
             `,
-        )
-        .join("")}
+              )
+              .join("")}
             <li><button class="clean" id="add-chapter"><span class="button-inner">${plusIcon}Add Chapter</span></button>
         </ul>
 
-        ${activeChapter
-        ? `
+        ${
+          activeChapter
+            ? `
             <div class="secondary-surface">
                 <h4 >Chapter ${activeChapter.number}</h4>
                 <h2><input name="activeChapter.title" class="h2" value="${activeChapter.title}"></input></h2>
@@ -133,62 +177,73 @@ export class BookPage implements Page {
             <button id="create-chapter"><span class="button-inner">${aiIconLeft}<span>${activeChapter.parts.length > 0 ? "Regenerate" : "Generate"} Chapter</span>${aiIconRight}</span></button>
             <button id="create-chapter-audio"><span class="button-inner">${aiIconLeft}<span>${activeChapter.parts[0]?.audio ? "Regenerate" : "Generate"} Audio</span>${aiIconRight}</span></button>
 
-            ${activeChapter.outline
-          ? `
+            ${
+              activeChapter.outline
+                ? `
                 <div class="secondary-surface">
                     <h4>Chapter Outline</h4>
                     ${activeChapter.outline
-            .map(
-              (partDescription, index) => `
+                      .map(
+                        (partDescription, index) => `
                         <h5>Part ${index + 1}</h5>
                         <textarea name="activeChapter.outline[index]">${partDescription}</textarea>
                     `,
-            )
-            .join("")}
+                      )
+                      .join("")}
                 </div>
             `
-          : ""
-        }
+                : ""
+            }
 
-            ${activeChapter.parts.length > 0
-          ? `
+            ${
+              activeChapter.parts.length > 0
+                ? `
                 <ul data-section="part" data-scroll-priority="${activePart ? 3 : 0}" class="pills">
                     ${activeChapter.parts
-            .map(
-              (part, index) => `
-                        <li class="${activePartNumber && index === activePartNumber - 1 ? 'active' : ''}"><a href="/book/${book.id}/chapter/${activeChapter.number}/part/${index + 1}">Part ${index + 1}</a></li>
+                      .map(
+                        (part, index) => `
+                        <li class="${activePartNumber && index === activePartNumber - 1 ? "active" : ""}"><a href="/book/${book.id}/chapter/${activeChapter.number}/part/${index + 1}">Part ${index + 1}</a></li>
                     `,
-            )
-            .join("")}
+                      )
+                      .join("")}
                 </ul>
             `
-          : `
+                : `
             `
-        }
+            }
 
-            ${activePart
-          ? `
+            ${
+              activePart
+                ? `
                 <button id="create-chapter-part"><span class="button-inner">${aiIconLeft}<span>${activeChapter.parts.length > 0 ? "Regenerate" : "Generate"} Part</span>${aiIconRight}</span></button>
-                ${activePart.audio ? `
+                ${
+                  activePart.audio
+                    ? `
                   <button id="create-chapter-part-audio"><span class="button-inner">${aiIconLeft}<span>${activeChapter.parts.length > 0 ? "Regenerate" : "Generate"} Audio</span>${aiIconRight}</span></button>
                   <audio id="audio-player"></audio>
-                `: ''}
+                `
+                    : ""
+                }
 
                 <div class="secondary-surface">
                     <div>
-                      ${activePart.audio ? `
+                      ${
+                        activePart.audio
+                          ? `
                         <button class="secondary audio-button" id="play-audio" style="display:inline-block;"><span class="button-inner">${audioIcon} Play Audio</span></button>
                         <button class="secondary audio-button" id="pause-audio" style="display:none;"><span class="button-inner">⏸ Pause Audio</span></button>
-                      `: ''}
+                      `
+                          : ""
+                      }
                     </div>
                     <textarea name="activePart.text">${activePart.text}</textarea>
                 </div>
             `
-          : ""
-        }
+                : ""
+            }
         `
-        : ""
-      }
+            : ""
+        }
         `;
   }
 
@@ -204,10 +259,18 @@ export class BookPage implements Page {
     );
     const addChapterButton = document.getElementById("add-chapter");
     const createChapterButton = document.getElementById("create-chapter");
-    const createChapterAudioButton = document.getElementById("create-chapter-audio");
-    const createChapterPartButton = document.getElementById("create-chapter-part");
-    const createChapterPartAudioButton = document.getElementById("create-chapter-part-audio");
-    const audioPlayer = document.getElementById("audio-player") as HTMLAudioElement;
+    const createChapterAudioButton = document.getElementById(
+      "create-chapter-audio",
+    );
+    const createChapterPartButton = document.getElementById(
+      "create-chapter-part",
+    );
+    const createChapterPartAudioButton = document.getElementById(
+      "create-chapter-part-audio",
+    );
+    const audioPlayer = document.getElementById(
+      "audio-player",
+    ) as HTMLAudioElement;
     const playAudioButton = document.getElementById("play-audio");
     const pauseAudioButton = document.getElementById("pause-audio");
     const downloadBookButton = document.getElementById("download-book");
@@ -255,8 +318,8 @@ export class BookPage implements Page {
     if (playAudioButton && audioPlayer && activeChapter && activePart) {
       playAudioButton.addEventListener("click", async () => {
         audioPlayer.src = `/api/book/${this.book.id}/chapter/${activeChapter.number}/part/${activePartNumber}/audio`;
-        audioPlayer.play().catch(error => {
-          console.error('Error playing audio:', error);
+        audioPlayer.play().catch((error) => {
+          console.error("Error playing audio:", error);
         });
       });
     }
@@ -266,17 +329,17 @@ export class BookPage implements Page {
       });
     }
     if (audioPlayer && playAudioButton && pauseAudioButton) {
-      audioPlayer.addEventListener('play', () => {
-        playAudioButton.style.display = 'none';
-        pauseAudioButton.style.display = 'inline-block';
+      audioPlayer.addEventListener("play", () => {
+        playAudioButton.style.display = "none";
+        pauseAudioButton.style.display = "inline-block";
       });
-      audioPlayer.addEventListener('pause', () => {
-        playAudioButton.style.display = 'inline-block';
-        pauseAudioButton.style.display = 'none';
+      audioPlayer.addEventListener("pause", () => {
+        playAudioButton.style.display = "inline-block";
+        pauseAudioButton.style.display = "none";
       });
-      audioPlayer.addEventListener('ended', () => {
-        playAudioButton.style.display = 'inline-block';
-        pauseAudioButton.style.display = 'none';
+      audioPlayer.addEventListener("ended", () => {
+        playAudioButton.style.display = "inline-block";
+        pauseAudioButton.style.display = "none";
       });
     }
 
@@ -295,11 +358,18 @@ export class BookPage implements Page {
 
     if (deleteBookButton) {
       deleteBookButton.addEventListener("click", async () => {
-        createModal("Delete Book", "Delete", [{
-          name: 'are_you_sure',
-          type: 'paragraph',
-          text: 'Are you sure you want to permanently delete this book?'
-        }], this.handleDeleteBookModalSubmit.bind(this));
+        createModal(
+          "Delete Book",
+          "Delete",
+          [
+            {
+              name: "are_you_sure",
+              type: "paragraph",
+              text: "Are you sure you want to permanently delete this book?",
+            },
+          ],
+          this.handleDeleteBookModalSubmit.bind(this),
+        );
       });
     }
 
@@ -315,48 +385,56 @@ export class BookPage implements Page {
               type: "dropdown",
               options: [
                 { label: "Microsoft Word (.docx)", value: "docx" },
-                { label: "Plain Text (.txt)", value: "txt" }
+                { label: "Plain Text (.txt)", value: "txt" },
               ],
-              default: "docx"
-            }
+              default: "docx",
+            },
           ],
           async (result) => {
-            const format = result.find((r) => r.name === "format")?.value || "txt";
+            const format =
+              result.find((r) => r.name === "format")?.value || "txt";
             if (format === "txt") {
               const bookText = book.chapters
-                .map(chapter => {
-                  const text = chapter.parts.map(part => part.text).join('\n');
-                  return `Chapter ${chapter.number}: ${chapter.title}\n\n${text || 'Not written yet'}`;
+                .map((chapter) => {
+                  const text = chapter.parts
+                    .map((part) => part.text)
+                    .join("\n");
+                  return `Chapter ${chapter.number}: ${chapter.title}\n\n${text || "Not written yet"}`;
                 })
-                .join('\n\n\n');
+                .join("\n\n\n");
               download(bookText, `${book.id}.txt`);
             } else if (format === "docx") {
               const doc = new Document({
                 sections: [
                   {
-                    children: book.chapters.flatMap(chapter => [
+                    children: book.chapters.flatMap((chapter) => [
                       new Paragraph({
                         children: [
-                          new TextRun({ text: `Chapter ${chapter.number}: ${chapter.title}`, bold: true, size: 28 }),
+                          new TextRun({
+                            text: `Chapter ${chapter.number}: ${chapter.title}`,
+                            bold: true,
+                            size: 28,
+                          }),
                         ],
                         spacing: { after: 200 },
                       }),
-                      ...chapter.parts.map(part =>
-                        new Paragraph({
-                          children: [
-                            new TextRun({ text: part.text || '', size: 24 }),
-                          ],
-                          spacing: { after: 100 },
-                        })
+                      ...chapter.parts.map(
+                        (part) =>
+                          new Paragraph({
+                            children: [
+                              new TextRun({ text: part.text || "", size: 24 }),
+                            ],
+                            spacing: { after: 100 },
+                          }),
                       ),
-                      new Paragraph({ text: '' })
-                    ])
-                  }
-                ]
+                      new Paragraph({ text: "" }),
+                    ]),
+                  },
+                ],
               });
               Packer.toBlob(doc).then((blob) => {
                 const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
+                const a = document.createElement("a");
                 a.href = url;
                 a.download = `${book.id}.docx`;
                 document.body.appendChild(a);
@@ -367,12 +445,13 @@ export class BookPage implements Page {
                 }, 100);
               });
             }
-          }
+          },
         );
       });
     }
 
-    const textareas: NodeListOf<HTMLTextAreaElement> = document.querySelectorAll("textarea");
+    const textareas: NodeListOf<HTMLTextAreaElement> =
+      document.querySelectorAll("textarea");
     textareas.forEach((textarea) => {
       if (textarea) {
         textarea.addEventListener("input", () => {
@@ -382,8 +461,10 @@ export class BookPage implements Page {
     });
 
     // Pronunciation inputs
-    const pronunciationMatches: NodeListOf<HTMLInputElement> = document.querySelectorAll(".pronunciation-match");
-    const pronunciationReplaces: NodeListOf<HTMLInputElement> = document.querySelectorAll(".pronunciation-replace");
+    const pronunciationMatches: NodeListOf<HTMLInputElement> =
+      document.querySelectorAll(".pronunciation-match");
+    const pronunciationReplaces: NodeListOf<HTMLInputElement> =
+      document.querySelectorAll(".pronunciation-replace");
     pronunciationMatches.forEach((input, index) => {
       input.addEventListener("input", () => {
         this.book.pronunciation[index].match = input.value;
@@ -417,7 +498,8 @@ export class BookPage implements Page {
       });
     });
 
-    const inputs: NodeListOf<HTMLInputElement> = document.querySelectorAll("input");
+    const inputs: NodeListOf<HTMLInputElement> =
+      document.querySelectorAll("input");
     inputs.forEach((input) => {
       if (input) {
         input.addEventListener("input", () => {
@@ -431,7 +513,7 @@ export class BookPage implements Page {
         await fetch(`/api/book/${this.book.id}/save`, {
           method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify(this.book),
         });
@@ -447,16 +529,22 @@ export class BookPage implements Page {
   renderPronunciations() {
     const pronunciationsList = document.getElementById("pronunciations-list");
     if (pronunciationsList) {
-      pronunciationsList.innerHTML = this.book.pronunciation.map((p, index) => `
+      pronunciationsList.innerHTML = this.book.pronunciation
+        .map(
+          (p, index) => `
         <div class="pronunciation-item" data-index="${index}">
           <input type="text" placeholder="Match" value="${p.match}" class="pronunciation-match">
           <input type="text" placeholder="Replace" value="${p.replace}" class="pronunciation-replace">
           <button class="clean remove-pronunciation"><span class="button-inner">Remove</span></button>
         </div>
-      `).join('');
+      `,
+        )
+        .join("");
       // Re-add event listeners for the new inputs
-      const pronunciationMatches: NodeListOf<HTMLInputElement> = document.querySelectorAll(".pronunciation-match");
-      const pronunciationReplaces: NodeListOf<HTMLInputElement> = document.querySelectorAll(".pronunciation-replace");
+      const pronunciationMatches: NodeListOf<HTMLInputElement> =
+        document.querySelectorAll(".pronunciation-match");
+      const pronunciationReplaces: NodeListOf<HTMLInputElement> =
+        document.querySelectorAll(".pronunciation-replace");
       pronunciationMatches.forEach((input, index) => {
         input.addEventListener("input", () => {
           this.book.pronunciation[index].match = input.value;
@@ -482,13 +570,13 @@ export class BookPage implements Page {
 
   async handleDeleteBookModalSubmit() {
     await fetch(`/api/book/${this.book.id}`, {
-      method: "DELETE"
+      method: "DELETE",
     });
     window.location.pathname = `/`;
   }
 
   handleChange(elem: HTMLTextAreaElement | HTMLInputElement) {
-    const attributes = elem.name.split('.');
+    const attributes = elem.name.split(".");
     const first = attributes.shift();
 
     if (first === "book") {
@@ -512,12 +600,20 @@ export class BookPage implements Page {
   }
 }
 
-function updateNestedProperty(obj: any, properties: string[], value: any): void {
+function updateNestedProperty(
+  obj: any,
+  properties: string[],
+  value: any,
+): void {
   let current: any = obj;
 
   for (let i = 0; i < properties.length - 1; i++) {
     const prop = properties[i];
-    if (!(prop in current) || typeof current[prop] !== 'object' || current[prop] === null) {
+    if (
+      !(prop in current) ||
+      typeof current[prop] !== "object" ||
+      current[prop] === null
+    ) {
       throw new Error(`Property '${prop}' does not exist or is not an object`);
     }
     current = current[prop];
