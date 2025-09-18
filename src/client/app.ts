@@ -192,9 +192,10 @@ class ClientApp {
           "Create",
           [
             {
-              name: "manual",
-              label: "Create Manually",
+              name: "generateImmediately",
+              label: "Generate Immediately",
               type: "boolean",
+              default: "true",
             },
             {
               name: "description",
@@ -202,8 +203,8 @@ class ClientApp {
               type: "plaintext",
               placeholder: "A story about knights and dragons",
               showIf: {
-                fieldName: "manual",
-                value: false,
+                fieldName: "generateImmediately",
+                value: true,
               },
             },
             {
@@ -211,8 +212,8 @@ class ClientApp {
               label: "Minimum Chapters",
               type: "plaintext",
               showIf: {
-                fieldName: "manual",
-                value: false,
+                fieldName: "generateImmediately",
+                value: true,
               },
             },
             {
@@ -220,8 +221,8 @@ class ClientApp {
               label: "Maximum Chapters",
               type: "plaintext",
               showIf: {
-                fieldName: "manual",
-                value: false,
+                fieldName: "generateImmediately",
+                value: true,
               },
             },
             {
@@ -229,8 +230,8 @@ class ClientApp {
               label: "Title",
               type: "plaintext",
               showIf: {
-                fieldName: "manual",
-                value: true,
+                fieldName: "generateImmediately",
+                value: false,
               },
             },
           ],
@@ -243,15 +244,9 @@ class ClientApp {
   async handleCreateBookModalSubmit(
     result: ModalSubmitDetail[],
   ): Promise<void> {
-    const manual = getExpectedBooleanValue(result, "manual");
+    const generateImmediately = getExpectedBooleanValue(result, "generateImmediately");
 
-    if (manual) {
-      const title = getExpectedStringValue(result, "title");
-      const book = await addEmptyBook({
-        title,
-      });
-      window.location.pathname = `/book/${book.id}`;
-    } else {
+    if (generateImmediately) {
       const description = getExpectedStringValue(result, "description");
       const min = getExpectedNumberValue(result, "min");
       const max = getExpectedNumberValue(result, "max");
@@ -261,6 +256,12 @@ class ClientApp {
         max,
       });
       window.location.pathname = `/book/${bookId}`;
+    } else {
+      const title = getExpectedStringValue(result, "title");
+      const book = await addEmptyBook({
+        title,
+      });
+      window.location.pathname = `/book/${book.id}`;
     }
   }
 
