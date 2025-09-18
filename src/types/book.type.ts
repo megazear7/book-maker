@@ -200,7 +200,6 @@ export type Instructions = z.infer<typeof Instructions>;
 
 export const PronunciationMatch = z
   .string()
-  .min(1)
   .describe(
     "Text to match on when looking for words to change in order to control the pronunciation in the audio.",
   );
@@ -208,7 +207,6 @@ export type PronunciationMatch = z.infer<typeof PronunciationMatch>;
 
 export const PronunciationReplace = z
   .string()
-  .min(1)
   .describe(
     "Text to replace the match with in order to control the pronunciation in the audio.",
   );

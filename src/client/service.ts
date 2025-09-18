@@ -196,3 +196,14 @@ export async function downloadFullAudio(
     throw new Error("API failed");
   }
 }
+
+export async function saveBook(
+  book: Book,
+): Promise<Book> {
+  return post({
+    path: `/api/book/${book.id}/save`,
+    responseType: Book,
+    loading: "Saving book...",
+    body: book,
+  });
+}

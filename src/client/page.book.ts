@@ -48,6 +48,7 @@ export class BookPage implements Page {
             <button id="delete-book" class="tertiary warning"><span class="button-inner">${trashIcon} Delete Book</span></button>
           </div>
         </div>
+
         <div class="secondary-surface">
             <input name="book.title" value="${book.title}" class="h1"></textarea>
             <div class="spread">
@@ -61,6 +62,20 @@ export class BookPage implements Page {
         <div class="secondary-surface">
             <h4>Audio Instructions</h4>
             <textarea name="book.instructions.audio">${book.instructions.audio}</textarea>
+        </div>
+
+        <div class="secondary-surface">
+            <h4>Pronunciations</h4>
+            <div id="pronunciations-list">
+                ${book.pronunciation.map((p, index) => `
+                    <div class="pronunciation-item" data-index="${index}">
+                        <input type="text" placeholder="Match" value="${p.match}" class="pronunciation-match">
+                        <input type="text" placeholder="Replace" value="${p.replace}" class="pronunciation-replace">
+                        <button class="clean remove-pronunciation"><span class="button-inner">Remove</span></button>
+                    </div>
+                `).join('')}
+            </div>
+            <button class="clean" id="add-pronunciation"><span class="button-inner">Add Pronunciation</span></button>
         </div>
 
         <div data-section="chapter" data-scroll-priority="${activeChapter ? 2 : 1}"></div>
@@ -366,6 +381,42 @@ export class BookPage implements Page {
       }
     });
 
+    // Pronunciation inputs
+    const pronunciationMatches: NodeListOf<HTMLInputElement> = document.querySelectorAll(".pronunciation-match");
+    const pronunciationReplaces: NodeListOf<HTMLInputElement> = document.querySelectorAll(".pronunciation-replace");
+    pronunciationMatches.forEach((input, index) => {
+      input.addEventListener("input", () => {
+        this.book.pronunciation[index].match = input.value;
+        this.hasChanges = true;
+      });
+    });
+    pronunciationReplaces.forEach((input, index) => {
+      input.addEventListener("input", () => {
+        this.book.pronunciation[index].replace = input.value;
+        this.hasChanges = true;
+      });
+    });
+
+    // Add pronunciation button
+    const addPronunciationButton = document.getElementById("add-pronunciation");
+    if (addPronunciationButton) {
+      addPronunciationButton.addEventListener("click", () => {
+        this.book.pronunciation.push({ match: "", replace: "" });
+        this.hasChanges = true;
+        this.renderPronunciations();
+      });
+    }
+
+    // Remove pronunciation buttons
+    const removeButtons = document.querySelectorAll(".remove-pronunciation");
+    removeButtons.forEach((button, index) => {
+      button.addEventListener("click", () => {
+        this.book.pronunciation.splice(index, 1);
+        this.hasChanges = true;
+        this.renderPronunciations();
+      });
+    });
+
     const inputs: NodeListOf<HTMLInputElement> = document.querySelectorAll("input");
     inputs.forEach((input) => {
       if (input) {
@@ -391,6 +442,42 @@ export class BookPage implements Page {
         }
       }
     }, 2000);
+  }
+
+  renderPronunciations() {
+    const pronunciationsList = document.getElementById("pronunciations-list");
+    if (pronunciationsList) {
+      pronunciationsList.innerHTML = this.book.pronunciation.map((p, index) => `
+        <div class="pronunciation-item" data-index="${index}">
+          <input type="text" placeholder="Match" value="${p.match}" class="pronunciation-match">
+          <input type="text" placeholder="Replace" value="${p.replace}" class="pronunciation-replace">
+          <button class="clean remove-pronunciation"><span class="button-inner">Remove</span></button>
+        </div>
+      `).join('');
+      // Re-add event listeners for the new inputs
+      const pronunciationMatches: NodeListOf<HTMLInputElement> = document.querySelectorAll(".pronunciation-match");
+      const pronunciationReplaces: NodeListOf<HTMLInputElement> = document.querySelectorAll(".pronunciation-replace");
+      pronunciationMatches.forEach((input, index) => {
+        input.addEventListener("input", () => {
+          this.book.pronunciation[index].match = input.value;
+          this.hasChanges = true;
+        });
+      });
+      pronunciationReplaces.forEach((input, index) => {
+        input.addEventListener("input", () => {
+          this.book.pronunciation[index].replace = input.value;
+          this.hasChanges = true;
+        });
+      });
+      const removeButtons = document.querySelectorAll(".remove-pronunciation");
+      removeButtons.forEach((button, index) => {
+        button.addEventListener("click", () => {
+          this.book.pronunciation.splice(index, 1);
+          this.hasChanges = true;
+          this.renderPronunciations();
+        });
+      });
+    }
   }
 
   async handleDeleteBookModalSubmit() {
