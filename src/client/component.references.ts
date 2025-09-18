@@ -12,7 +12,9 @@ export class References implements Component {
     this.onChange = onChange;
   }
 
+  // TODO Update how the component is rendered so that it can update dynamically
   render(): string {
+    // TODO Improve the styles of the add reference button to match the rest of the app
     return `
         <div class="secondary-surface">
             <h4>References</h4>
@@ -28,7 +30,7 @@ export class References implements Component {
                   )
                   .join("")}
             </div>
-            <button class="clean" id="references-add-reference"><span class="button-inner">Add Reference</span></button>
+            <button class="tertiary small" id="references-add-reference"><span class="button-inner">Add Reference</span></button>
         </div>
     `;
   }
@@ -60,8 +62,8 @@ export class References implements Component {
     removeButtons.forEach((button) => {
       button.addEventListener("click", (e) => {
         const index = parseInt(
-          ((e.target as HTMLElement).closest(".reference-item") as HTMLElement)?.dataset.index ||
-            "0",
+          ((e.target as HTMLElement).closest(".reference-item") as HTMLElement)
+            ?.dataset.index || "0",
         );
         this.book.references.splice(index, 1);
         this.onChange();
@@ -93,7 +95,7 @@ export class References implements Component {
           name: "file",
           label: "File",
           type: "custom",
-          html: `<div id="file-drop" style="border: 2px dashed #ccc; padding: 20px; text-align: center;">Drop file here or click to select</div><input type="file" id="file-input" style="display: none;">`,
+          html: `<div id="file-drop" style="border: 2px dashed #ccc; padding: 20px; text-align: center;">Drop file here or click to select</div><input type="file" id="file-input" style="display: none;"><div id="file-name" style="margin-top: 10px; font-size: 14px; color: var(--color-primary-text);">${ref.file ? ref.file.split("/").pop() : "No file selected"}</div>`,
         },
         {
           name: "instructions",
@@ -104,22 +106,23 @@ export class References implements Component {
         {
           name: "whenToUse",
           label: "When to Use",
-          type: "custom",
-          html: `<select multiple id="when-to-use" style="width: 100%; height: 100px;">
-            <option value="outlining" ${ref.whenToUse.includes("outlining") ? "selected" : ""}>Outlining</option>
-            <option value="writing" ${ref.whenToUse.includes("writing") ? "selected" : ""}>Writing</option>
-          </select>`,
+          type: "multiselect",
+          options: [
+            { label: "Outlining", value: "outlining" },
+            { label: "Writing", value: "writing" },
+          ],
+          selected: ref.whenToUse,
         },
       ],
       async (result) => {
-        ref.instructions =
-          String(result.find((r) => r.name === "instructions")?.value ?? "");
-        const whenToUseSelect = document.getElementById(
-          "when-to-use",
-        ) as HTMLSelectElement;
-        ref.whenToUse = Array.from(whenToUseSelect.selectedOptions).map(
-          (o) => o.value as "outlining" | "writing",
+        ref.instructions = String(
+          result.find((r) => r.name === "instructions")?.value || "",
         );
+        ref.whenToUse =
+          (result.find((r) => r.name === "whenToUse")?.value as (
+            | "outlining"
+            | "writing"
+          )[]) || [];
         this.onChange();
         // Save to server
         await fetch(`/api/book/${this.book.id}/save`, {
@@ -127,7 +130,6 @@ export class References implements Component {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(this.book),
         });
-        this.renderReferences();
       },
     );
 
@@ -135,8 +137,17 @@ export class References implements Component {
     setTimeout(() => {
       this.setupFileDrop(index);
     }, 100);
+
+    // Update drop text based on existing file
+    setTimeout(() => {
+      const fileDrop = document.getElementById("file-drop");
+      if (fileDrop) {
+        fileDrop.textContent = ref.file ? "Drop file here or click to select to replace the file" : "Drop file here or click to select";
+      }
+    }, 100);
   }
 
+  // TODO improve the styles of the file drop area
   setupFileDrop(index: number): void {
     const dropArea = document.getElementById("file-drop");
     const fileInput = document.getElementById("file-input") as HTMLInputElement;
@@ -146,6 +157,13 @@ export class References implements Component {
         const file = (e.target as HTMLInputElement).files?.[0];
         if (file) {
           this.uploadFile(file, index);
+          // Update file name display
+          const fileNameDiv = document.getElementById("file-name");
+          if (fileNameDiv) {
+            fileNameDiv.textContent = file.name;
+          }
+          // Update drop text
+          dropArea.textContent = "Drop file here or click to select to replace the file";
         }
       });
       dropArea.addEventListener("dragover", (e) => {
@@ -161,6 +179,13 @@ export class References implements Component {
         const file = e.dataTransfer?.files[0];
         if (file) {
           this.uploadFile(file, index);
+          // Update file name display
+          const fileNameDiv = document.getElementById("file-name");
+          if (fileNameDiv) {
+            fileNameDiv.textContent = file.name;
+          }
+          // Update drop text
+          dropArea.textContent = "Drop file here or click to select to replace the file";
         }
       });
     }

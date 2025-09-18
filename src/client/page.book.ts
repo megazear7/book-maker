@@ -67,13 +67,13 @@ export class BookPage implements Page {
     const million = 1000000;
     const tokens = formatNumber(
       book.model.text.usage.completion_tokens +
-      book.model.text.usage.prompt_tokens,
+        book.model.text.usage.prompt_tokens,
     );
     const cost = formatNumber(
       book.model.text.usage.completion_tokens *
-      (book.model.text.cost.outputTokenCost / million) +
-      book.model.text.usage.prompt_tokens *
-      (book.model.text.cost.inputTokenCost / million),
+        (book.model.text.cost.outputTokenCost / million) +
+        book.model.text.usage.prompt_tokens *
+          (book.model.text.cost.inputTokenCost / million),
       { decimals: 2 },
     );
     const wordCount = formatNumber(
@@ -121,17 +121,18 @@ export class BookPage implements Page {
 
         <ul class="pills">
             ${book.chapters
-        .map(
-          (chapter) => `
+              .map(
+                (chapter) => `
                 <li class="${chapter.number === activeChapter?.number ? "active" : ""}"><a href="/book/${book.id}/chapter/${chapter.number}">Chapter ${chapter.number}: ${chapter.title}</a></li>
             `,
-        )
-        .join("")}
+              )
+              .join("")}
             <li><button class="clean" id="add-chapter"><span class="button-inner">${plusIcon}Add Chapter</span></button>
         </ul>
 
-        ${activeChapter
-        ? `
+        ${
+          activeChapter
+            ? `
             <div class="secondary-surface">
                 <h4 >Chapter ${activeChapter.number}</h4>
                 <h2><input name="activeChapter.title" class="h2" value="${activeChapter.title}"></input></h2>
@@ -172,68 +173,73 @@ export class BookPage implements Page {
             <button id="create-chapter"><span class="button-inner">${aiIconLeft}<span>${activeChapter.parts.length > 0 ? "Regenerate" : "Generate"} Chapter</span>${aiIconRight}</span></button>
             <button id="create-chapter-audio"><span class="button-inner">${aiIconLeft}<span>${activeChapter.parts[0]?.audio ? "Regenerate" : "Generate"} Audio</span>${aiIconRight}</span></button>
 
-            ${activeChapter.outline
-          ? `
+            ${
+              activeChapter.outline
+                ? `
                 <div class="secondary-surface">
                     <h4>Chapter Outline</h4>
                     ${activeChapter.outline
-            .map(
-              (partDescription, index) => `
+                      .map(
+                        (partDescription, index) => `
                         <h5>Part ${index + 1}</h5>
                         <textarea name="activeChapter.outline[index]">${partDescription}</textarea>
                     `,
-            )
-            .join("")}
+                      )
+                      .join("")}
                 </div>
             `
-          : ""
-        }
+                : ""
+            }
 
-            ${activeChapter.parts.length > 0
-          ? `
+            ${
+              activeChapter.parts.length > 0
+                ? `
                 <ul data-section="part" data-scroll-priority="${activePart ? 3 : 0}" class="pills">
                     ${activeChapter.parts
-            .map(
-              (part, index) => `
+                      .map(
+                        (part, index) => `
                         <li class="${activePartNumber && index === activePartNumber - 1 ? "active" : ""}"><a href="/book/${book.id}/chapter/${activeChapter.number}/part/${index + 1}">Part ${index + 1}</a></li>
                     `,
-            )
-            .join("")}
+                      )
+                      .join("")}
                 </ul>
             `
-          : `
+                : `
             `
-        }
+            }
 
-            ${activePart
-          ? `
+            ${
+              activePart
+                ? `
                 <button id="create-chapter-part"><span class="button-inner">${aiIconLeft}<span>${activePart.text ? "Regenerate" : "Generate"} Part</span>${aiIconRight}</span></button>
                 <button id="create-chapter-part-audio"><span class="button-inner">${aiIconLeft}<span>${activePart.audio ? "Regenerate" : "Generate"} Audio</span>${aiIconRight}</span></button>
-                ${activePart.audio
-            ? `
+                ${
+                  activePart.audio
+                    ? `
                   <audio id="audio-player"></audio>
                 `
-            : ""
-          }
+                    : ""
+                }
 
                 <div class="secondary-surface">
                     <div>
-                      ${activePart.audio
-            ? `
+                      ${
+                        activePart.audio
+                          ? `
                         <button class="secondary audio-button" id="play-audio" style="display:inline-block;"><span class="button-inner">${audioIcon} Play Audio</span></button>
                         <button class="secondary audio-button" id="pause-audio" style="display:none;"><span class="button-inner">⏸ Pause Audio</span></button>
                       `
-            : ""
-          }
+                          : ""
+                      }
                     </div>
                     <textarea name="activePart.text">${activePart.text}</textarea>
                 </div>
             `
-          : ""
-        }
+                : ""
+            }
         `
-        : ""
-      }
+            : ""
+        }
         `;
   }
 

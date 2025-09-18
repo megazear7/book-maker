@@ -28,7 +28,7 @@ export class Pronunciations implements Component {
                   )
                   .join("")}
             </div>
-            <button class="clean" id="add-pronunciation"><span class="button-inner">Add Pronunciation</span></button>
+            <button class="tertiary small" id="add-pronunciation"><span class="button-inner">Add Pronunciation</span></button>
         </div>
     `;
   }

@@ -481,6 +481,27 @@ body.overlay-active {
   outline: none;
 }
 
+.modal-textarea {
+  width: 100%;
+  padding: var(--size-medium);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-medium);
+  font-size: var(--font-medium);
+  background-color: transparent;
+  color: var(--color-secondary-text);
+  transition: border-color var(--time-normal) ease;
+  font-family: var(--font-family);
+  line-height: var(--line-height);
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.modal-textarea:focus {
+  border-color: var(--color-1);
+  outline: none;
+  box-shadow: 0 0 8px rgba(30, 144, 255, 0.3);
+}
+
 .modal-footer {
   width: auto;
   max-width: 100%;
@@ -536,6 +557,10 @@ button.tertiary {
   background: none;
   color: var(--color-primary-text);
   box-shadow: none;
+}
+
+button.small {
+  padding: var(--size-small) var(--size-medium);
 }
 
 .audio-button {
@@ -739,8 +764,50 @@ a.completion-bar-segment:hover::after {
   color: var(--color-warning);
 }
 
+.remove-reference:hover {
+  color: var(--color-warning);
+}
+
 @media (max-width: 1500px) {
   .bookmark-tabs {
     display: none !important;
   }
+}
+
+/* Pill styles for references component */
+.pill {
+  padding: 5px 10px;
+  border-radius: 15px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background-color: var(--color-secondary-surface);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.pill button {
+  background: none;
+  cursor: pointer;
+  padding: 0;
+  top: 0;
+}
+
+.pill button:hover {
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: var(--color-warning);
+}
+
+.reference-item {
+  margin-top: var(--size-small);
+  padding: var(--size-medium);
+  border-radius: var(--radius-medium);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: var(--transition-all);
+}
+
+.reference-item:hover {
+  border-color: var(--color-1);
+  box-shadow: var(--shadow-hover);
 }

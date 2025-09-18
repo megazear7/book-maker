@@ -4,7 +4,7 @@ export interface ModalPartInput {
   name: string;
   label: string;
   placeholder?: string;
-  type: "plaintext" | "boolean" | "number" | "dropdown";
+  type: "plaintext" | "boolean" | "number" | "dropdown" | "multiselect";
   options?: { label: string; value: string }[];
   default?: string;
   showIf?: {
@@ -45,15 +45,28 @@ export interface ModalPartCustom {
   };
 }
 
+export interface ModalPartMultiselect {
+  name: string;
+  label: string;
+  type: "multiselect";
+  options: { label: string; value: string }[];
+  selected?: string[];
+  showIf?: {
+    fieldName: string;
+    value: string | boolean | number;
+  };
+}
+
 export type ModalPart =
   | ModalPartInput
   | ModalPartParagraph
   | ModalPartTextarea
-  | ModalPartCustom;
+  | ModalPartCustom
+  | ModalPartMultiselect;
 
 export interface ModalSubmitDetail {
   name: string;
-  value: string | boolean | number;
+  value: string | boolean | number | string[];
 }
 
 export function createModal(
@@ -143,6 +156,9 @@ export function createModal(
     }
   >();
 
+  // Map to store multiselect selected values
+  const multiselectData = new Map<string, string[]>();
+
   // Function to update field visibility
   const updateVisibility = (): void => {
     parts.forEach((part) => {
@@ -219,6 +235,59 @@ export function createModal(
       customContainer.innerHTML = (part as ModalPartCustom).html;
       partContainer.appendChild(customContainer);
       partElements.set(part.name, { container: partContainer });
+    } else if (part.type === "multiselect") {
+      const multiselectPart = part as ModalPartMultiselect;
+      const select = document.createElement("select");
+      select.id = multiselectPart.name + "-select";
+      select.className = "modal-input";
+      select.style.marginBottom = "var(--size-medium)";
+      const pillsDiv = document.createElement("div");
+      pillsDiv.id = multiselectPart.name + "-pills";
+      pillsDiv.style.display = "flex";
+      pillsDiv.style.flexWrap = "wrap";
+      pillsDiv.style.gap = "5px";
+      partContainer.appendChild(select);
+      partContainer.appendChild(pillsDiv);
+      const selected = multiselectPart.selected || [];
+      const updateUI = (): void => {
+        select.innerHTML = "";
+        // Add placeholder option
+        const placeholder = document.createElement("option");
+        placeholder.value = "";
+        placeholder.textContent = "Select an option";
+        placeholder.disabled = true;
+        placeholder.selected = true;
+        select.appendChild(placeholder);
+        multiselectPart.options.forEach((opt) => {
+          if (!selected.includes(opt.value)) {
+            const option = document.createElement("option");
+            option.value = opt.value;
+            option.textContent = opt.label;
+            select.appendChild(option);
+          }
+        });
+        pillsDiv.innerHTML = "";
+        selected.forEach((value, idx) => {
+          const opt = multiselectPart.options.find((o) => o.value === value);
+          const pill = document.createElement("span");
+          pill.className = "pill";
+          pill.innerHTML = `${opt?.label || value} <button class="clean">×</button>`;
+          pill.querySelector("button")?.addEventListener("click", () => {
+            selected.splice(idx, 1);
+            updateUI();
+          });
+          pillsDiv.appendChild(pill);
+        });
+      };
+      updateUI();
+      select.addEventListener("change", () => {
+        if (select.value) {
+          selected.push(select.value);
+          updateUI();
+        }
+      });
+      multiselectData.set(multiselectPart.name, selected);
+      partElements.set(multiselectPart.name, { container: partContainer });
     } else {
       // Add input based on type
       const inputPart = part as ModalPartInput;
@@ -373,6 +442,14 @@ export function createModal(
           };
         },
       );
+
+    // Handle multiselect parts
+    parts.forEach((part) => {
+      if (part.type === "multiselect") {
+        const selected = multiselectData.get(part.name) || [];
+        result.push({ name: part.name, value: selected });
+      }
+    });
 
     // Call the provided callback
     onSubmit(result);
