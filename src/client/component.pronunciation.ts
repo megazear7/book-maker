@@ -1,5 +1,6 @@
 import { Book } from "../types/book.type.js";
 import { Component } from "./component.interface.js";
+import { trashIcon } from "./service.icon.js";
 
 export class Pronunciations implements Component {
   book: Book;
@@ -18,10 +19,10 @@ export class Pronunciations implements Component {
                 ${this.book.pronunciation
                   .map(
                     (p, index) => `
-                    <div class="pronunciation-item" data-index="${index}">
-                        <input type="text" placeholder="Match" value="${p.match}" class="pronunciation-match">
-                        <input type="text" placeholder="Replace" value="${p.replace}" class="pronunciation-replace">
-                        <button class="clean remove-pronunciation"><span class="button-inner">Remove</span></button>
+                    <div class="pronunciation-item" data-index="${index}" style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                        <input type="text" placeholder="Word" value="${p.match}" class="pronunciation-match" style="flex: 1;">
+                        <input type="text" placeholder="Pronunciation" value="${p.replace}" class="pronunciation-replace" style="flex: 1;">
+                        <button class="clean remove-pronunciation"><span class="button-inner">${trashIcon}</span></button>
                     </div>
                 `,
                   )
@@ -78,10 +79,10 @@ export class Pronunciations implements Component {
       pronunciationsList.innerHTML = this.book.pronunciation
         .map(
           (p, index) => `
-        <div class="pronunciation-item" data-index="${index}">
-          <input type="text" placeholder="Match" value="${p.match}" class="pronunciation-match">
-          <input type="text" placeholder="Replace" value="${p.replace}" class="pronunciation-replace">
-          <button class="clean remove-pronunciation"><span class="button-inner">Remove</span></button>
+        <div class="pronunciation-item" data-index="${index}" style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+          <input type="text" placeholder="Word" value="${p.match}" class="pronunciation-match" style="flex: 1;">
+          <input type="text" placeholder="Pronunciation" value="${p.replace}" class="pronunciation-replace" style="flex: 1;">
+          <button class="clean remove-pronunciation"><span class="button-inner">${trashIcon}</span></button>
         </div>
       `,
         )

@@ -188,7 +188,7 @@ ul.pills li:hover button {
   box-shadow: var(--shadow-hover);
 }
 
-.secondary-surface :first-child {
+.secondary-surface > :first-child {
   margin-top: 0;
 }
 
@@ -326,7 +326,6 @@ button.clean {
   padding: 0;
   margin: 0;
   font-size: var(--font-medium);
-  color: var(--color-accent);
 }
 
 li:hover button.clean {
@@ -734,6 +733,10 @@ a.completion-bar-segment:hover::after {
   background: var(--color-secondary-surface);
   color: var(--color-primary-text);
   filter: brightness(1.1);
+}
+
+.remove-pronunciation:hover {
+  color: var(--color-warning);
 }
 
 @media (max-width: 1500px) {

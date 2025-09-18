@@ -98,6 +98,18 @@ server.post("/api/book/:book/chapter/:chapter/part/:part", async (req, res) => {
     ),
   );
 });
+server.post(
+  "/api/book/:book/chapter/:chapter/part/:part/audio",
+  async (req, res) => {
+    res.json(
+      await createChapterPartAudio(
+        req.params.book,
+        parseInt(req.params.chapter),
+        parseInt(req.params.part),
+      ),
+    );
+  },
+);
 server.get(
   "/api/book/:book/chapter/:chapter/part/:part/audio",
   async (req, res) => {
