@@ -5,6 +5,7 @@ import {
   ChapterPartNumber,
 } from "../types/book.type.js";
 import { CompletionBar } from "./component.completion-bar.js";
+import { Pronunciations } from "./component.pronunciation.js";
 import { download } from "./service.download.js";
 import { Document, Packer, Paragraph, TextRun } from "docx";
 import {
@@ -36,6 +37,7 @@ export class BookPage implements Page {
   activePart?: ChapterPart;
   activePartNumber?: ChapterPartNumber;
   hasChanges: boolean = false;
+  pronunciationsComponent: Pronunciations;
 
   constructor(
     book: Book,
@@ -47,6 +49,9 @@ export class BookPage implements Page {
     this.activeChapter = activeChapter;
     this.activePart = activePart;
     this.activePartNumber = activePartNumber;
+    this.pronunciationsComponent = new Pronunciations(book, () => {
+      this.hasChanges = true;
+    });
   }
 
   render(root: HTMLElement): void {
@@ -103,23 +108,7 @@ export class BookPage implements Page {
             <textarea name="book.instructions.audio">${book.instructions.audio}</textarea>
         </div>
 
-        <div class="secondary-surface">
-            <h4>Pronunciations</h4>
-            <div id="pronunciations-list">
-                ${book.pronunciation
-                  .map(
-                    (p, index) => `
-                    <div class="pronunciation-item" data-index="${index}">
-                        <input type="text" placeholder="Match" value="${p.match}" class="pronunciation-match">
-                        <input type="text" placeholder="Replace" value="${p.replace}" class="pronunciation-replace">
-                        <button class="clean remove-pronunciation"><span class="button-inner">Remove</span></button>
-                    </div>
-                `,
-                  )
-                  .join("")}
-            </div>
-            <button class="clean" id="add-pronunciation"><span class="button-inner">Add Pronunciation</span></button>
-        </div>
+        ${this.pronunciationsComponent.render()}
 
         <div data-section="chapter" data-scroll-priority="${activeChapter ? 2 : 1}"></div>
 
@@ -460,43 +449,7 @@ export class BookPage implements Page {
       }
     });
 
-    // Pronunciation inputs
-    const pronunciationMatches: NodeListOf<HTMLInputElement> =
-      document.querySelectorAll(".pronunciation-match");
-    const pronunciationReplaces: NodeListOf<HTMLInputElement> =
-      document.querySelectorAll(".pronunciation-replace");
-    pronunciationMatches.forEach((input, index) => {
-      input.addEventListener("input", () => {
-        this.book.pronunciation[index].match = input.value;
-        this.hasChanges = true;
-      });
-    });
-    pronunciationReplaces.forEach((input, index) => {
-      input.addEventListener("input", () => {
-        this.book.pronunciation[index].replace = input.value;
-        this.hasChanges = true;
-      });
-    });
-
-    // Add pronunciation button
-    const addPronunciationButton = document.getElementById("add-pronunciation");
-    if (addPronunciationButton) {
-      addPronunciationButton.addEventListener("click", () => {
-        this.book.pronunciation.push({ match: "", replace: "" });
-        this.hasChanges = true;
-        this.renderPronunciations();
-      });
-    }
-
-    // Remove pronunciation buttons
-    const removeButtons = document.querySelectorAll(".remove-pronunciation");
-    removeButtons.forEach((button, index) => {
-      button.addEventListener("click", () => {
-        this.book.pronunciation.splice(index, 1);
-        this.hasChanges = true;
-        this.renderPronunciations();
-      });
-    });
+    await this.pronunciationsComponent.addEventListeners();
 
     const inputs: NodeListOf<HTMLInputElement> =
       document.querySelectorAll("input");
@@ -524,48 +477,6 @@ export class BookPage implements Page {
         }
       }
     }, 2000);
-  }
-
-  renderPronunciations(): void {
-    const pronunciationsList = document.getElementById("pronunciations-list");
-    if (pronunciationsList) {
-      pronunciationsList.innerHTML = this.book.pronunciation
-        .map(
-          (p, index) => `
-        <div class="pronunciation-item" data-index="${index}">
-          <input type="text" placeholder="Match" value="${p.match}" class="pronunciation-match">
-          <input type="text" placeholder="Replace" value="${p.replace}" class="pronunciation-replace">
-          <button class="clean remove-pronunciation"><span class="button-inner">Remove</span></button>
-        </div>
-      `,
-        )
-        .join("");
-      // Re-add event listeners for the new inputs
-      const pronunciationMatches: NodeListOf<HTMLInputElement> =
-        document.querySelectorAll(".pronunciation-match");
-      const pronunciationReplaces: NodeListOf<HTMLInputElement> =
-        document.querySelectorAll(".pronunciation-replace");
-      pronunciationMatches.forEach((input, index) => {
-        input.addEventListener("input", () => {
-          this.book.pronunciation[index].match = input.value;
-          this.hasChanges = true;
-        });
-      });
-      pronunciationReplaces.forEach((input, index) => {
-        input.addEventListener("input", () => {
-          this.book.pronunciation[index].replace = input.value;
-          this.hasChanges = true;
-        });
-      });
-      const removeButtons = document.querySelectorAll(".remove-pronunciation");
-      removeButtons.forEach((button, index) => {
-        button.addEventListener("click", () => {
-          this.book.pronunciation.splice(index, 1);
-          this.hasChanges = true;
-          this.renderPronunciations();
-        });
-      });
-    }
   }
 
   async handleDeleteBookModalSubmit(): Promise<void> {
