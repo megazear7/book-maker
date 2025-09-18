@@ -34,8 +34,10 @@ export class Pronunciations implements Component {
 
   async addEventListeners(): Promise<void> {
     // Pronunciation inputs
-    const pronunciationMatches: NodeListOf<HTMLInputElement> = document.querySelectorAll(".pronunciation-match");
-    const pronunciationReplaces: NodeListOf<HTMLInputElement> = document.querySelectorAll(".pronunciation-replace");
+    const pronunciationMatches: NodeListOf<HTMLInputElement> =
+      document.querySelectorAll(".pronunciation-match");
+    const pronunciationReplaces: NodeListOf<HTMLInputElement> =
+      document.querySelectorAll(".pronunciation-replace");
     pronunciationMatches.forEach((input, index) => {
       input.addEventListener("input", () => {
         this.book.pronunciation[index].match = input.value;
@@ -85,8 +87,10 @@ export class Pronunciations implements Component {
         )
         .join("");
       // Re-add event listeners for the new inputs
-      const pronunciationMatches: NodeListOf<HTMLInputElement> = document.querySelectorAll(".pronunciation-match");
-      const pronunciationReplaces: NodeListOf<HTMLInputElement> = document.querySelectorAll(".pronunciation-replace");
+      const pronunciationMatches: NodeListOf<HTMLInputElement> =
+        document.querySelectorAll(".pronunciation-match");
+      const pronunciationReplaces: NodeListOf<HTMLInputElement> =
+        document.querySelectorAll(".pronunciation-replace");
       pronunciationMatches.forEach((input, index) => {
         input.addEventListener("input", () => {
           this.book.pronunciation[index].match = input.value;
