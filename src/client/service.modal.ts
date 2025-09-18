@@ -23,7 +23,33 @@ export interface ModalPartParagraph {
   };
 }
 
-export type ModalPart = ModalPartInput | ModalPartParagraph;
+export interface ModalPartTextarea {
+  name: string;
+  label: string;
+  type: "textarea";
+  value?: string;
+  showIf?: {
+    fieldName: string;
+    value: string | boolean | number;
+  };
+}
+
+export interface ModalPartCustom {
+  name: string;
+  label: string;
+  type: "custom";
+  html: string;
+  showIf?: {
+    fieldName: string;
+    value: string | boolean | number;
+  };
+}
+
+export type ModalPart =
+  | ModalPartInput
+  | ModalPartParagraph
+  | ModalPartTextarea
+  | ModalPartCustom;
 
 export interface ModalSubmitDetail {
   name: string;
@@ -109,10 +135,13 @@ export function createModal(
   document.head.appendChild(style);
 
   // Map to store all part containers (inputs and paragraphs)
-  const partElements: Map<
+  const partElements = new Map<
     string,
-    { input?: HTMLInputElement | HTMLSelectElement; container: HTMLDivElement }
-  > = new Map();
+    {
+      input?: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+      container: HTMLElement;
+    }
+  >();
 
   // Function to update field visibility
   const updateVisibility = (): void => {
@@ -126,7 +155,10 @@ export function createModal(
         if (dependentField && dependentField.input) {
           let dependentValue: string | boolean | number =
             dependentField.input.value;
-          if (dependentField.input.type === "checkbox") {
+          if (
+            dependentField.input instanceof HTMLInputElement &&
+            dependentField.input.type === "checkbox"
+          ) {
             dependentValue = dependentField.input.checked;
           } else if (dependentField.input.type === "number") {
             dependentValue = dependentField.input.value
@@ -167,6 +199,25 @@ export function createModal(
       paragraph.className = "paragraph";
       paragraph.textContent = (part as ModalPartParagraph).text || "";
       partContainer.appendChild(paragraph);
+      partElements.set(part.name, { container: partContainer });
+    } else if (part.type === "textarea") {
+      const textarea: HTMLTextAreaElement = document.createElement("textarea");
+      textarea.name = part.name;
+      textarea.id = part.name;
+      textarea.className = "modal-textarea";
+      if ((part as ModalPartTextarea).value !== undefined) {
+        textarea.value = (part as ModalPartTextarea).value || "";
+      }
+      partContainer.appendChild(textarea);
+      partElements.set(part.name, {
+        input: textarea,
+        container: partContainer,
+      });
+    } else if (part.type === "custom") {
+      const customContainer: HTMLDivElement = document.createElement("div");
+      customContainer.className = "custom-container";
+      customContainer.innerHTML = (part as ModalPartCustom).html;
+      partContainer.appendChild(customContainer);
       partElements.set(part.name, { container: partContainer });
     } else {
       // Add input based on type
@@ -297,28 +348,31 @@ export function createModal(
 
   // Handle button click
   submitButton.addEventListener("click", () => {
-    const inputs: NodeListOf<HTMLInputElement | HTMLSelectElement> =
-      form.querySelectorAll("input, select");
+    const inputs: NodeListOf<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    > = form.querySelectorAll("input, select, textarea");
     const result: ModalSubmitDetail[] = Array.from(inputs)
       .filter(
         (input) =>
           !input.closest(".part-container")?.classList.contains("hidden"),
       )
-      .map((input: HTMLInputElement | HTMLSelectElement) => {
-        let value: string | boolean | number = input.value;
-        if (input instanceof HTMLInputElement && input.type === "checkbox") {
-          value = input.checked;
-        } else if (
-          input instanceof HTMLInputElement &&
-          input.type === "number"
-        ) {
-          value = input.value ? Number(input.value) : 0;
-        }
-        return {
-          name: input.name,
-          value,
-        };
-      });
+      .map(
+        (input: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement) => {
+          let value: string | boolean | number = input.value;
+          if (input instanceof HTMLInputElement && input.type === "checkbox") {
+            value = input.checked;
+          } else if (
+            input instanceof HTMLInputElement &&
+            input.type === "number"
+          ) {
+            value = input.value ? Number(input.value) : 0;
+          }
+          return {
+            name: input.name,
+            value,
+          };
+        },
+      );
 
     // Call the provided callback
     onSubmit(result);

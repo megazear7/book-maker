@@ -19,10 +19,14 @@ export const BookMinimalInfo = z.object({
 });
 export type BookMinimalInfo = z.infer<typeof BookMinimalInfo>;
 
-export const BookReference = z
-  .string()
-  .min(1)
-  .describe("Reference material to base writing style off of.");
+export const ReferenceUse = z.enum(["outlining", "writing"]);
+export type ReferenceUse = z.infer<typeof ReferenceUse>;
+
+export const BookReference = z.object({
+  file: z.string().describe("The path to the reference file."),
+  instructions: z.string(),
+  whenToUse: ReferenceUse.array(),
+});
 export type BookReference = z.infer<typeof BookReference>;
 
 export const BookOverview = z

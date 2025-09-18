@@ -322,20 +322,21 @@ export function openDownloadBookModal(book: Book): void {
                 }),
                 ...chapter.parts.flatMap((part) => {
                   const lines = (part.text || "").split("\n");
-                  return lines.filter(line => !!line).map(
+                  const filteredLines = lines.filter((line) => !!line);
+                  return filteredLines.map(
                     (line, index) =>
                       new Paragraph({
-                        indent: { firstLine: 360 },
+                        indent: index === 0 ? { firstLine: 720 } : undefined,
                         children: [
                           new TextRun({
-                            text: line.trim(),
+                            text: line,
                             size: 24,
                             font: "Garamond",
                           }),
                         ],
                         spacing: {
                           line: 276,
-                          after: 0,
+                          after: index === filteredLines.length - 1 ? 200 : 0,
                         },
                       }),
                   );

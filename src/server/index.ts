@@ -23,11 +23,27 @@ import { deleteBook } from "../services/delete-book.js";
 import { createChapterAudio } from "../services/create-chapter-audio.js";
 import { getChapterPartAudioId } from "../services/get-chapter-part-audio-id.js";
 import { promises as fs, createReadStream } from "fs";
+import { mkdirSync } from "fs";
 import { createChapterPartAudio } from "../services/create-chapter-part-audio.js";
 import { getBookAudio } from "../services/get-book-audio.js";
+import multer from "multer";
 
 const server = express();
 const port = 3000;
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const book = req.params.book;
+    const dir = `books/book.${book}.references`;
+    mkdirSync(dir, { recursive: true });
+    cb(null, dir);
+  },
+  filename: (req, file, cb) => {
+    cb(null, req.params.filename);
+  },
+});
+const upload = multer({ storage });
+
 server.use(express.json());
 server.get("/api/books", async (req, res) => {
   res.json(await getBooks());
@@ -149,6 +165,13 @@ server.post(
         parseInt(req.params.part),
       ),
     );
+  },
+);
+server.post(
+  "/api/book/:book/reference/:filename",
+  upload.single("file"),
+  (req, res) => {
+    res.json({ success: true });
   },
 );
 server.use(express.static("dist/client"));
