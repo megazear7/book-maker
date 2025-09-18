@@ -15,7 +15,7 @@ import {
   RequestMethod,
   RequestPath,
 } from "../types/requests.js";
-import { toggleLoading } from "./loading.js";
+import { toggleLoading } from "./service.loading.js";
 
 async function request<A, B>({
   path,

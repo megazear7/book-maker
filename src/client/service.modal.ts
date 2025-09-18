@@ -1,4 +1,4 @@
-import { saveIcon } from "./icon.js";
+import { saveIcon } from "./service.icon.js";
 
 export interface ModalPartInput {
   name: string;

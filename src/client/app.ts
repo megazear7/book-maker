@@ -11,16 +11,16 @@ import { HomePage } from "./page.home.js";
 import { Page404 } from "./page.404.js";
 import "/example.js";
 import { Page } from "./page.interface.js";
-import { plusIcon } from "./icon.js";
-import { homeIcon } from "./icon.js";
-import { addEmptyBook, createBook } from "./service.js";
+import { plusIcon } from "./service.icon.js";
+import { homeIcon } from "./service.icon.js";
+import { addEmptyBook, createBook } from "./service.api.js";
 import {
   createModal,
   getExpectedBooleanValue,
   getExpectedNumberValue,
   getExpectedStringValue,
   ModalSubmitDetail,
-} from "./modal.js";
+} from "./service.modal.js";
 
 class ClientApp {
   rootElementId: string;

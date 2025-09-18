@@ -5,7 +5,7 @@ import {
   ChapterPartNumber,
 } from "../types/book.type.js";
 import { CompletionBar } from "./component.completion-bar.js";
-import { download } from "./download.js";
+import { download } from "./service.download.js";
 import { Document, Packer, Paragraph, TextRun } from "docx";
 import {
   aiIconLeft,
@@ -15,8 +15,8 @@ import {
   gearIcon,
   plusIcon,
   trashIcon,
-} from "./icon.js";
-import { createModal } from "./modal.js";
+} from "./service.icon.js";
+import { createModal } from "./service.modal.js";
 import { Page } from "./page.interface.js";
 import {
   addChapter,
@@ -26,9 +26,9 @@ import {
   createChapterPart,
   createChapterPartAudio,
   downloadFullAudio,
-} from "./service.js";
-import { formatNumber } from "./util.js";
-import { openConfigurationModal } from "./configure-modal.modal.js";
+} from "./service.api.js";
+import { formatNumber } from "./service.util.js";
+import { openBookConfigurationModal } from "./modal.book-configuration.js";
 
 export class BookPage implements Page {
   book: Book;
@@ -251,7 +251,7 @@ export class BookPage implements Page {
     const configureModelButton = document.getElementById("configure-model");
     if (configureModelButton) {
       configureModelButton.addEventListener("click", async () => {
-        openConfigurationModal(this.book);
+        openBookConfigurationModal(this.book);
       });
     }
     const createChapterOutlineButton = document.getElementById(

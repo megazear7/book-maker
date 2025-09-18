@@ -1,7 +1,7 @@
 import { Book, KnownModelTypeName } from "../types/book.type.js";
-import { createModal, ModalPartInput } from "./modal.js";
+import { createModal, ModalPartInput } from "./service.modal.js";
 
-export function openConfigurationModal(book: Book): void {
+export function openBookConfigurationModal(book: Book): void {
   // Only allow editing model names (string type)
   // Get known model names from statically imported KnownModelTypeName enum
   const knownModelNames = KnownModelTypeName.options;
