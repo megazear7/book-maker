@@ -8,7 +8,7 @@ import { createEmpty } from "./util.js";
 import { writeBook } from "./write-book.js";
 import { MaximumChapters, MinimumChapters } from "../types/requests.js";
 
-const systemPrompt = (min: MinimumChapters, max: MaximumChapters) =>
+const systemPrompt = (min: MinimumChapters, max: MaximumChapters): string =>
   `
 You are a book config creator.
 Given instructions from the user, you create a book congif

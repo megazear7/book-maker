@@ -35,18 +35,18 @@ class ClientApp {
     this.rootElementId = rootElementId;
   }
 
-  async init() {
+  async init(): Promise<void> {
     await this.loadBooks();
     this.render();
   }
 
-  async loadBooks() {
+  async loadBooks(): Promise<void> {
     this.books = BookMinimalInfo.array().parse(
       await (await fetch("/api/books")).json(),
     );
   }
 
-  async loadBook() {
+  async loadBook(): Promise<void> {
     this.book = Book.parse(
       await (await fetch(`/api/book/${this.bookId}`)).json(),
     );
@@ -59,7 +59,7 @@ class ClientApp {
     return element;
   }
 
-  async render() {
+  async render(): Promise<void> {
     let page: Page = new Page404();
     let pageName: string = "";
 
@@ -68,17 +68,17 @@ class ClientApp {
       page = await this.homePageRouter();
     } else if (
       location.pathname.match(
-        /^\/book\/([^\/]+)\/chapter\/([^\/]+)\/part\/([^\/]+)/,
+        new RegExp("^/book/([^/]+)/chapter/([^/]+)/part/([^/]+)"),
       )
     ) {
       pageName = "part";
       page = await this.partPageRouter();
     } else if (
-      location.pathname.match(/^\/book\/([^\/]+)\/chapter\/([^\/]+)/)
+      location.pathname.match(new RegExp("^/book/([^/]+)/chapter/([^/]+)"))
     ) {
       pageName = "chapter";
       page = await this.chapterPageRouter();
-    } else if (location.pathname.match(/^\/book\/([^\/]+)/)) {
+    } else if (location.pathname.match(new RegExp("^/book/([^/]+)"))) {
       pageName = "book";
       page = await this.bookPageRouter();
     }
@@ -132,7 +132,7 @@ class ClientApp {
       const partSection = document.querySelector(
         '[data-section="part"]',
       ) as HTMLElement;
-      function highlightTab() {
+      function highlightTab(): void {
         let active = "";
         if (
           partSection &&
@@ -238,7 +238,7 @@ class ClientApp {
     await this.addEventListeners();
   }
 
-  async addEventListeners() {
+  async addEventListeners(): Promise<void> {
     const newBookButton = document.getElementById("new-book");
 
     if (newBookButton) {
@@ -296,7 +296,9 @@ class ClientApp {
     }
   }
 
-  async handleCreateBookModalSubmit(result: ModalSubmitDetail[]) {
+  async handleCreateBookModalSubmit(
+    result: ModalSubmitDetail[],
+  ): Promise<void> {
     const manual = getExpectedBooleanValue(result, "manual");
 
     if (manual) {
@@ -318,11 +320,11 @@ class ClientApp {
     }
   }
 
-  resizeTextAreas() {
+  resizeTextAreas(): void {
     const textareas: NodeListOf<HTMLTextAreaElement> =
       document.querySelectorAll("textarea");
 
-    const resizeTextarea = (element: HTMLTextAreaElement) => {
+    const resizeTextarea = (element: HTMLTextAreaElement): void => {
       element.style.height = "auto";
       element.style.height = `${element.scrollHeight}px`;
     };
@@ -374,8 +376,8 @@ class ClientApp {
     return new BookPage(book, chapter);
   }
 
-  async getBookFromRoute() {
-    const matches = location.pathname.match(/^\/book\/([^\/]+)/);
+  async getBookFromRoute(): Promise<void> {
+    const matches = location.pathname.match(new RegExp("^/book/([^/]+)"));
     if (!matches || matches.length < 1) throw new Error("Match not found");
     this.bookId = matches[1];
     await this.loadBook();
@@ -383,9 +385,9 @@ class ClientApp {
     if (!book) throw new Error("Book not loaded");
   }
 
-  async getChapterFromRoute() {
+  async getChapterFromRoute(): Promise<void> {
     const matches = location.pathname.match(
-      /^\/book\/([^\/]+)\/chapter\/([^\/]+)/,
+      new RegExp("^/book/([^/]+)/chapter/([^/]+)"),
     );
     if (!matches || matches.length < 3) throw new Error("Match not found");
     const chapterIndex = parseInt(matches[2]) - 1;
@@ -394,9 +396,9 @@ class ClientApp {
     this.chapter = book.chapters[chapterIndex];
   }
 
-  async getPartFromRoute() {
+  async getPartFromRoute(): Promise<void> {
     const matches = location.pathname.match(
-      /^\/book\/([^\/]+)\/chapter\/([^\/]+)\/part\/([^\/]+)/,
+      new RegExp("^/book/([^/]+)/chapter/([^/]+)/part/([^/]+)"),
     );
     if (!matches || matches.length < 4) throw new Error("Match not found");
     const chapterIndex = parseInt(matches[2]) - 1;
@@ -414,7 +416,7 @@ const app = new ClientApp("app");
 app.init();
 
 // Function to handle navigation
-function navigate(event: Event) {
+function navigate(event: Event): void {
   const target = event.target as HTMLElement;
   const anchor = target as HTMLAnchorElement;
   if (

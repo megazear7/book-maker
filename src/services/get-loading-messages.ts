@@ -3,7 +3,7 @@ import { Role } from "../types/prompt.type.js";
 import { ChatCompletionMessageParam } from "openai/resources.js";
 import { getJsonCompletionNoBook } from "./get-json-completion-no-book.js";
 
-const prompt = (str: string) =>
+const prompt = (str: string): string =>
   `
 ${str}
 

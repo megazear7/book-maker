@@ -115,7 +115,7 @@ export function createModal(
   > = new Map();
 
   // Function to update field visibility
-  const updateVisibility = () => {
+  const updateVisibility = (): void => {
     parts.forEach((part) => {
       const partData = partElements.get(part.name);
       if (!partData) return; // Skip if no container found

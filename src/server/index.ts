@@ -113,7 +113,7 @@ server.get(
       res.setHeader("Content-Type", "audio/mpeg");
       const stream = createReadStream(audioPath);
       stream.pipe(res);
-    } catch (error) {
+    } catch {
       res.status(404).send("Audio file not found");
     }
   },

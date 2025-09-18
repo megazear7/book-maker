@@ -1,8 +1,8 @@
-import { BookId } from "../types/book.type.js";
+import { BookId, Chapter } from "../types/book.type.js";
 import { getBook } from "./get-book.js";
 import { writeBook } from "./write-book.js";
 
-export async function addEmptyChapter(bookId: BookId) {
+export async function addEmptyChapter(bookId: BookId): Promise<Chapter> {
   const book = await getBook(bookId);
   const emptyChapter = {
     number: book.chapters.length + 1,

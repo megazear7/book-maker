@@ -44,7 +44,7 @@ export function downloadTextAsFile(
   }
 }
 
-export function download(text: string, name = "file.txt") {
+export function download(text: string, name = "file.txt"): void {
   const blob = new Blob([text]);
   // Convert your blob into a Blob URL (a special url that points to an object in the browser's memory)
   const blobUrl = URL.createObjectURL(blob);

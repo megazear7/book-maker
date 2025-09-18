@@ -1,6 +1,8 @@
 import { LoadingMessageContent, LoadingMessages } from "../types/book.type.js";
 
-async function getLoadingMessages(content: LoadingMessageContent) {
+async function getLoadingMessages(
+  content: LoadingMessageContent,
+): Promise<LoadingMessages> {
   const res = await fetch(`/api/loading/messages`, {
     method: "POST",
     headers: {

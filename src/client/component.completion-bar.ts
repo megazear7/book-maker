@@ -8,12 +8,12 @@ export class CompletionBar implements Component {
     this.book = book;
   }
 
-  render() {
+  render(): string {
     const book = this.book;
     let completionBar = "";
     if (book.chapters && book.chapters.length > 0) {
       completionBar = '<div class="completion-bar">';
-      book.chapters.forEach((chapter, chapterIdx) => {
+      book.chapters.forEach((chapter) => {
         let expectedParts =
           chapter.maxParts || chapter.minParts || chapter.parts.length;
         if (

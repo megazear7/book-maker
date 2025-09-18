@@ -49,7 +49,7 @@ export class BookPage implements Page {
     this.activePartNumber = activePartNumber;
   }
 
-  render(root: HTMLElement) {
+  render(root: HTMLElement): void {
     const book = this.book;
     const activeChapter = this.activeChapter;
     const activePart = this.activePart;
@@ -247,7 +247,7 @@ export class BookPage implements Page {
         `;
   }
 
-  async addEventListeners() {
+  async addEventListeners(): Promise<void> {
     const configureModelButton = document.getElementById("configure-model");
     if (configureModelButton) {
       configureModelButton.addEventListener("click", async () => {
@@ -526,7 +526,7 @@ export class BookPage implements Page {
     }, 2000);
   }
 
-  renderPronunciations() {
+  renderPronunciations(): void {
     const pronunciationsList = document.getElementById("pronunciations-list");
     if (pronunciationsList) {
       pronunciationsList.innerHTML = this.book.pronunciation
@@ -568,14 +568,14 @@ export class BookPage implements Page {
     }
   }
 
-  async handleDeleteBookModalSubmit() {
+  async handleDeleteBookModalSubmit(): Promise<void> {
     await fetch(`/api/book/${this.book.id}`, {
       method: "DELETE",
     });
     window.location.pathname = `/`;
   }
 
-  handleChange(elem: HTMLTextAreaElement | HTMLInputElement) {
+  handleChange(elem: HTMLTextAreaElement | HTMLInputElement): void {
     const attributes = elem.name.split(".");
     const first = attributes.shift();
 
@@ -601,11 +601,11 @@ export class BookPage implements Page {
 }
 
 function updateNestedProperty(
-  obj: any,
+  obj: unknown,
   properties: string[],
-  value: any,
+  value: unknown,
 ): void {
-  let current: any = obj;
+  let current = obj as Record<string, unknown>;
 
   for (let i = 0; i < properties.length - 1; i++) {
     const prop = properties[i];
@@ -616,7 +616,7 @@ function updateNestedProperty(
     ) {
       throw new Error(`Property '${prop}' does not exist or is not an object`);
     }
-    current = current[prop];
+    current = current[prop] as Record<string, unknown>;
   }
 
   const lastProp = properties[properties.length - 1];

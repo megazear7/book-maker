@@ -49,23 +49,6 @@ async function request<A, B>({
   }
 }
 
-async function get<A, B>({
-  path,
-  responseType,
-  loading,
-}: {
-  path: RequestPath;
-  responseType: ZodSchema<B>;
-  loading: LoadingMessageContent;
-}): Promise<B> {
-  return request({
-    path: path,
-    method: RequestMethod.enum.GET,
-    responseType,
-    loading,
-  });
-}
-
 async function post<A, B>({
   path,
   responseType,
