@@ -43,6 +43,7 @@ ${chapter.who}
   },
 ];
 
+// TODO the fileContent could be a docx file or other file format. Need to handle that.
 export const referencesPrompt = (book: Book, use: ReferenceUse): ChatCompletionMessageParam[] => [
   {
     role: "user",

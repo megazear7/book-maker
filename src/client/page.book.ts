@@ -92,6 +92,7 @@ export class BookPage implements Page {
             <button id="download-book" class="secondary"><span class="button-inner">${downloadIcon} Download Book</span></button>
             <button id="download-audio" class="secondary"><span class="button-inner">${downloadIcon} Download Audio</span></button>
             <button id="configure-model" class="secondary"><span class="button-inner">${gearIcon} Configure</span></button>
+            <button id="create-book-everything" class="secondary"><span class="button-inner">${aiIconLeft}<span>Generate everything</span>${aiIconRight}</span></span></button>
           </div>
 
           <div>
@@ -178,6 +179,7 @@ export class BookPage implements Page {
             <button id="create-chapter-outline"><span class="button-inner">${aiIconLeft}<span>${activeChapter.outline.length > 0 ? "Regenerate" : "Generate"} Outline</span>${aiIconRight}</span></button>
             <button id="create-chapter"><span class="button-inner">${aiIconLeft}<span>${activeChapter.parts.length > 0 ? "Regenerate" : "Generate"} Chapter</span>${aiIconRight}</span></button>
             <button id="create-chapter-audio"><span class="button-inner">${aiIconLeft}<span>${activeChapter.parts[0]?.audio ? "Regenerate" : "Generate"} Audio</span>${aiIconRight}</span></button>
+            <button id="create-chapter-everything"><span class="button-inner">${aiIconLeft}<span>Generate everything</span>${aiIconRight}</span></button>
 
             ${
               activeChapter.outline
@@ -278,6 +280,8 @@ export class BookPage implements Page {
     const downloadBookButton = document.getElementById("download-book");
     const downloadAudioButton = document.getElementById("download-audio");
     const deleteBookButton = document.getElementById("delete-book");
+    const createBookEverythingButton = document.getElementById("create-book-everything");
+    const createChapterEverythingButton = document.getElementById("create-chapter-everything");
     const book = this.book;
     const activeChapter = this.activeChapter;
     const activePartNumber = this.activePartNumber;
@@ -381,6 +385,18 @@ export class BookPage implements Page {
       });
     }
 
+    if (createBookEverythingButton) {
+      createBookEverythingButton.addEventListener("click", () => {
+        alert("TODO: Generate all the remaining chapters for the book including the outline, parts, and audio for each chapter that is missing any of these things. Confirm this action with a modal.");
+      });
+    }
+
+    if (createChapterEverythingButton) {
+      createChapterEverythingButton.addEventListener("click", () => {
+        alert("TODO: Generate everything for the chapter in one go, the outline, the parts, and the audio. Confirm this action with a modal.");
+      });
+    }
+
     const textareas: NodeListOf<HTMLTextAreaElement> =
       document.querySelectorAll("textarea");
     textareas.forEach((textarea) => {
@@ -399,7 +415,7 @@ export class BookPage implements Page {
     generateInstructionsButtons.forEach((button) => {
       button.addEventListener("click", () => {
         const property = button.getAttribute("data-property");
-        console.log(`TODO: Generate instructions for ${property}`);
+        alert(`TODO: Generate for ${property}`);
       });
     });
 
