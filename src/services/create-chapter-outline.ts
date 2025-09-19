@@ -4,6 +4,7 @@ import {
   Chapter,
   ChapterNumber,
   ChapterOutline,
+  ReferenceUse,
 } from "../types/book.type.js";
 import { ChatCompletionMessageParam } from "openai/resources";
 import { getTextClient } from "./client.js";
@@ -27,7 +28,7 @@ export async function createChapterOutline(
     `Generating chapter outline for ${chapter.number} of book ${book.title}`,
   );
   const history: ChatCompletionMessageParam[] = [
-    ...referencesPrompt(book),
+    ...referencesPrompt(book, ReferenceUse.enum.outlining),
     ...bookOverviewPrompt(book),
     ...writtenChaptersPrompt(book),
     ...chapterDetailsPrompt(chapter),

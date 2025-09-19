@@ -1,4 +1,6 @@
 import z, { ZodSchema } from "zod";
+import fs from "fs";
+import { BookReference } from "../types/book.type.js";
 
 /* eslint-disable */
 export function createEmpty<T>(schema: ZodSchema<T>): T {
@@ -61,3 +63,11 @@ export function createEmpty<T>(schema: ZodSchema<T>): T {
   return schema.parse(null) as T;
 }
 /* eslint-enable */
+
+export function loadFiles(ref: BookReference): BookReference & { fileContent: string } {
+  const content = fs.readFileSync(ref.file, "utf-8");
+  return {
+    ...ref,
+    fileContent: content,
+  };
+}

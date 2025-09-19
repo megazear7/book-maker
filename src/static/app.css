@@ -232,6 +232,33 @@ textarea.h2 {
   padding: 0;
 }
 
+.textarea-wrapper {
+  position: relative;
+}
+
+.textarea-wrapper .textarea-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: var(--size-small);
+  opacity: 0;
+  transition: var(--transition-all);
+  position: absolute;
+  right: 0;
+  top: -24px;
+}
+
+.textarea-wrapper:hover .textarea-actions {
+  opacity: 1;
+}
+
+.textarea-wrapper .textarea-actions button {
+  opacity: 0.7;
+}
+
+.textarea-wrapper .textarea-actions button:hover {
+  opacity: 1;
+}
+
 /* Input styling */
 input {
   width: 100%;

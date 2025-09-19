@@ -1,5 +1,7 @@
-import { Book, Chapter } from "../types/book.type.js";
+import { ref } from "process";
+import { Book, Chapter, ReferenceUse } from "../types/book.type.js";
 import { ChatCompletionMessageParam } from "openai/resources";
+import { loadFiles } from "./util.js";
 
 export const existingPartsPrompt = (
   chapter: Chapter,
@@ -41,19 +43,17 @@ ${chapter.who}
   },
 ];
 
-export const referencesPrompt = (book: Book): ChatCompletionMessageParam[] => [
+export const referencesPrompt = (book: Book, use: ReferenceUse): ChatCompletionMessageParam[] => [
   {
     role: "user",
-    content: `
-${book.references.join("\n\n\n\n")}
+    content: book.references
+      .filter(ref => ref.whenToUse.includes(use))
+      .map(ref => loadFiles(ref))
+      .map(ref => `
+${ref.fileContent}
 
-
-
-The above text is existing written material from the author.
-Any new chapters that you write should be written in the same style and vocabulary.
-When writing new chapters, you should try to match this writing style as much as possible.
-`,
-  },
+${ref.instructions}
+`).join("\n\n\n\n\n")}
 ];
 
 export const bookOverviewPrompt = (

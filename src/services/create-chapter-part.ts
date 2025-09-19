@@ -7,6 +7,7 @@ import {
   ChapterPart,
   ChapterPartDescription,
   ChapterPartNumber,
+  ReferenceUse,
 } from "../types/book.type.js";
 import { ChatCompletionMessageParam } from "openai/resources";
 import { getTextClient } from "./client.js";
@@ -36,7 +37,7 @@ export async function createChapterPart(
   );
 
   const history: ChatCompletionMessageParam[] = [
-    ...referencesPrompt(book),
+    ...referencesPrompt(book, ReferenceUse.enum.writing),
     ...bookOverviewPrompt(book),
     ...writtenChaptersPrompt(book),
     ...chapterDetailsPrompt(chapter),

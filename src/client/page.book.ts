@@ -14,6 +14,7 @@ import {
   downloadIcon,
   gearIcon,
   plusIcon,
+  refreshIcon,
   trashIcon,
 } from "./service.icon.js";
 import { createModal } from "./service.modal.js";
@@ -105,7 +106,12 @@ export class BookPage implements Page {
               <span class="save-status">${this.hasChanges ? "Saving" : "Saved"}</span>
             </div>
             <h4>Edit Instructions</h4>
-            <textarea name="book.instructions.edit">${book.instructions.edit}</textarea>
+            <div class="textarea-wrapper">
+              <div class="textarea-actions">
+                <button data-property="book.instructions.edit" class="generate-instructions clean"><span class="button-inner">${refreshIcon}</span></button>
+              </div>
+              <textarea name="book.instructions.edit">${book.instructions.edit}</textarea>
+            </div>
         </div>
 
         <div class="secondary-surface">
@@ -387,6 +393,15 @@ export class BookPage implements Page {
 
     await this.pronunciationsComponent.addEventListeners();
     await this.referencesComponent.addEventListeners();
+
+    // TODO Add this button to all fields and implement an api to support this request.
+    const generateInstructionsButtons = document.querySelectorAll(".generate-instructions");
+    generateInstructionsButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const property = button.getAttribute("data-property");
+        console.log(`TODO: Generate instructions for ${property}`);
+      });
+    });
 
     const inputs: NodeListOf<HTMLInputElement> =
       document.querySelectorAll("input");
