@@ -441,8 +441,28 @@ export class BookPage implements Page {
 
     if (createChapterEverythingButton) {
       createChapterEverythingButton.addEventListener("click", () => {
-        alert(
-          "TODO: Generate everything for the chapter in one go, the outline, the parts, and the audio. Confirm this action with a modal.",
+        createModal(
+          "Generate Everything for Chapter",
+          "Generate",
+          [
+            {
+              name: "confirm",
+              type: "paragraph",
+              text: `This will generate the outline${activeChapter!.outline.length === 0 ? "" : " (already exists)"}, parts${activeChapter!.parts.length === 0 ? "" : " (already exists)"}, and audio${activeChapter!.parts.length > 0 && activeChapter!.parts[0].audio ? " (already exists)" : ""} for this chapter. Continue?`,
+            },
+          ],
+          async () => {
+            if (activeChapter && activeChapter!.outline.length === 0) {
+              await createChapterOutline(book, activeChapter!);
+            }
+            if (activeChapter && activeChapter!.parts.length === 0) {
+              activeChapter.parts = await createChapter(book, activeChapter!);
+            }
+            if (activeChapter && activeChapter!.parts.length > 0 && !activeChapter!.parts[0].audio) {
+              await createChapterAudio(book, activeChapter!);
+            }
+            window.location.pathname = `/book/${book.id}/chapter/${activeChapter!.number}`;
+          },
         );
       });
     }

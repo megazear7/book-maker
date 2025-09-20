@@ -31,6 +31,7 @@ import multer from "multer";
 import { generateProperty } from "../services/generate-property.js";
 
 const server = express();
+server.use(express.json({ limit: '10mb' }));
 const port = 3000;
 
 const storage = multer.diskStorage({
