@@ -32,7 +32,7 @@ export async function createChapterOutline(
   const initialCompletionTokens = book.model.text.usage.completion_tokens;
 
   const history: ChatCompletionMessageParam[] = [
-    ...referencesPrompt(book, ReferenceUse.enum.outlining),
+    ...(await referencesPrompt(book, ReferenceUse.enum.outlining)),
     ...bookOverviewPrompt(book),
     ...writtenChaptersPrompt(book),
     ...chapterDetailsPrompt(chapter),

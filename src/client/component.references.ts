@@ -12,6 +12,28 @@ export class References implements Component {
     this.onChange = onChange;
   }
 
+  private isValidFileType(file: File): boolean {
+    const allowedExtensions = [".txt", ".docx", ".pdf"];
+    const fileName = file.name.toLowerCase();
+    return allowedExtensions.some((ext) => fileName.endsWith(ext));
+  }
+
+  private showFileError(): void {
+    const fileNameDiv = document.getElementById("file-name");
+    if (fileNameDiv) {
+      fileNameDiv.textContent =
+        "Error: Only .txt, .docx, and .pdf files are allowed";
+      fileNameDiv.style.color = "var(--color-error, #ff4444)";
+    }
+  }
+
+  private clearFileError(): void {
+    const fileNameDiv = document.getElementById("file-name");
+    if (fileNameDiv) {
+      fileNameDiv.style.color = "var(--color-primary-text)";
+    }
+  }
+
   // TODO Update how the component is rendered so that it can update dynamically
   render(): string {
     // TODO Improve the styles of the add reference button to match the rest of the app
@@ -95,7 +117,7 @@ export class References implements Component {
           name: "file",
           label: "File",
           type: "custom",
-          html: `<div id="file-drop" style="border: 2px dashed #ccc; padding: 20px; text-align: center;">Drop file here or click to select</div><input type="file" id="file-input" style="display: none;"><div id="file-name" style="margin-top: 10px; font-size: 14px; color: var(--color-primary-text);">${ref.file ? ref.file.split("/").pop() : "No file selected"}</div>`,
+          html: `<div id="file-drop" style="border: 2px dashed #ccc; padding: 20px; text-align: center;">Drop file here or click to select (txt, docx, pdf)</div><input type="file" id="file-input" accept=".txt,.docx,.pdf" style="display: none;"><div id="file-name" style="margin-top: 10px; font-size: 14px; color: var(--color-primary-text);">${ref.file ? ref.file.split("/").pop() : "No file selected"}</div>`,
         },
         {
           name: "instructions",
@@ -143,8 +165,8 @@ export class References implements Component {
       const fileDrop = document.getElementById("file-drop");
       if (fileDrop) {
         fileDrop.textContent = ref.file
-          ? "Drop file here or click to select to replace the file"
-          : "Drop file here or click to select";
+          ? "Drop file here or click to select to replace the file (docx, pdf, txt)"
+          : "Drop file here or click to select (docx, pdf, txt)";
       }
     }, 100);
   }
@@ -158,6 +180,11 @@ export class References implements Component {
       fileInput.addEventListener("change", (e) => {
         const file = (e.target as HTMLInputElement).files?.[0];
         if (file) {
+          if (!this.isValidFileType(file)) {
+            this.showFileError();
+            return;
+          }
+          this.clearFileError();
           this.uploadFile(file, index);
           // Update file name display
           const fileNameDiv = document.getElementById("file-name");
@@ -166,7 +193,7 @@ export class References implements Component {
           }
           // Update drop text
           dropArea.textContent =
-            "Drop file here or click to select to replace the file";
+            "Drop file here or click to select to replace the file (docx, pdf, txt)";
         }
       });
       dropArea.addEventListener("dragover", (e) => {
@@ -181,6 +208,11 @@ export class References implements Component {
         dropArea.style.borderColor = "#ccc";
         const file = e.dataTransfer?.files[0];
         if (file) {
+          if (!this.isValidFileType(file)) {
+            this.showFileError();
+            return;
+          }
+          this.clearFileError();
           this.uploadFile(file, index);
           // Update file name display
           const fileNameDiv = document.getElementById("file-name");
@@ -189,7 +221,7 @@ export class References implements Component {
           }
           // Update drop text
           dropArea.textContent =
-            "Drop file here or click to select to replace the file";
+            "Drop file here or click to select to replace the file (docx, pdf, txt)";
         }
       });
     }

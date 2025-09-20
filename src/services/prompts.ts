@@ -42,26 +42,31 @@ ${chapter.who}
   },
 ];
 
-// TODO the fileContent could be a docx file or other file format. Need to handle that.
-export const referencesPrompt = (
+export const referencesPrompt = async (
   book: Book,
   use: ReferenceUse,
-): ChatCompletionMessageParam[] => [
-  {
-    role: "user",
-    content: book.references
+): Promise<ChatCompletionMessageParam[]> => {
+  const loadedRefs = await Promise.all(
+    book.references
       .filter((ref) => ref.whenToUse.includes(use))
-      .map((ref) => loadFiles(ref))
-      .map(
-        (ref) => `
+      .map((ref) => loadFiles(ref)),
+  );
+
+  return [
+    {
+      role: "user",
+      content: loadedRefs
+        .map(
+          (ref) => `
 ${ref.fileContent}
 
 ${ref.instructions}
 `,
-      )
-      .join("\n\n\n\n\n"),
-  },
-];
+        )
+        .join("\n\n\n\n\n"),
+    },
+  ];
+};
 
 export const bookOverviewPrompt = (
   book: Book,

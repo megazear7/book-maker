@@ -1,6 +1,9 @@
 import z, { ZodSchema } from "zod";
 import fs from "fs";
 import { BookReference } from "../types/book.type.js";
+import mammoth from "mammoth";
+import { PdfReader } from "pdfreader";
+import TurndownService from "turndown";
 
 /* eslint-disable */
 export function createEmpty<T>(schema: ZodSchema<T>): T {
@@ -64,10 +67,46 @@ export function createEmpty<T>(schema: ZodSchema<T>): T {
 }
 /* eslint-enable */
 
-export function loadFiles(
+export async function loadFiles(
   ref: BookReference,
-): BookReference & { fileContent: string } {
-  const content = fs.readFileSync(ref.file, "utf-8");
+): Promise<BookReference & { fileContent: string }> {
+  const filePath = ref.file;
+  const extension = filePath.split(".").pop()?.toLowerCase();
+
+  let content: string;
+
+  if (extension === "txt") {
+    content = fs.readFileSync(filePath, "utf-8");
+  } else if (extension === "docx") {
+    const buffer = fs.readFileSync(filePath);
+    const result = await mammoth.convertToHtml({ buffer });
+    const turndownService = new TurndownService();
+    content = turndownService.turndown(result.value);
+  } else if (extension === "pdf") {
+    const buffer = fs.readFileSync(filePath);
+
+    const textItems: string[] = [];
+    const reader = new PdfReader();
+
+    await new Promise<void>((resolve, reject) => {
+      reader.parseBuffer(buffer, (err, item) => {
+        if (err) {
+          reject(err);
+        } else if (!item) {
+          // End of file
+          resolve();
+        } else if (item.text) {
+          textItems.push(item.text);
+        }
+      });
+    });
+
+    content = textItems.join(" ");
+  } else {
+    // Default to reading as text for unknown extensions
+    content = fs.readFileSync(filePath, "utf-8");
+  }
+
   return {
     ...ref,
     fileContent: content,

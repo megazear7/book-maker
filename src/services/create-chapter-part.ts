@@ -37,7 +37,7 @@ export async function createChapterPart(
   );
 
   const history: ChatCompletionMessageParam[] = [
-    ...referencesPrompt(book, ReferenceUse.enum.writing),
+    ...(await referencesPrompt(book, ReferenceUse.enum.writing)),
     ...bookOverviewPrompt(book),
     ...writtenChaptersPrompt(book),
     ...chapterDetailsPrompt(chapter),
