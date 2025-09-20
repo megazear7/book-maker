@@ -11,6 +11,7 @@ import OpenAI from "openai";
 import { env } from "../services/env.js";
 import {
   CreateEmptyBookRequest,
+  GeneratePropertyRequest,
   GetLoadingMessagesRequest,
   PostBookRequest,
 } from "../types/requests.js";
@@ -27,6 +28,7 @@ import { mkdirSync } from "fs";
 import { createChapterPartAudio } from "../services/create-chapter-part-audio.js";
 import { getBookAudio } from "../services/get-book-audio.js";
 import multer from "multer";
+import { generateProperty } from "../services/generate-property.js";
 
 const server = express();
 const port = 3000;
@@ -99,6 +101,16 @@ server.post("/api/book/:book/chapter/:chapter/outline", async (req, res) => {
 });
 server.post("/api/book/:book/chapter/:chapter", async (req, res) => {
   res.json(await createChapter(req.params.book, parseInt(req.params.chapter)));
+});
+server.post("/api/book/:book/property/:property", async (req, res) => {
+  const body = GeneratePropertyRequest.parse(req.body);
+  await generateProperty(
+    req.params.book,
+    req.params.property,
+    body.instructions,
+    body.wordCount,
+  ),
+  res.json(await getBook(req.params.book));
 });
 server.post("/api/book/:book/chapter/:chapter/audio", async (req, res) => {
   res.json(
@@ -175,6 +187,7 @@ server.post(
   },
 );
 server.use(express.static("dist/client"));
+server.use("/shared", express.static("dist/shared"));
 server.use("/types", express.static("dist/types"));
 server.use(
   "/node_modules/docx/dist/index.mjs",

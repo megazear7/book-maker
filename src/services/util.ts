@@ -64,7 +64,9 @@ export function createEmpty<T>(schema: ZodSchema<T>): T {
 }
 /* eslint-enable */
 
-export function loadFiles(ref: BookReference): BookReference & { fileContent: string } {
+export function loadFiles(
+  ref: BookReference,
+): BookReference & { fileContent: string } {
   const content = fs.readFileSync(ref.file, "utf-8");
   return {
     ...ref,

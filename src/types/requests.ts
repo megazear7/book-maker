@@ -34,3 +34,9 @@ export const GetLoadingMessagesRequest = z.object({
 export type GetLoadingMessagesRequest = z.infer<
   typeof GetLoadingMessagesRequest
 >;
+
+export const GeneratePropertyRequest = z.object({
+  instructions: z.string(),
+  wordCount: z.number(),
+});
+export type GeneratePropertyRequest = z.infer<typeof GeneratePropertyRequest>;

@@ -244,7 +244,10 @@ class ClientApp {
   async handleCreateBookModalSubmit(
     result: ModalSubmitDetail[],
   ): Promise<void> {
-    const generateImmediately = getExpectedBooleanValue(result, "generateImmediately");
+    const generateImmediately = getExpectedBooleanValue(
+      result,
+      "generateImmediately",
+    );
 
     if (generateImmediately) {
       const description = getExpectedStringValue(result, "description");

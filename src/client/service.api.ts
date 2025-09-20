@@ -189,3 +189,17 @@ export async function saveBook(book: Book): Promise<Book> {
     body: book,
   });
 }
+
+export async function generatePropertyApi(
+  bookId: string,
+  property: string,
+  instructions: string,
+  wordCount: number,
+): Promise<Book> {
+  return post({
+    path: `/api/book/${bookId}/property/${property}`,
+    responseType: Book,
+    loading: `Generating ${property}...`,
+    body: { instructions, wordCount },
+  });
+}

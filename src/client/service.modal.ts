@@ -26,6 +26,7 @@ export interface ModalPartParagraph {
 export interface ModalPartTextarea {
   name: string;
   label: string;
+  placeholder?: string;
   type: "textarea";
   value?: string;
   showIf?: {
@@ -221,6 +222,7 @@ export function createModal(
       textarea.name = part.name;
       textarea.id = part.name;
       textarea.className = "modal-textarea";
+      textarea.placeholder = (part as ModalPartTextarea).placeholder || "";
       if ((part as ModalPartTextarea).value !== undefined) {
         textarea.value = (part as ModalPartTextarea).value || "";
       }

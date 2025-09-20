@@ -1,4 +1,3 @@
-import { ref } from "process";
 import { Book, Chapter, ReferenceUse } from "../types/book.type.js";
 import { ChatCompletionMessageParam } from "openai/resources";
 import { loadFiles } from "./util.js";
@@ -44,17 +43,24 @@ ${chapter.who}
 ];
 
 // TODO the fileContent could be a docx file or other file format. Need to handle that.
-export const referencesPrompt = (book: Book, use: ReferenceUse): ChatCompletionMessageParam[] => [
+export const referencesPrompt = (
+  book: Book,
+  use: ReferenceUse,
+): ChatCompletionMessageParam[] => [
   {
     role: "user",
     content: book.references
-      .filter(ref => ref.whenToUse.includes(use))
-      .map(ref => loadFiles(ref))
-      .map(ref => `
+      .filter((ref) => ref.whenToUse.includes(use))
+      .map((ref) => loadFiles(ref))
+      .map(
+        (ref) => `
 ${ref.fileContent}
 
 ${ref.instructions}
-`).join("\n\n\n\n\n")}
+`,
+      )
+      .join("\n\n\n\n\n"),
+  },
 ];
 
 export const bookOverviewPrompt = (

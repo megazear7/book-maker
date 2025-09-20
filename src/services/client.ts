@@ -14,6 +14,7 @@ export async function getTextClient(book: Book): Promise<OpenAI> {
     });
   } else {
     return new OpenAI({
+      baseURL: modelConfig.endpoint,
       apiKey: modelConfig.apiKey,
     });
   }
@@ -31,6 +32,7 @@ export async function getAudioClient(book: Book): Promise<OpenAI> {
     });
   } else {
     return new OpenAI({
+      baseURL: modelConfig.endpoint,
       apiKey: modelConfig.apiKey,
     });
   }

@@ -32,6 +32,7 @@ import { formatNumber } from "./service.util.js";
 import { openBookConfigurationModal } from "./modal.book-configuration.js";
 import { openDownloadBookModal } from "./modal.download-book.js";
 import { References } from "./component.references.js";
+import { generateProperty } from "./service.generate-property.js";
 
 export class BookPage implements Page {
   book: Book;
@@ -117,7 +118,13 @@ export class BookPage implements Page {
 
         <div class="secondary-surface">
             <h4>Audio Instructions</h4>
-            <textarea name="book.instructions.audio">${book.instructions.audio}</textarea>
+
+            <div class="textarea-wrapper">
+              <div class="textarea-actions">
+                <button data-property="book.instructions.audio" class="generate-instructions clean"><span class="button-inner">${refreshIcon}</span></button>
+              </div>
+              <textarea name="book.instructions.audio">${book.instructions.audio}</textarea>
+            </div>
         </div>
 
         ${this.pronunciationsComponent.render()}
@@ -147,22 +154,52 @@ export class BookPage implements Page {
 
             <div class="secondary-surface">
                 <h4>When</h4>
-                <textarea name="activeChapter.when">${activeChapter.when}</textarea>
+                <div class="textarea-wrapper">
+                  <div class="textarea-actions">
+                    <button data-property="book.chapters[${activeChapter.number - 1}].audio" class="generate-instructions clean"><span class="button-inner">${refreshIcon}</span></button>
+                  </div>
+                  <textarea name="activeChapter.when">${activeChapter.when}</textarea>
+                </div>
 
                 <h4>Where</h4>
-                <textarea name="activeChapter.where">${activeChapter.where}</textarea>
+                <div class="textarea-wrapper">
+                  <div class="textarea-actions">
+                    <button data-property="book.chapters[${activeChapter.number - 1}].where" class="generate-instructions clean"><span class="button-inner">${refreshIcon}</span></button>
+                  </div>
+                  <textarea name="activeChapter.where">${activeChapter.where}</textarea>
+                </div>
 
                 <h4>What</h4>
-                <textarea name="activeChapter.what">${activeChapter.what}</textarea>
+                <div class="textarea-wrapper">
+                  <div class="textarea-actions">
+                    <button data-property="book.chapters[${activeChapter.number - 1}].what" class="generate-instructions clean"><span class="button-inner">${refreshIcon}</span></button>
+                  </div>
+                  <textarea name="activeChapter.what">${activeChapter.what}</textarea>
+                </div>
 
                 <h4>Why</h4>
-                <textarea name="activeChapter.why">${activeChapter.why}</textarea>
+                <div class="textarea-wrapper">
+                  <div class="textarea-actions">
+                    <button data-property="book.chapters[${activeChapter.number - 1}].why" class="generate-instructions clean"><span class="button-inner">${refreshIcon}</span></button>
+                  </div>
+                  <textarea name="activeChapter.why">${activeChapter.why}</textarea>
+                </div>
 
                 <h4>How</h4>
-                <textarea name="activeChapter.how">${activeChapter.how}</textarea>
+                <div class="textarea-wrapper">
+                  <div class="textarea-actions">
+                    <button data-property="book.chapters[${activeChapter.number - 1}].how" class="generate-instructions clean"><span class="button-inner">${refreshIcon}</span></button>
+                  </div>
+                  <textarea name="activeChapter.how">${activeChapter.how}</textarea>
+                </div>
 
                 <h4>Who</h4>
-                <textarea name="activeChapter.who">${activeChapter.who}</textarea>
+                <div class="textarea-wrapper">
+                  <div class="textarea-actions">
+                    <button data-property="book.chapters[${activeChapter.number - 1}].who" class="generate-instructions clean"><span class="button-inner">${refreshIcon}</span></button>
+                  </div>
+                  <textarea name="activeChapter.who">${activeChapter.who}</textarea>
+                </div>
             </div>
 
             <div class="secondary-surface">
@@ -190,7 +227,12 @@ export class BookPage implements Page {
                       .map(
                         (partDescription, index) => `
                         <h5>Part ${index + 1}</h5>
-                        <textarea name="activeChapter.outline[index]">${partDescription}</textarea>
+                        <div class="textarea-wrapper">
+                          <div class="textarea-actions">
+                            <button data-property="book.chapters[${activeChapter.number - 1}].outline[${index}]" class="generate-instructions clean"><span class="button-inner">${refreshIcon}</span></button>
+                          </div>
+                          <textarea name="activeChapter.outline[index]">${partDescription}</textarea>
+                        </div>
                     `,
                       )
                       .join("")}
@@ -280,8 +322,12 @@ export class BookPage implements Page {
     const downloadBookButton = document.getElementById("download-book");
     const downloadAudioButton = document.getElementById("download-audio");
     const deleteBookButton = document.getElementById("delete-book");
-    const createBookEverythingButton = document.getElementById("create-book-everything");
-    const createChapterEverythingButton = document.getElementById("create-chapter-everything");
+    const createBookEverythingButton = document.getElementById(
+      "create-book-everything",
+    );
+    const createChapterEverythingButton = document.getElementById(
+      "create-chapter-everything",
+    );
     const book = this.book;
     const activeChapter = this.activeChapter;
     const activePartNumber = this.activePartNumber;
@@ -387,13 +433,17 @@ export class BookPage implements Page {
 
     if (createBookEverythingButton) {
       createBookEverythingButton.addEventListener("click", () => {
-        alert("TODO: Generate all the remaining chapters for the book including the outline, parts, and audio for each chapter that is missing any of these things. Confirm this action with a modal.");
+        alert(
+          "TODO: Generate all the remaining chapters for the book including the outline, parts, and audio for each chapter that is missing any of these things. Confirm this action with a modal.",
+        );
       });
     }
 
     if (createChapterEverythingButton) {
       createChapterEverythingButton.addEventListener("click", () => {
-        alert("TODO: Generate everything for the chapter in one go, the outline, the parts, and the audio. Confirm this action with a modal.");
+        alert(
+          "TODO: Generate everything for the chapter in one go, the outline, the parts, and the audio. Confirm this action with a modal.",
+        );
       });
     }
 
@@ -411,11 +461,15 @@ export class BookPage implements Page {
     await this.referencesComponent.addEventListeners();
 
     // TODO Add this button to all fields and implement an api to support this request.
-    const generateInstructionsButtons = document.querySelectorAll(".generate-instructions");
+    const generateInstructionsButtons = document.querySelectorAll(
+      ".generate-instructions",
+    );
     generateInstructionsButtons.forEach((button) => {
       button.addEventListener("click", () => {
         const property = button.getAttribute("data-property");
-        alert(`TODO: Generate for ${property}`);
+        if (property) {
+          generateProperty(this.book, property);
+        }
       });
     });
 

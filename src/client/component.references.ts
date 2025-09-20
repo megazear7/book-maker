@@ -142,7 +142,9 @@ export class References implements Component {
     setTimeout(() => {
       const fileDrop = document.getElementById("file-drop");
       if (fileDrop) {
-        fileDrop.textContent = ref.file ? "Drop file here or click to select to replace the file" : "Drop file here or click to select";
+        fileDrop.textContent = ref.file
+          ? "Drop file here or click to select to replace the file"
+          : "Drop file here or click to select";
       }
     }, 100);
   }
@@ -163,7 +165,8 @@ export class References implements Component {
             fileNameDiv.textContent = file.name;
           }
           // Update drop text
-          dropArea.textContent = "Drop file here or click to select to replace the file";
+          dropArea.textContent =
+            "Drop file here or click to select to replace the file";
         }
       });
       dropArea.addEventListener("dragover", (e) => {
@@ -185,7 +188,8 @@ export class References implements Component {
             fileNameDiv.textContent = file.name;
           }
           // Update drop text
-          dropArea.textContent = "Drop file here or click to select to replace the file";
+          dropArea.textContent =
+            "Drop file here or click to select to replace the file";
         }
       });
     }
