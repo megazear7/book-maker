@@ -15,7 +15,7 @@ export class CompletionBar implements Component {
       completionBar = '<div class="completion-bar">';
       book.chapters.forEach((chapter) => {
         let expectedParts =
-          chapter.maxParts || chapter.minParts || chapter.parts.length;
+          chapter.parts.length || chapter.maxParts || chapter.minParts;
         if (
           typeof expectedParts !== "number" ||
           expectedParts < chapter.parts.length

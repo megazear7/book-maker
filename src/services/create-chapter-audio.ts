@@ -17,8 +17,14 @@ export async function createChapterAudio(
   const book: Book = await getBook(bookId);
   const chapter: Chapter = book.chapters[chapterNumber - 1];
   const client = await getAudioClient(book);
+  console.log(
+    `Generating audio for chapter ${chapter.number} of book ${book.title} with ${chapter.parts.length} parts`,
+  );
 
   for (let partIndex = 0; partIndex < chapter.parts.length; partIndex++) {
+    console.log(
+      `Generating audio for part ${partIndex + 1}/${chapter.parts.length} of chapter ${chapter.number}`,
+    );
     const response = await client.chat.completions.create({
       model: "gpt-4o-audio-preview-2025-06-03",
       modalities: ["text", "audio"],
@@ -51,9 +57,13 @@ export async function createChapterAudio(
     await fs.mkdir(`books/book.${book.id}.audio`, { recursive: true });
     await fs.writeFile(`books/book.${book.id}.audio/${id}.mp3`, buffer);
     chapter.parts[partIndex].audio = id;
+    console.log(
+      `Audio generated for part ${partIndex + 1}, saved as ${id}.mp3`,
+    );
   }
 
   await writeBook(book);
+  console.log(`Audio generation complete for chapter ${chapter.number}`);
 
   return chapter.parts;
 }

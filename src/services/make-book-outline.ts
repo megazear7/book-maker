@@ -18,6 +18,7 @@ There should be ${min}-${max} chapters.
 Each reference should include multiple paragraphs of sample writing to esablish a writing tone and style.
 The book id should be less than 12 characters.
 The tokens and dollars in the usage section must be 0.
+The references should be an empty array.
 The part length should be 600, 800, or 1000.
 The chapter outline and part attributes should be empty arrays.
 

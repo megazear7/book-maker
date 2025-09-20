@@ -203,3 +203,15 @@ export async function generatePropertyApi(
     body: { instructions, wordCount },
   });
 }
+
+export async function generateEverythingApi(
+  bookId: string,
+  maxSpend: number,
+): Promise<Book> {
+  return post({
+    path: `/api/book/${bookId}/generate-everything`,
+    responseType: Book,
+    loading: `Generating everything for book...`,
+    body: { maxSpend },
+  });
+}

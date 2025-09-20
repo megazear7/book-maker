@@ -15,7 +15,9 @@ export async function createChapter(
 ): Promise<ChapterParts> {
   const book: Book = await getBook(bookId);
   const chapter: Chapter = book.chapters[chapterNumber - 1];
-  console.log(`Generating chapter ${chapter.number} of book ${book.title}`);
+  console.log(
+    `Generating chapter ${chapter.number} of book ${book.title} with ${chapter.outline.length} parts`,
+  );
   const parts: ChapterParts = [];
 
   for (
@@ -23,9 +25,15 @@ export async function createChapter(
     partNumber <= chapter.outline.length;
     partNumber++
   ) {
+    console.log(
+      `Generating part ${partNumber}/${chapter.outline.length} for chapter ${chapter.number}`,
+    );
     const part = await createChapterPart(bookId, chapterNumber, partNumber);
     parts.push(part);
   }
 
+  console.log(
+    `Chapter ${chapter.number} generation complete with ${parts.length} parts`,
+  );
   return parts;
 }

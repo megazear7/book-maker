@@ -29,9 +29,10 @@ import { createChapterPartAudio } from "../services/create-chapter-part-audio.js
 import { getBookAudio } from "../services/get-book-audio.js";
 import multer from "multer";
 import { generateProperty } from "../services/generate-property.js";
+import { generateEverything } from "../services/book-generate-everything.js";
 
 const server = express();
-server.use(express.json({ limit: '10mb' }));
+server.use(express.json({ limit: "10mb" }));
 const port = 3000;
 
 const storage = multer.diskStorage({
@@ -110,7 +111,7 @@ server.post("/api/book/:book/property/:property", async (req, res) => {
     req.params.property,
     body.instructions,
     body.wordCount,
-  ),
+  );
   res.json(await getBook(req.params.book));
 });
 server.post("/api/book/:book/chapter/:chapter/audio", async (req, res) => {
@@ -187,6 +188,10 @@ server.post(
     res.json({ success: true });
   },
 );
+server.post("/api/book/:book/generate-everything", async (req, res) => {
+  const { maxSpend } = req.body;
+  res.json(await generateEverything(req.params.book, maxSpend));
+});
 server.use(express.static("dist/client"));
 server.use("/shared", express.static("dist/shared"));
 server.use("/types", express.static("dist/types"));

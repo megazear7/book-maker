@@ -27,6 +27,10 @@ export async function createChapterOutline(
   console.log(
     `Generating chapter outline for ${chapter.number} of book ${book.title}`,
   );
+
+  const initialPromptTokens = book.model.text.usage.prompt_tokens;
+  const initialCompletionTokens = book.model.text.usage.completion_tokens;
+
   const history: ChatCompletionMessageParam[] = [
     ...referencesPrompt(book, ReferenceUse.enum.outlining),
     ...bookOverviewPrompt(book),
@@ -35,6 +39,7 @@ export async function createChapterOutline(
     ...makeChapterOutlinePrompt(chapter),
   ];
   const client = await getTextClient(book);
+  console.log(`Sending API request for chapter outline...`);
   const outline = await getJsonCompletion(
     book,
     client,
@@ -46,6 +51,14 @@ export async function createChapterOutline(
     `Writing updates for chapter ${chapter.number} of book ${book.title}`,
   );
   await writeBook(book);
+
+  const finalPromptTokens = book.model.text.usage.prompt_tokens;
+  const finalCompletionTokens = book.model.text.usage.completion_tokens;
+  const promptTokensUsed = finalPromptTokens - initialPromptTokens;
+  const completionTokensUsed = finalCompletionTokens - initialCompletionTokens;
+  console.log(
+    `Chapter outline generation complete. Tokens used: ${promptTokensUsed} prompt, ${completionTokensUsed} completion`,
+  );
 
   return outline;
 }

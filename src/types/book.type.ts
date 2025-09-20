@@ -253,7 +253,9 @@ export type BookModelConfigs = z.infer<typeof BookModelConfigs>;
 export const Book = z.object({
   id: BookId,
   title: BookTitle,
-  references: BookReference.array(),
+  references: BookReference.array().describe(
+    "A list of reference files to use when writing the book.",
+  ),
   overview: BookOverview,
   chapters: Chapter.array(),
   instructions: Instructions,

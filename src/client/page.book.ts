@@ -27,6 +27,7 @@ import {
   createChapterPart,
   createChapterPartAudio,
   downloadFullAudio,
+  generateEverythingApi,
 } from "./service.api.js";
 import { formatNumber } from "./service.util.js";
 import { openBookConfigurationModal } from "./modal.book-configuration.js";
@@ -433,8 +434,24 @@ export class BookPage implements Page {
 
     if (createBookEverythingButton) {
       createBookEverythingButton.addEventListener("click", () => {
-        alert(
-          "TODO: Generate all the remaining chapters for the book including the outline, parts, and audio for each chapter that is missing any of these things. Confirm this action with a modal.",
+        createModal(
+          "Generate Everything for Book",
+          "Generate",
+          [
+            {
+              name: "maxSpend",
+              label: "Maximum Spend ($)",
+              type: "number",
+              default: "1",
+            },
+          ],
+          async (result) => {
+            const maxSpend = parseFloat(
+              result.find((r) => r.name === "maxSpend")?.value as string,
+            );
+            await generateEverythingApi(book.id, maxSpend);
+            window.location.reload();
+          },
         );
       });
     }
@@ -458,7 +475,11 @@ export class BookPage implements Page {
             if (activeChapter && activeChapter!.parts.length === 0) {
               activeChapter.parts = await createChapter(book, activeChapter!);
             }
-            if (activeChapter && activeChapter!.parts.length > 0 && !activeChapter!.parts[0].audio) {
+            if (
+              activeChapter &&
+              activeChapter!.parts.length > 0 &&
+              !activeChapter!.parts[0].audio
+            ) {
               await createChapterAudio(book, activeChapter!);
             }
             window.location.pathname = `/book/${book.id}/chapter/${activeChapter!.number}`;

@@ -38,6 +38,14 @@ export async function getJsonCompletion<T>(
     book.model.text.usage.completion_tokens +=
       completion.usage?.completion_tokens || 0;
     book.model.text.usage.prompt_tokens += completion.usage?.prompt_tokens || 0;
+    if (completion.usage && completion.usage.completion_tokens && completion.usage?.prompt_tokens) {
+      const addedCost = completion.usage.completion_tokens * (book.model.text.cost.outputTokenCost / 1000000) +
+        completion.usage.prompt_tokens * (book.model.text.cost.inputTokenCost / 1000000);
+      console.log("Added cost: " + addedCost, completion.usage);
+    } else {
+      console.log("No usage info returned: ", completion.usage);
+    }
+
     await writeBook(book);
   }
 
