@@ -1,5 +1,5 @@
 import z from "zod";
-import { BookTitle, LoadingMessageContent } from "./book.type.js";
+import { BookTitle, LoadingMessageContent, BookId } from "./book.type.js";
 
 export const RequestPath = z.string();
 export type RequestPath = z.infer<typeof RequestPath>;
@@ -29,6 +29,7 @@ export const CreateEmptyBookRequest = z.object({
 export type CreateEmptyBookRequest = z.infer<typeof CreateEmptyBookRequest>;
 
 export const GetLoadingMessagesRequest = z.object({
+  bookId: BookId,
   content: LoadingMessageContent,
 });
 export type GetLoadingMessagesRequest = z.infer<

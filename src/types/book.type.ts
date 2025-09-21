@@ -38,7 +38,9 @@ export type BookOverview = z.infer<typeof BookOverview>;
 
 export const BookChapterPartText = z
   .string()
-  .describe("A written part of a chapter of the book.");
+  .describe(
+    "A written part of a chapter of the book. This should be plain text written in proper sentences and paragraphs. It should include absolutely no json or markup.",
+  );
 export type BookChapterPartText = z.infer<typeof BookChapterPartText>;
 
 export const PropertyText = z
@@ -250,6 +252,15 @@ export const BookModelConfigs = z.object({
 });
 export type BookModelConfigs = z.infer<typeof BookModelConfigs>;
 
+export const LoadingMessageContent = z.string();
+export type LoadingMessageContent = z.infer<typeof LoadingMessageContent>;
+
+export const LoadingMessage = z.string();
+export type LoadingMessage = z.infer<typeof LoadingMessage>;
+
+export const LoadingMessages = LoadingMessage.array();
+export type LoadingMessages = z.infer<typeof LoadingMessages>;
+
 export const Book = z.object({
   id: BookId,
   title: BookTitle,
@@ -261,14 +272,6 @@ export const Book = z.object({
   instructions: Instructions,
   pronunciation: Pronunciation.array(),
   model: BookModelConfigs,
+  loadingMessages: LoadingMessages,
 });
 export type Book = z.infer<typeof Book>;
-
-export const LoadingMessageContent = z.string();
-export type LoadingMessageContent = z.infer<typeof LoadingMessageContent>;
-
-export const LoadingMessage = z.string();
-export type LoadingMessage = z.infer<typeof LoadingMessage>;
-
-export const LoadingMessages = LoadingMessage.array();
-export type LoadingMessages = z.infer<typeof LoadingMessages>;

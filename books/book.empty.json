@@ -2,6 +2,7 @@
     "id": "000",
     "title": "",
     "references": [],
+    "loadingMessages": [],
     "overview": "",
     "chapters": [
         {
@@ -51,7 +52,7 @@
             }
         },
         "audio": {
-            "name": "gpt",
+            "name": "openai",
             "cost": {
                 "tokens": 0,
                 "dollars": 0

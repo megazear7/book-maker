@@ -23,14 +23,16 @@ async function request<A, B>({
   body,
   loading,
   responseType,
+  bookId,
 }: {
   path: RequestPath;
   method: RequestMethod;
   responseType: ZodSchema<B>;
   loading: LoadingMessageContent;
   body?: A;
+  bookId?: BookId;
 }): Promise<B> {
-  const cleanup = await toggleLoading(loading);
+  const cleanup = await toggleLoading(bookId, loading);
   try {
     const config: RequestInit = {
       method: method,
@@ -54,11 +56,13 @@ async function post<A, B>({
   responseType,
   loading,
   body,
+  bookId,
 }: {
   path: RequestPath;
   responseType: ZodSchema<B>;
   loading: LoadingMessageContent;
   body?: A;
+  bookId?: BookId;
 }): Promise<B> {
   return request({
     path: path,
@@ -66,6 +70,7 @@ async function post<A, B>({
     responseType,
     loading,
     body,
+    bookId,
   });
 }
 
@@ -94,6 +99,7 @@ export async function addChapter(book: Book): Promise<Chapter> {
     path: `/api/book/${book.id}/chapter/add`,
     responseType: Chapter,
     loading: book.overview,
+    bookId: book.id,
   });
 }
 
@@ -105,6 +111,7 @@ export async function createChapterOutline(
     path: `/api/book/${book.id}/chapter/${chapter.number}/outline`,
     responseType: ChapterOutline,
     loading: chapter.what + "\n" + chapter.who,
+    bookId: book.id,
   });
 }
 
@@ -116,6 +123,7 @@ export async function createChapter(
     path: `/api/book/${book.id}/chapter/${chapter.number}`,
     responseType: ChapterParts,
     loading: chapter.outline.join("\n"),
+    bookId: book.id,
   });
 }
 
@@ -127,6 +135,7 @@ export async function createChapterAudio(
     path: `/api/book/${book.id}/chapter/${chapter.number}/audio`,
     responseType: ChapterParts,
     loading: chapter.outline.join("\n"),
+    bookId: book.id,
   });
 }
 
@@ -139,6 +148,7 @@ export async function createChapterPart(
     path: `/api/book/${book.id}/chapter/${chapter.number}/part/${part}`,
     responseType: ChapterPart,
     loading: chapter.outline[part - 1],
+    bookId: book.id,
   });
 }
 
@@ -151,13 +161,12 @@ export async function createChapterPartAudio(
     path: `/api/book/${book.id}/chapter/${chapter.number}/part/${part}/audio`,
     responseType: ChapterPart,
     loading: chapter.outline[part - 1],
+    bookId: book.id,
   });
 }
 
 export async function downloadFullAudio(book: Book): Promise<void> {
-  const cleanup = await toggleLoading(
-    "Messages about creating audio book mp3 file",
-  );
+  const cleanup = await toggleLoading(book.id, book.title);
   try {
     const response = await fetch(`/api/book/${book.id}/audio.mp3`);
     if (!response.ok) {
@@ -187,6 +196,7 @@ export async function saveBook(book: Book): Promise<Book> {
     responseType: Book,
     loading: "Saving book...",
     body: book,
+    bookId: book.id,
   });
 }
 
@@ -201,6 +211,7 @@ export async function generatePropertyApi(
     responseType: Book,
     loading: `Generating ${property}...`,
     body: { instructions, wordCount },
+    bookId,
   });
 }
 
@@ -213,5 +224,6 @@ export async function generateEverythingApi(
     responseType: Book,
     loading: `Generating everything for book...`,
     body: { maxSpend },
+    bookId,
   });
 }

@@ -91,7 +91,7 @@ server.post("/api/book", async (req, res) => {
 });
 server.post("/api/loading/messages", async (req, res) => {
   const body = GetLoadingMessagesRequest.parse(req.body);
-  res.json(await getLoadingMessages(body.content));
+  res.json(await getLoadingMessages(body.bookId, body.content));
 });
 server.post("/api/book/:book/chapter/add", async (req, res) => {
   res.json(await addEmptyChapter(req.params.book));

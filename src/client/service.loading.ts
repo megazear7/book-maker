@@ -1,6 +1,11 @@
-import { LoadingMessageContent, LoadingMessages } from "../types/book.type.js";
+import {
+  LoadingMessageContent,
+  LoadingMessages,
+  BookId,
+} from "../types/book.type.js";
 
 async function getLoadingMessages(
+  bookId: BookId,
   content: LoadingMessageContent,
 ): Promise<LoadingMessages> {
   const res = await fetch(`/api/loading/messages`, {
@@ -8,7 +13,7 @@ async function getLoadingMessages(
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ content }),
+    body: JSON.stringify({ bookId, content }),
   });
   const json = await res.json();
   return LoadingMessages.parse(json);
@@ -18,6 +23,7 @@ let isLoading = false;
 let cleanupFunction: (() => void) | null = null;
 
 export async function toggleLoading(
+  bookId: BookId | undefined,
   content: LoadingMessageContent,
   messageDelay: number = 10000,
 ): Promise<() => void> {
@@ -108,7 +114,9 @@ export async function toggleLoading(
   let messageInterval: NodeJS.Timeout | null = null;
 
   try {
-    const messages: string[] = await getLoadingMessages(content);
+    const messages: string[] = bookId
+      ? await getLoadingMessages(bookId, content)
+      : [];
     if (messages.length > 0) {
       messageDiv.textContent = messages[currentMessageIndex];
       messageInterval = setInterval(() => {

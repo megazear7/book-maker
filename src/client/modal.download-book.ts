@@ -9,6 +9,8 @@ import {
   Table,
   TableRow,
   TableCell,
+  Footer,
+  PageNumber,
 } from "docx";
 
 export function openDownloadBookModal(book: Book): void {
@@ -305,8 +307,27 @@ export function openDownloadBookModal(book: Book): void {
               properties: {
                 page: {
                   size: { width: 8640, height: 12960 },
-                  margin: { top: 720, bottom: 720, left: 720, right: 720 },
+                  margin: {
+                    top: 720,
+                    bottom: 720,
+                    left: 720,
+                    right: 720,
+                  },
                 },
+              },
+              footers: {
+                default: new Footer({
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({
+                          children: [PageNumber.CURRENT],
+                        }),
+                      ],
+                      alignment: "center",
+                    }),
+                  ],
+                }),
               },
               children: [
                 new Paragraph({
@@ -324,9 +345,9 @@ export function openDownloadBookModal(book: Book): void {
                   const lines = (part.text || "").split("\n");
                   const filteredLines = lines.filter((line) => !!line);
                   return filteredLines.map(
-                    (line, index) =>
+                    (line) =>
                       new Paragraph({
-                        indent: index === 0 ? { firstLine: 720 } : undefined,
+                        indent: { firstLine: 200 },
                         children: [
                           new TextRun({
                             text: line,
@@ -335,8 +356,8 @@ export function openDownloadBookModal(book: Book): void {
                           }),
                         ],
                         spacing: {
-                          line: 276,
-                          after: index === filteredLines.length - 1 ? 200 : 0,
+                          line: 360,
+                          after: 0,
                         },
                       }),
                   );
