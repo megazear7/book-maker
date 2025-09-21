@@ -97,3 +97,22 @@ ${chapter.parts.map((part) => part.text).join("\n")}
 `,
     }));
 };
+
+export const generatePreviewSentencePrompt = (
+  word: string,
+  book: Book,
+): ChatCompletionMessageParam[] => [
+  {
+    role: "system",
+    content: `You are helping create a preview sentence for testing pronunciation of the word "${word}" in the context of a book. Create a short, natural sentence that uses the word "${word}" in a way that would appear in this book's style and genre.`,
+  },
+  {
+    role: "user",
+    content: `
+Book Title: ${book.title}
+Book Overview: ${book.overview}
+
+Create a single short sentence (6-15 words) that naturally incorporates the word "${word}" and fits the style and tone of this book. The sentence should demonstrate how the word would be used in context.
+`,
+  },
+];

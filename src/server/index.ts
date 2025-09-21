@@ -8,6 +8,7 @@ import { createChapter } from "../services/create-chapter.js";
 import { createChapterPart } from "../services/create-chapter-part.js";
 import { makeBookOutline } from "../services/make-book-outline.js";
 import OpenAI from "openai";
+import { ChatCompletionMessageParam } from "openai/resources";
 import { env } from "../services/env.js";
 import {
   CreateEmptyBookRequest,
@@ -30,6 +31,10 @@ import { getBookAudio } from "../services/get-book-audio.js";
 import multer from "multer";
 import { generateProperty } from "../services/generate-property.js";
 import { generateEverything } from "../services/book-generate-everything.js";
+import { generatePreviewSentencePrompt } from "../services/prompts.js";
+import { getTextClient } from "../services/client.js";
+import { getTextModelConfig } from "../services/get-model-config.js";
+import { getAudioClient } from "../services/client.js";
 
 const server = express();
 server.use(express.json({ limit: "10mb" }));
@@ -47,6 +52,20 @@ const storage = multer.diskStorage({
   },
 });
 const upload = multer({ storage });
+
+async function getTextCompletion(
+  book: Book,
+  messages: ChatCompletionMessageParam[],
+): Promise<string> {
+  const client = await getTextClient(book);
+  const modelConfig = getTextModelConfig(book);
+  const completion = await client.chat.completions.create({
+    model: modelConfig.modelName,
+    messages,
+    max_completion_tokens: 1000,
+  });
+  return completion.choices[0].message.content || "";
+}
 
 server.use(express.json());
 server.get("/api/books", async (req, res) => {
@@ -191,6 +210,55 @@ server.post(
 server.post("/api/book/:book/generate-everything", async (req, res) => {
   const { maxSpend } = req.body;
   res.json(await generateEverything(req.params.book, maxSpend));
+});
+server.post("/api/preview", async (req, res) => {
+  const { word, bookId } = req.body;
+  const book = await getBook(bookId);
+
+  // Generate a preview sentence
+  const messages = generatePreviewSentencePrompt(word, book);
+  const sentence = await getTextCompletion(book, messages);
+
+  // Apply pronunciation replacement
+  const pronunciation = book.pronunciation.find((p) => p.match === word);
+  let textToSpeak = sentence;
+  if (pronunciation) {
+    textToSpeak = sentence.replace(
+      new RegExp(word, "gi"),
+      pronunciation.replace,
+    );
+  }
+
+  // Generate audio
+  const client = await getAudioClient(book);
+  const response = await client.chat.completions.create({
+    model: "gpt-4o-audio-preview-2025-06-03",
+    modalities: ["text", "audio"],
+    max_completion_tokens: 15000,
+    audio: {
+      voice: "ash",
+      format: "mp3",
+    },
+    messages: [
+      {
+        role: "system",
+        content: `You are a professional audio book narrator. You repeat the provided text exactly as written. ${book.instructions.audio}`,
+      },
+      {
+        role: "user",
+        content: textToSpeak,
+      },
+    ],
+  });
+
+  const audio = response.choices[0].message.audio?.data;
+  if (!audio) {
+    throw new Error("No audio data returned in the response");
+  }
+
+  const buffer = Buffer.from(audio, "base64");
+  res.setHeader("Content-Type", "audio/mpeg");
+  res.send(buffer);
 });
 server.use(express.static("dist/client"));
 server.use("/shared", express.static("dist/shared"));
