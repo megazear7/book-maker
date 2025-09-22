@@ -243,16 +243,12 @@ export const Character = z.object({
 });
 export type Character = z.infer<typeof Character>;
 
-export const KnownModelTypeName = z
-  .enum(["grok", "gpt", "azure", "openai", "anthropic"])
+export const ModelTypeName = z
+  .string()
+  .min(3)
   .describe(
-    "Known model types. Any selected model needs preconfigured environment variables as described in the ModelTypeName description.",
+    "The model name. This should correspond to an environment variable ending with _MODEL_API_KEY (e.g., GROK_MODEL_API_KEY).",
   );
-export type KnownModelTypeName = z.infer<typeof KnownModelTypeName>;
-
-export const ModelTypeName = KnownModelTypeName.or(z.string()).describe(
-  "The model you select should have an environment variable in a .env file called ABC_API_KEY where `ABC` is replaced with the uppercase version of the model name. The endpoint, model name, and deployment (for Azure) are configured directly in the book JSON.",
-);
 export type ModelTypeName = z.infer<typeof ModelTypeName>;
 
 export const ModelTypeConfig = z.object({

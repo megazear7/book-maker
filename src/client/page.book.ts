@@ -305,7 +305,7 @@ export class BookPage implements Page {
     const configureModelButton = document.getElementById("configure-model");
     if (configureModelButton) {
       configureModelButton.addEventListener("click", async () => {
-        openBookConfigurationModal(this.book);
+        await openBookConfigurationModal(this.book);
       });
     }
     const createChapterOutlineButton = document.getElementById(

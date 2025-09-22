@@ -260,6 +260,45 @@ server.post("/api/preview", async (req, res) => {
   res.setHeader("Content-Type", "audio/mpeg");
   res.send(buffer);
 });
+server.get("/api/models", async (req, res) => {
+  try {
+    // Read .env file
+    const envPath = ".env";
+    const envContent = await fs.readFile(envPath, "utf-8");
+
+    // Parse environment variables
+    const envVars = envContent
+      .split("\n")
+      .filter((line) => line.trim() && !line.startsWith("#"))
+      .map((line) => line.split("=")[0]?.trim())
+      .filter((key) => key && key.endsWith("_MODEL_API_KEY"));
+
+    // Extract model names (remove _MODEL_API_KEY suffix)
+    const models = envVars.map((key) =>
+      key.replace("_MODEL_API_KEY", "").toLowerCase(),
+    );
+
+    if (models.length === 0) {
+      res.json({
+        models: [],
+        message:
+          "No model API keys found in .env file. Please add environment variables ending with '_MODEL_API_KEY' (e.g., OPENAI_MODEL_API_KEY, GROK_MODEL_API_KEY).",
+      });
+    } else {
+      res.json({
+        models: models,
+        message: null,
+      });
+    }
+  } catch (error) {
+    console.error("Error reading .env file:", error);
+    res.status(500).json({
+      models: [],
+      message:
+        "Error reading .env file. Please ensure the .env file exists and contains model API keys.",
+    });
+  }
+});
 server.use(express.static("dist/client"));
 server.use("/shared", express.static("dist/shared"));
 server.use("/types", express.static("dist/types"));
