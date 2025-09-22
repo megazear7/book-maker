@@ -9,13 +9,14 @@ npm install
 
 ## Prep
 
-Obtain an api key, base url, and model name that is compatible with
-the OpenAI sdk and set the environment variables as shown below:
+Obtain an api key for a model and set an environment variable as shown below in `.env`
 
 ```sh
-ABC_MODEL_NAME=''
-ABC_API_KEY=''
-ABC_BASE_URL=''
+GROK_API_KEY=''
+GPT_API_KEY=''
+AZURE_API_KEY=''
+OPENAI_API_KEY=''
+ANTHROPIC_API_KEY=''
 ```
 
 ## Build

@@ -15,12 +15,56 @@ export function openBookConfigurationModal(book: Book): void {
         typeof book.model.text.name === "string" ? book.model.text.name : "",
     },
     {
+      name: "textEndpoint",
+      label: "Text Model Endpoint",
+      type: "plaintext",
+      default: book.model.text.endpoint ?? "",
+    },
+    {
+      name: "textModelNameField",
+      label: "Text Model Name",
+      type: "plaintext",
+      default: book.model.text.modelName ?? "",
+    },
+    {
+      name: "textDeployment",
+      label: "Text Model Deployment",
+      type: "plaintext",
+      default: book.model.text.deployment ?? "",
+      showIf: {
+        fieldName: "textModelName",
+        value: "azure",
+      },
+    },
+    {
       name: "audioModelName",
       label: "Audio Model Name",
       type: "dropdown",
       options: knownModelNames.map((n) => ({ label: n, value: n })),
       default:
         typeof book.model.audio.name === "string" ? book.model.audio.name : "",
+    },
+    {
+      name: "audioEndpoint",
+      label: "Audio Model Endpoint",
+      type: "plaintext",
+      default: book.model.audio.endpoint ?? "",
+    },
+    {
+      name: "audioModelNameField",
+      label: "Audio Model Name",
+      type: "plaintext",
+      default: book.model.audio.modelName ?? "",
+    },
+    {
+      name: "audioDeployment",
+      label: "Audio Model Deployment",
+      type: "plaintext",
+      default: book.model.audio.deployment ?? "",
+      showIf: {
+        fieldName: "audioModelName",
+        value: "azure",
+      },
     },
     // Text model cost fields
     {
@@ -81,8 +125,78 @@ export function openBookConfigurationModal(book: Book): void {
     const audioModelName = String(
       result.find((r) => r.name === "audioModelName")?.value ?? "",
     );
+    const textEndpoint = String(
+      result.find((r) => r.name === "textEndpoint")?.value ?? "",
+    );
+    const textModelNameField = String(
+      result.find((r) => r.name === "textModelNameField")?.value ?? "",
+    );
+    const textDeployment = String(
+      result.find((r) => r.name === "textDeployment")?.value ?? "",
+    );
+    const audioEndpoint = String(
+      result.find((r) => r.name === "audioEndpoint")?.value ?? "",
+    );
+    const audioModelNameField = String(
+      result.find((r) => r.name === "audioModelNameField")?.value ?? "",
+    );
+    const audioDeployment = String(
+      result.find((r) => r.name === "audioDeployment")?.value ?? "",
+    );
+
     book.model.text.name = textModelName;
+    book.model.text.endpoint = textEndpoint;
+    book.model.text.modelName = textModelNameField;
+    if (textDeployment) {
+      book.model.text.deployment = textDeployment;
+    } else {
+      delete book.model.text.deployment;
+    }
+
     book.model.audio.name = audioModelName;
+    book.model.audio.endpoint = audioEndpoint;
+    book.model.audio.modelName = audioModelNameField;
+    if (audioDeployment) {
+      book.model.audio.deployment = audioDeployment;
+    } else {
+      delete book.model.audio.deployment;
+    }
+
+    // Update cost fields
+    const textInputTokenCost = Number(
+      result.find((r) => r.name === "textInputTokenCost")?.value ?? 0,
+    );
+    const textInputTokenCount = Number(
+      result.find((r) => r.name === "textInputTokenCount")?.value ?? 0,
+    );
+    const textOutputTokenCost = Number(
+      result.find((r) => r.name === "textOutputTokenCost")?.value ?? 0,
+    );
+    const textOutputTokenCount = Number(
+      result.find((r) => r.name === "textOutputTokenCount")?.value ?? 0,
+    );
+    const audioInputTokenCost = Number(
+      result.find((r) => r.name === "audioInputTokenCost")?.value ?? 0,
+    );
+    const audioInputTokenCount = Number(
+      result.find((r) => r.name === "audioInputTokenCount")?.value ?? 0,
+    );
+    const audioOutputTokenCost = Number(
+      result.find((r) => r.name === "audioOutputTokenCost")?.value ?? 0,
+    );
+    const audioOutputTokenCount = Number(
+      result.find((r) => r.name === "audioOutputTokenCount")?.value ?? 0,
+    );
+
+    book.model.text.cost.inputTokenCost = textInputTokenCost;
+    book.model.text.cost.inputTokenCount = textInputTokenCount;
+    book.model.text.cost.outputTokenCost = textOutputTokenCost;
+    book.model.text.cost.outputTokenCount = textOutputTokenCount;
+    book.model.audio.cost.inputTokenCost = audioInputTokenCost;
+    book.model.audio.cost.inputTokenCount = audioInputTokenCount;
+    book.model.audio.cost.outputTokenCost = audioOutputTokenCost;
+    book.model.audio.cost.outputTokenCount = audioOutputTokenCount;
+
     // Save changes
     await fetch(`/api/book/${book.id}/save`, {
       method: "POST",

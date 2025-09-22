@@ -46,16 +46,28 @@
     "model": {
         "text": {
             "name": "grok",
+            "endpoint": "https://api.x.ai/v1",
+            "modelName": "grok-4-0709",
             "cost": {
                 "tokens": 0,
                 "dollars": 0
+            },
+            "usage": {
+                "completion_tokens": 0,
+                "prompt_tokens": 0
             }
         },
         "audio": {
             "name": "openai",
+            "endpoint": "https://api.openai.com/v1",
+            "modelName": "gpt-4o-audio-preview-2025-06-03",
             "cost": {
                 "tokens": 0,
                 "dollars": 0
+            },
+            "usage": {
+                "completion_tokens": 0,
+                "prompt_tokens": 0
             }
         }
     }

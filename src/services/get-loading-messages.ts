@@ -6,6 +6,8 @@ import { getBook } from "./get-book.js";
 import { writeBook } from "./write-book.js";
 import { BookId } from "../types/book.type.js";
 
+const MESSAGE_COUNT = 25;
+
 const prompt = (str: string): string =>
   `
 ${str}
@@ -30,7 +32,7 @@ export async function getLoadingMessages(
   if (book.loadingMessages.length < 100) {
     // Generate 10 more messages
     console.log(
-      `Generating 10 new loading messages (current count: ${book.loadingMessages.length})`,
+      `Generating ${MESSAGE_COUNT} new loading messages (current count: ${book.loadingMessages.length})`,
     );
     const newMessages = await generateNewMessages(content);
     book.loadingMessages.push(...newMessages);
@@ -42,7 +44,7 @@ export async function getLoadingMessages(
         `Randomly regenerating loading messages (current count: ${book.loadingMessages.length})`,
       );
       const newMessages = await generateNewMessages(content);
-      book.loadingMessages.splice(0, 10, ...newMessages);
+      book.loadingMessages.splice(0, MESSAGE_COUNT, ...newMessages);
       await writeBook(book);
     } else {
       console.log(

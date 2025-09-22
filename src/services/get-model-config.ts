@@ -1,5 +1,5 @@
 import { Book } from "../types/book.type.js";
-import { env, envOptional } from "./env.js";
+import { env } from "./env.js";
 
 export function getTextModelConfig(book: Book): {
   endpoint: string;
@@ -8,10 +8,10 @@ export function getTextModelConfig(book: Book): {
   deployment: string | undefined;
 } {
   return {
-    endpoint: env(`${book.model.text.name.toUpperCase()}_BASE_URL`),
+    endpoint: book.model.text.endpoint,
     apiKey: env(`${book.model.text.name.toUpperCase()}_API_KEY`),
-    modelName: env(`${book.model.text.name.toUpperCase()}_MODEL_NAME`),
-    deployment: envOptional(`${book.model.text.name.toUpperCase()}_DEPLOYMENT`),
+    modelName: book.model.text.modelName,
+    deployment: book.model.text.deployment,
   };
 }
 
@@ -22,11 +22,9 @@ export function getAudioModelConfig(book: Book): {
   deployment: string | undefined;
 } {
   return {
-    endpoint: env(`${book.model.audio.name.toUpperCase()}_BASE_URL`),
+    endpoint: book.model.audio.endpoint,
     apiKey: env(`${book.model.audio.name.toUpperCase()}_API_KEY`),
-    modelName: env(`${book.model.audio.name.toUpperCase()}_MODEL_NAME`),
-    deployment: envOptional(
-      `${book.model.audio.name.toUpperCase()}_DEPLOYMENT`,
-    ),
+    modelName: book.model.audio.modelName,
+    deployment: book.model.audio.deployment,
   };
 }

@@ -251,12 +251,18 @@ export const KnownModelTypeName = z
 export type KnownModelTypeName = z.infer<typeof KnownModelTypeName>;
 
 export const ModelTypeName = KnownModelTypeName.or(z.string()).describe(
-  "The model you select should have three environment variables in a .env file called ABC_MODEL_NAME, ABC_API_KEY, and ABC_BASE_URL where `ABC` is replaced with the uppercse version of the model. The azure mmodel type requires a ABC_DEPLOYMENT environment variable as well.",
+  "The model you select should have an environment variable in a .env file called ABC_API_KEY where `ABC` is replaced with the uppercase version of the model name. The endpoint, model name, and deployment (for Azure) are configured directly in the book JSON.",
 );
 export type ModelTypeName = z.infer<typeof ModelTypeName>;
 
 export const ModelTypeConfig = z.object({
   name: ModelTypeName,
+  endpoint: z.string().describe("The base URL for the model API"),
+  modelName: z.string().describe("The specific model name to use"),
+  deployment: z
+    .string()
+    .optional()
+    .describe("Azure deployment name (required for Azure models)"),
   cost: Cost,
   usage: Usage,
 });
