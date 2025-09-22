@@ -271,4 +271,22 @@ server.use(express.static("src/static"));
 server.get("/*", async (req, res) => {
   res.send(page(body()));
 });
+
+// Error handling middleware
+server.use((err: Error, _req: express.Request, res: express.Response) => {
+  console.error("Server error:", err);
+  res.status(500).json({ error: "Internal server error" });
+});
+
 server.listen(port, () => console.log(`Example app listening on port ${port}`));
+
+// Process-level error handlers
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("Unhandled Rejection at:", promise, "reason:", reason);
+  // Don't exit the process, just log the error
+});
+
+process.on("uncaughtException", (error) => {
+  console.error("Uncaught Exception:", error);
+  // Don't exit the process, just log the error
+});
