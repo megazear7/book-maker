@@ -200,7 +200,7 @@ class ClientApp {
             {
               name: "description",
               label: "Description",
-              type: "plaintext",
+              type: "textarea",
               placeholder: "A story about knights and dragons",
               showIf: {
                 fieldName: "generateImmediately",
