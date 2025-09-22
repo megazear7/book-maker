@@ -98,6 +98,24 @@ ${chapter.parts.map((part) => part.text).join("\n")}
     }));
 };
 
+export const charactersPrompt = (book: Book): ChatCompletionMessageParam[] => [
+  {
+    role: "user",
+    content: `
+Characters in this book:
+
+${book.characters
+  .map(
+    (character) => `
+${character.name}:
+${character.instructions}
+`,
+  )
+  .join("\n\n")}
+`,
+  },
+];
+
 export const generatePreviewSentencePrompt = (
   word: string,
   book: Book,

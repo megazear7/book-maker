@@ -15,6 +15,7 @@ import {
   chapterDetailsPrompt,
   referencesPrompt,
   writtenChaptersPrompt,
+  charactersPrompt,
 } from "./prompts.js";
 import { writeBook } from "./write-book.js";
 
@@ -34,6 +35,7 @@ export async function createChapterOutline(
   const history: ChatCompletionMessageParam[] = [
     ...(await referencesPrompt(book, ReferenceUse.enum.outlining)),
     ...bookOverviewPrompt(book),
+    ...charactersPrompt(book),
     ...writtenChaptersPrompt(book),
     ...chapterDetailsPrompt(chapter),
     ...makeChapterOutlinePrompt(chapter),

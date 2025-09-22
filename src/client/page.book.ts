@@ -6,6 +6,7 @@ import {
 } from "../types/book.type.js";
 import { CompletionBar } from "./component.completion-bar.js";
 import { Pronunciations } from "./component.pronunciation.js";
+import { Characters } from "./component.characters.js";
 
 import {
   aiIconLeft,
@@ -43,6 +44,7 @@ export class BookPage implements Page {
   hasChanges: boolean = false;
   pronunciationsComponent: Pronunciations;
   referencesComponent: References;
+  charactersComponent: Characters;
 
   constructor(
     book: Book,
@@ -58,6 +60,9 @@ export class BookPage implements Page {
       this.hasChanges = true;
     });
     this.referencesComponent = new References(book, () => {
+      this.hasChanges = true;
+    });
+    this.charactersComponent = new Characters(book, () => {
       this.hasChanges = true;
     });
   }
@@ -131,6 +136,8 @@ export class BookPage implements Page {
         ${this.pronunciationsComponent.render()}
 
         ${this.referencesComponent.render()}
+
+        ${this.charactersComponent.render()}
 
         <div data-section="chapter" data-scroll-priority="${activeChapter ? 2 : 1}"></div>
 
@@ -500,6 +507,7 @@ export class BookPage implements Page {
 
     await this.pronunciationsComponent.addEventListeners();
     await this.referencesComponent.addEventListeners();
+    await this.charactersComponent.addEventListeners();
 
     // TODO Add this button to all fields and implement an api to support this request.
     const generateInstructionsButtons = document.querySelectorAll(

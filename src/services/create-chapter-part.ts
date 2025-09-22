@@ -18,6 +18,7 @@ import {
   existingPartsPrompt,
   referencesPrompt,
   writtenChaptersPrompt,
+  charactersPrompt,
 } from "./prompts.js";
 import { writeBook } from "./write-book.js";
 import { getBook } from "./get-book.js";
@@ -39,6 +40,7 @@ export async function createChapterPart(
   const history: ChatCompletionMessageParam[] = [
     ...(await referencesPrompt(book, ReferenceUse.enum.writing)),
     ...bookOverviewPrompt(book),
+    ...charactersPrompt(book),
     ...writtenChaptersPrompt(book),
     ...chapterDetailsPrompt(chapter),
     ...existingPartsPrompt(chapter),

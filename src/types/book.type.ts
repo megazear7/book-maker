@@ -227,6 +227,22 @@ export const Pronunciation = z.object({
 });
 export type Pronunciation = z.infer<typeof Pronunciation>;
 
+export const CharacterName = z.string().describe("The name of the character");
+export type CharacterName = z.infer<typeof CharacterName>;
+
+export const CharacterInstructions = z
+  .string()
+  .describe(
+    "Instructions for how this character should behave, their personality, background, and any other relevant details for writing their parts.",
+  );
+export type CharacterInstructions = z.infer<typeof CharacterInstructions>;
+
+export const Character = z.object({
+  name: CharacterName,
+  instructions: CharacterInstructions,
+});
+export type Character = z.infer<typeof Character>;
+
 export const KnownModelTypeName = z
   .enum(["grok", "gpt", "azure", "openai", "anthropic"])
   .describe(
@@ -271,6 +287,7 @@ export const Book = z.object({
   chapters: Chapter.array(),
   instructions: Instructions,
   pronunciation: Pronunciation.array(),
+  characters: Character.array(),
   model: BookModelConfigs,
   loadingMessages: LoadingMessages,
 });
