@@ -102,3 +102,26 @@ export const refreshIcon = `
   <path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z" fill="currentColor"/>
 </svg>
 `;
+
+export const detailsIcon = `
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="24" height="24" viewBox="0 0 24 24"
+     role="img" aria-label="Details" fill="none"
+     stroke="currentColor" stroke-width="1.6"
+     stroke-linecap="round" stroke-linejoin="round">
+  <title>Details</title>
+
+  <!-- bullets -->
+  <circle cx="5"  cy="6"  r="0.9" />
+  <circle cx="5"  cy="12" r="0.9" />
+  <circle cx="5"  cy="18" r="0.9" />
+
+  <!-- list lines -->
+  <path d="M9 6h7" />
+  <path d="M9 12h7" />
+  <path d="M9 18h7" />
+
+  <!-- chevron (indicates 'more details') -->
+  <path d="M19 10.7 L20.7 12 L19 13.3" />
+</svg>
+`;

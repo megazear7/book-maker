@@ -12,6 +12,7 @@ import {
   aiIconLeft,
   aiIconRight,
   audioIcon,
+  detailsIcon,
   downloadIcon,
   gearIcon,
   plusIcon,
@@ -32,6 +33,7 @@ import {
 } from "./service.api.js";
 import { formatNumber } from "./service.util.js";
 import { openBookConfigurationModal } from "./modal.book-configuration.js";
+import { openBookDetailsModal } from "./modal.book-details.js";
 import { openDownloadBookModal } from "./modal.download-book.js";
 import { References } from "./component.references.js";
 import { generateProperty } from "./service.generate-property.js";
@@ -99,6 +101,7 @@ export class BookPage implements Page {
             <button id="download-book" class="secondary"><span class="button-inner">${downloadIcon} Download Book</span></button>
             <button id="download-audio" class="secondary"><span class="button-inner">${downloadIcon} Download Audio</span></button>
             <button id="configure-model" class="secondary"><span class="button-inner">${gearIcon} Configure</span></button>
+            <button id="edit-details" class="secondary"><span class="button-inner">${detailsIcon} Details</span></button>
             <button id="create-book-everything" class="secondary"><span class="button-inner">${aiIconLeft}<span>Generate everything</span>${aiIconRight}</span></span></button>
           </div>
 
@@ -306,6 +309,12 @@ export class BookPage implements Page {
     if (configureModelButton) {
       configureModelButton.addEventListener("click", async () => {
         await openBookConfigurationModal(this.book);
+      });
+    }
+    const editDetailsButton = document.getElementById("edit-details");
+    if (editDetailsButton) {
+      editDetailsButton.addEventListener("click", async () => {
+        await openBookDetailsModal(this.book);
       });
     }
     const createChapterOutlineButton = document.getElementById(

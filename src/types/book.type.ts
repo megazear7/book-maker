@@ -36,6 +36,15 @@ export const BookOverview = z
   );
 export type BookOverview = z.infer<typeof BookOverview>;
 
+export const BookDetails = z.object({
+  authorName: z.string().optional(),
+  isbn: z.string().optional(),
+  dedication: z.string().optional(),
+  acknowledgements: z.string().optional(),
+  aboutTheAuthor: z.string().optional(),
+});
+export type BookDetails = z.infer<typeof BookDetails>;
+
 export const BookChapterPartText = z
   .string()
   .describe(
@@ -286,6 +295,7 @@ export const Book = z.object({
     "A list of reference files to use when writing the book.",
   ),
   overview: BookOverview,
+  details: BookDetails.optional(),
   chapters: Chapter.array(),
   instructions: Instructions,
   pronunciation: Pronunciation.array(),
