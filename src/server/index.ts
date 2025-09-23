@@ -35,6 +35,7 @@ import { generatePreviewSentencePrompt } from "../services/prompts.js";
 import { getTextClient } from "../services/client.js";
 import { getTextModelConfig } from "../services/get-model-config.js";
 import { getAudioClient } from "../services/client.js";
+import { createDocxFile } from "../services/book-file-docx.js";
 
 const server = express();
 server.use(express.json({ limit: "10mb" }));
@@ -297,6 +298,22 @@ server.get("/api/models", async (req, res) => {
       message:
         "Error reading .env file. Please ensure the .env file exists and contains model API keys.",
     });
+  }
+});
+server.get("/api/book/:book/download.docx", async (req, res) => {
+  try {
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    );
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${req.params.book}.docx"`,
+    );
+    res.send(await createDocxFile(req.params.book));
+  } catch (error) {
+    console.error("Error generating DOCX:", error);
+    res.status(500).send("Error generating DOCX file");
   }
 });
 server.use(express.static("dist/client"));
