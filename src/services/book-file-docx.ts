@@ -10,6 +10,7 @@ import {
   TableCell,
   Footer,
   PageNumber,
+  Bookmark,
 } from "docx";
 import { getBook } from "./get-book.js";
 
@@ -177,7 +178,7 @@ export async function createDocxFile(bookId: string): Promise<Buffer> {
           insideVertical: { style: "none" },
         },
         rows: book.chapters.map(
-          (chapter, index) =>
+          (chapter) =>
             new TableRow({
               children: [
                 new TableCell({
@@ -210,7 +211,7 @@ export async function createDocxFile(bookId: string): Promise<Buffer> {
                     new Paragraph({
                       children: [
                         new TextRun({
-                          text: `Pg ${index + 1}`,
+                          text: `chapter_${chapter.number}_table_of_contents`,
                           size: 22,
                           font: "Garamond",
                         }),
@@ -319,19 +320,25 @@ export async function createDocxFile(bookId: string): Promise<Buffer> {
       children: [
         new Paragraph({
           children: [
-            new TextRun({
-              text: `CHAPTER ${chapter.number}`,
-              size: 28,
-              font: "Garamond",
+            new Bookmark({
+              id: `chapter_${chapter.number}`,
+              children: [
+                new TextRun({
+                  text: `CHAPTER ${chapter.number}`,
+                  size: 28,
+                  font: "Garamond",
+                }),
+              ],
             }),
           ],
           alignment: "center",
           spacing: { after: 400, before: 2600 },
         }),
         ...chapter.parts.flatMap((part) => {
-          const lines = (part.text || "").split("\n");
-          const filteredLines = lines.filter((line) => !!line);
-          return filteredLines.map(
+          const lines = (part.text || "")
+            .split(/\n|\\n/)
+            .filter((line: string) => !!line.trim());
+          return lines.map(
             (line) =>
               new Paragraph({
                 indent: { firstLine: 200 },
@@ -412,17 +419,17 @@ export async function createDocxFile(bookId: string): Promise<Buffer> {
 
   // Modify XML to add mirrorMargins to chapter sections
   // Chapter sections are identified by having footers (page numbers)
-  const modifiedXml = documentXml.replace(
+  let modifiedXml = documentXml.replace(
     /<w:pgMar w:top="720" w:right="1152" w:bottom="720" w:left="864" w:header="708" w:footer="708" w:gutter="0"\/>/g,
     `<w:pgMar w:top="720" w:right="1152" w:bottom="720" w:left="864" w:header="708" w:footer="708" w:gutter="0"/><w:mirrorMargins w:val="true"/>`,
   );
 
-  // Check if any modifications were made
-  if (modifiedXml !== documentXml) {
-    console.log("XML was modified - mirrorMargins added");
-  } else {
-    console.log("XML was NOT modified - no sections matched");
-  }
+  book.chapters.forEach((chapter) => {
+    modifiedXml = modifiedXml.replaceAll(
+      `chapter_${chapter.number}_table_of_contents`,
+      `<w:fldSimple w:instr="PAGEREF chapter_${chapter.number} \\h"><w:r><w:t>Page #</w:t></w:r></w:fldSimple>`,
+    );
+  });
 
   zip.updateFile("word/document.xml", Buffer.from(modifiedXml, "utf8"));
   return zip.toBuffer();
