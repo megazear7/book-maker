@@ -19,7 +19,7 @@ export const BookMinimalInfo = z.object({
 });
 export type BookMinimalInfo = z.infer<typeof BookMinimalInfo>;
 
-export const ReferenceUse = z.enum(["outlining", "writing"]);
+export const ReferenceUse = z.enum(["outlining", "writing", "editing"]);
 export type ReferenceUse = z.infer<typeof ReferenceUse>;
 
 export const BookReference = z.object({

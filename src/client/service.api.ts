@@ -165,6 +165,28 @@ export async function createChapterPartAudio(
   });
 }
 
+export async function editChapterPart(
+  book: Book,
+  chapter: Chapter,
+  part: ChapterPartNumber,
+  options: {
+    addMoreDialog?: boolean;
+    useLessDescriptiveLanguage?: boolean;
+    replaceUndesirableWords?: boolean;
+    splitIntoParagraphs?: boolean;
+    removeOutOfPlaceReferences?: boolean;
+    additionalInstructions?: string;
+  },
+): Promise<ChapterPart> {
+  return post({
+    path: `/api/book/${book.id}/chapter/${chapter.number}/part/${part}/edit`,
+    responseType: ChapterPart,
+    loading: chapter.parts[part - 1]?.text || "Editing chapter part...",
+    body: options,
+    bookId: book.id,
+  });
+}
+
 export async function downloadFullAudio(book: Book): Promise<void> {
   const cleanup = await toggleLoading(book.id, book.title);
   try {

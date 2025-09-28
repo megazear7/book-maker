@@ -125,3 +125,9 @@ export const detailsIcon = `
   <path d="M19 10.7 L20.7 12 L19 13.3" />
 </svg>
 `;
+
+export const editIcon = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="100%" height="100%" role="img" aria-label="Pencil icon">
+  <path fill="currentColor" d="M3 17.2V21h3.8l11-11.1-3.8-3.8L3 17.2zM20.7 7.0c.4-.4.4-1.1 0-1.5l-2.2-2.2c-.4-.4-1.1-.4-1.5 0L15 4.3l3.8 3.8 1.9-1.1z"/>
+</svg>
+`;

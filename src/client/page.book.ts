@@ -14,6 +14,7 @@ import {
   audioIcon,
   detailsIcon,
   downloadIcon,
+  editIcon,
   gearIcon,
   plusIcon,
   refreshIcon,
@@ -35,6 +36,7 @@ import { formatNumber } from "./service.util.js";
 import { openBookConfigurationModal } from "./modal.book-configuration.js";
 import { openBookDetailsModal } from "./modal.book-details.js";
 import { openDownloadBookModal } from "./modal.download-book.js";
+import { openEditPartModal } from "./modal.edit-part.js";
 import { References } from "./component.references.js";
 import { generateProperty } from "./service.generate-property.js";
 
@@ -273,6 +275,7 @@ export class BookPage implements Page {
               activePart
                 ? `
                 <button id="create-chapter-part"><span class="button-inner">${aiIconLeft}<span>${activePart.text ? "Regenerate" : "Generate"} Part</span>${aiIconRight}</span></button>
+                <button id="edit-chapter-part"><span class="button-inner">${editIcon} Edit Part</span></button>
                 <button id="create-chapter-part-audio"><span class="button-inner">${aiIconLeft}<span>${activePart.audio ? "Regenerate" : "Generate"} Audio</span>${aiIconRight}</span></button>
                 ${
                   activePart.audio
@@ -328,6 +331,9 @@ export class BookPage implements Page {
     const createChapterPartButton = document.getElementById(
       "create-chapter-part",
     );
+    const editChapterPartButton = document.getElementById(
+      "edit-chapter-part",
+    );
     const createChapterPartAudioButton = document.getElementById(
       "create-chapter-part-audio",
     );
@@ -375,6 +381,12 @@ export class BookPage implements Page {
       createChapterPartButton.addEventListener("click", async () => {
         await createChapterPart(book, activeChapter, activePartNumber);
         window.location.pathname = `/book/${book.id}/chapter/${activeChapter?.number}/part/${activePartNumber}`;
+      });
+    }
+
+    if (editChapterPartButton && activeChapter && activePartNumber) {
+      editChapterPartButton.addEventListener("click", async () => {
+        await openEditPartModal(book.id, activeChapter.number, activePartNumber, book, activeChapter);
       });
     }
 

@@ -19,6 +19,17 @@ export async function createChapterPartAudio(
   const book: Book = await getBook(bookId);
   const chapter: Chapter = book.chapters[chapterNumber - 1];
   const client = await getAudioClient(book);
+
+  // Apply pronunciations to the text
+  let processedText = chapter.parts[chapterPartNumber - 1].text;
+  if (book.pronunciation && book.pronunciation.length > 0) {
+    for (const pronunciation of book.pronunciation) {
+      // Use word boundaries to avoid partial matches
+      const regex = new RegExp(`\\b${pronunciation.match}\\b`, "gi");
+      processedText = processedText.replace(regex, pronunciation.replace);
+    }
+  }
+
   const response = await client.chat.completions.create({
     model: "gpt-4o-audio-preview-2025-06-03",
     modalities: ["text", "audio"],
@@ -34,7 +45,7 @@ export async function createChapterPartAudio(
       },
       {
         role: "user",
-        content: chapter.parts[chapterPartNumber - 1].text,
+        content: processedText,
       },
       {
         role: "user",

@@ -28,6 +28,7 @@ import { promises as fs, createReadStream } from "fs";
 import { mkdirSync } from "fs";
 import { createChapterPartAudio } from "../services/create-chapter-part-audio.js";
 import { getBookAudio } from "../services/get-book-audio.js";
+import { editChapterPart, EditChapterPartOptions } from "../services/edit-chapter-part.js";
 import multer from "multer";
 import { generateProperty } from "../services/generate-property.js";
 import { generateEverything } from "../services/book-generate-everything.js";
@@ -145,6 +146,17 @@ server.post("/api/book/:book/chapter/:chapter/part/:part", async (req, res) => {
       req.params.book,
       parseInt(req.params.chapter),
       parseInt(req.params.part),
+    ),
+  );
+});
+server.post("/api/book/:book/chapter/:chapter/part/:part/edit", async (req, res) => {
+  const options: EditChapterPartOptions = req.body;
+  res.json(
+    await editChapterPart(
+      req.params.book,
+      parseInt(req.params.chapter),
+      parseInt(req.params.part),
+      options,
     ),
   );
 });
