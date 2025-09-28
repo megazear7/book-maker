@@ -10,7 +10,6 @@ import { PageName } from "../types/app.type.js";
 import { BookPage } from "./page.book.js";
 import { HomePage } from "./page.home.js";
 import { Page404 } from "./page.404.js";
-import "/example.js";
 import { Page } from "./page.interface.js";
 import { plusIcon } from "./service.icon.js";
 import { homeIcon } from "./service.icon.js";

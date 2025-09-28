@@ -12,6 +12,7 @@ npm install
 Obtain an api key for a model and set an environment variable as shown below in `.env`
 
 ```sh
+GROK_BASE_URL='https://api.x.ai/v1'
 GROK_API_KEY=''
 GPT_API_KEY=''
 AZURE_API_KEY=''

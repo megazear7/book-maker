@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import { ChatCompletionMessageParam } from "openai/resources";
+import { ChatCompletionCreateParamsNonStreaming, ChatCompletionMessageParam } from "openai/resources";
 import { ZodSchema } from "zod";
 import zodToJsonSchema from "zod-to-json-schema";
 import { Book } from "../types/book.type.js";
@@ -10,25 +10,29 @@ export async function getJsonCompletion<T>(
   book: Book,
   client: OpenAI,
   history: ChatCompletionMessageParam[],
-  zod: ZodSchema<T>,
+  zod?: ZodSchema<T>,
 ): Promise<T> {
   const modelConfig = getTextModelConfig(book);
-  const innerSchema = zodToJsonSchema(zod);
-  const jsonSchemaForOpenAI = {
-    name: "schema",
-    schema: innerSchema.definitions?.Article || innerSchema,
-    strict: true,
-  };
-
-  const completion = await client.chat.completions.create({
+  const config: ChatCompletionCreateParamsNonStreaming = {
     model: modelConfig.modelName,
     messages: history,
     max_completion_tokens: 10000,
-    response_format: {
+  };
+
+  if (zod) {
+    const innerSchema = zodToJsonSchema(zod);
+    const jsonSchemaForOpenAI = {
+      name: "schema",
+      schema: innerSchema.definitions?.Article || innerSchema,
+      strict: true,
+    };
+    config.response_format = {
       type: "json_schema",
       json_schema: jsonSchemaForOpenAI,
-    },
-  });
+    };
+  }
+
+  const completion = await client.chat.completions.create(config);
 
   if (!completion.choices[0].message.content) {
     throw new Error("No response");
@@ -57,7 +61,11 @@ export async function getJsonCompletion<T>(
   }
 
   try {
-    return zod.parse(JSON.parse(completion.choices[0].message.content));
+    if (zod) {
+      return zod.parse(JSON.parse(completion.choices[0].message.content));
+    } else {
+      return completion.choices[0].message.content as T;
+    }
   } catch (error) {
     console.error(completion.choices[0].message.content);
     throw error;

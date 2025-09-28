@@ -33,12 +33,18 @@ export async function openBookDetailsModal(book: Book): Promise<void> {
       type: "textarea",
       value: book.details?.aboutTheAuthor ?? "",
     },
+    {
+      name: "includeChapterTitles",
+      label: "Include Chapter Titles",
+      type: "boolean",
+      default: book.details?.includeChapterTitles ? "true" : "false",
+    },
   ];
 
   createModal("Book Details", "Save", fields, async (result) => {
     // Update book details
     if (!book.details) {
-      book.details = {};
+      book.details = { };
     }
 
     book.details.authorName =
@@ -55,16 +61,19 @@ export async function openBookDetailsModal(book: Book): Promise<void> {
     book.details.aboutTheAuthor =
       (result.find((r) => r.name === "aboutTheAuthor")?.value as string) ||
       undefined;
+    book.details.includeChapterTitles =
+      (result.find((r) => r.name === "includeChapterTitles")
+        ?.value as boolean) ?? false;
 
     // Remove empty fields
-    if (!book.details.authorName) delete book.details.authorName;
-    if (!book.details.isbn) delete book.details.isbn;
-    if (!book.details.dedication) delete book.details.dedication;
-    if (!book.details.acknowledgements) delete book.details.acknowledgements;
-    if (!book.details.aboutTheAuthor) delete book.details.aboutTheAuthor;
+    if (!book.details!.authorName) delete book.details!.authorName;
+    if (!book.details!.isbn) delete book.details!.isbn;
+    if (!book.details!.dedication) delete book.details!.dedication;
+    if (!book.details!.acknowledgements) delete book.details!.acknowledgements;
+    if (!book.details!.aboutTheAuthor) delete book.details!.aboutTheAuthor;
 
     // If details object is empty, remove it entirely
-    if (Object.keys(book.details).length === 0) {
+    if (book.details && Object.keys(book.details).length === 0) {
       delete book.details;
     }
 

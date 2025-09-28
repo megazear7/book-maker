@@ -30,7 +30,7 @@ export async function createChapterAudio(
       modalities: ["text", "audio"],
       max_completion_tokens: 15000,
       audio: {
-        voice: "ash", // Preview voice options here: https://www.openai.fm/
+        voice: "ash",
         format: "mp3",
       },
       messages: [
@@ -48,13 +48,13 @@ export async function createChapterAudio(
         },
       ],
     });
+
     const audio = response.choices[0].message.audio?.data;
     if (!audio) {
       throw new Error("No audio data returned in the response");
     }
     const buffer = Buffer.from(audio, "base64");
     const id = crypto.randomUUID();
-    await fs.mkdir(`books/book.${book.id}.audio`, { recursive: true });
     await fs.writeFile(`books/book.${book.id}.audio/${id}.mp3`, buffer);
     chapter.parts[partIndex].audio = id;
     console.log(

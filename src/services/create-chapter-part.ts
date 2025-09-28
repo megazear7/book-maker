@@ -47,11 +47,10 @@ export async function createChapterPart(
     ...makeChapterPartPrompt(chapter, partNumber, partDescription),
   ];
   const client = await getTextClient(book);
-  const chapterPartText = await getJsonCompletion(
+  const chapterPartText = await getJsonCompletion<BookChapterPartText>(
     book,
     client,
     history,
-    BookChapterPartText,
   );
   const chapterPart = {
     text: chapterPartText,

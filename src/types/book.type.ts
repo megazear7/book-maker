@@ -42,6 +42,7 @@ export const BookDetails = z.object({
   dedication: z.string().optional(),
   acknowledgements: z.string().optional(),
   aboutTheAuthor: z.string().optional(),
+  includeChapterTitles: z.boolean().optional(),
 });
 export type BookDetails = z.infer<typeof BookDetails>;
 

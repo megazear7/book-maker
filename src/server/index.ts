@@ -168,6 +168,12 @@ server.get(
       parseInt(req.params.chapter),
       parseInt(req.params.part),
     );
+    
+    if (!audioId) {
+      res.status(404).send("Audio file not found");
+      return;
+    }
+    
     const audioPath = `books/book.${req.params.book}.audio/${audioId}.mp3`;
 
     try {

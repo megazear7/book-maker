@@ -9,8 +9,8 @@ export async function getJsonCompletionNoBook<T>(
   zod: ZodSchema<T>,
 ): Promise<T> {
   const client = new OpenAI({
-    baseURL: env(`GROK_BASE_URL`),
-    apiKey: env(`GROK_API_KEY`),
+    baseURL: "https://api.x.ai/v1",
+    apiKey: env(`GROK_MODEL_API_KEY`),
   });
   const innerSchema = zodToJsonSchema(zod);
   const jsonSchemaForOpenAI = {
@@ -19,7 +19,7 @@ export async function getJsonCompletionNoBook<T>(
     strict: true,
   };
   const completion = await client.chat.completions.create({
-    model: env(`GROK_MODEL_NAME`),
+    model: "grok-4-0709",
     messages: history,
     max_completion_tokens: 10000,
     response_format: {

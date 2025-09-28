@@ -33,7 +33,10 @@ export function openDownloadBookModal(book: Book): void {
         const bookText = book.chapters
           .map((chapter) => {
             const text = chapter.parts.map((part) => part.text).join("\n");
-            return `CHAPTER ${chapter.number}: ${chapter.title}\n\n${text || "Not written yet"}`;
+            const chapterHeader = book.details?.includeChapterTitles
+              ? `CHAPTER ${chapter.number}: ${chapter.title}`
+              : `CHAPTER ${chapter.number}`;
+            return `${chapterHeader}\n\n${text || "Not written yet"}`;
           })
           .join("\n\n\n");
         download(bookText, `${book.id}.txt`);

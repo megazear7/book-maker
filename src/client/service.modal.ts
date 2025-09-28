@@ -306,6 +306,13 @@ export function createModal(
         input.name = inputPart.name;
         input.id = inputPart.name;
 
+        // Set initial checked state based on default value
+        if (inputPart.default === "true") {
+          input.checked = true;
+        } else {
+          input.checked = false;
+        }
+
         const slider: HTMLSpanElement = document.createElement("span");
         slider.className = "slider";
 

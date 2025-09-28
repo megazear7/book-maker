@@ -192,7 +192,9 @@ export async function createDocxFile(bookId: string): Promise<Buffer> {
                     new Paragraph({
                       children: [
                         new TextRun({
-                          text: `Chapter ${chapter.number}`,
+                          text: book.details?.includeChapterTitles
+                            ? `Chapter ${chapter.number}: ${chapter.title}`
+                            : `Chapter ${chapter.number}`,
                           size: 22,
                           font: "Garamond",
                         }),
@@ -324,7 +326,9 @@ export async function createDocxFile(bookId: string): Promise<Buffer> {
               id: `chapter_${chapter.number}`,
               children: [
                 new TextRun({
-                  text: `CHAPTER ${chapter.number}`,
+                  text: book.details?.includeChapterTitles
+                    ? `CHAPTER ${chapter.number}: ${chapter.title}`
+                    : `CHAPTER ${chapter.number}`,
                   size: 28,
                   font: "Garamond",
                 }),
