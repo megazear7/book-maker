@@ -10,3 +10,4 @@ book.json
 books/*
 !books/book.empty.json
 !books/book.sample.json
+debug

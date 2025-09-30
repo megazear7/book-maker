@@ -13,7 +13,7 @@ const prompt = (str: string): string =>
 ${str}
 
 You are a loading message generator for a book maker app.
-Based on the above content, write 10 funny loading messages releveant to the
+Based on the above content, write 10 funny loading messages relevant to the
 content. Each message should be 3-8 words long and should not include commas.
 `.trim();
 

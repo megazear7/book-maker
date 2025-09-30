@@ -14,7 +14,7 @@ import { getJsonCompletion } from "./get-json-completion.js";
 import {
   bookOverviewPrompt,
   chapterDetailsPrompt,
-  existingPartsPrompt,
+  priorPartsPrompt,
   referencesPrompt,
   writtenChaptersPrompt,
   charactersPrompt,
@@ -49,9 +49,9 @@ export async function editChapterPart(
     ...(await referencesPrompt(book, ReferenceUse.enum.editing)),
     ...bookOverviewPrompt(book),
     ...charactersPrompt(book),
-    ...writtenChaptersPrompt(book),
+    ...writtenChaptersPrompt(book, chapter),
     ...chapterDetailsPrompt(chapter),
-    ...existingPartsPrompt(chapter),
+    ...priorPartsPrompt(chapter, partNumber),
     ...makeEditChapterPartPrompt(existingPart.text, options),
   ];
 

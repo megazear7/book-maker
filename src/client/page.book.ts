@@ -244,7 +244,7 @@ export class BookPage implements Page {
                           <div class="textarea-actions">
                             <button data-property="book.chapters[${activeChapter.number - 1}].outline[${index}]" class="generate-instructions clean"><span class="button-inner">${refreshIcon}</span></button>
                           </div>
-                          <textarea name="activeChapter.outline[index]">${partDescription}</textarea>
+                          <textarea name="activeChapter.outline[${index}]">${partDescription}</textarea>
                         </div>
                     `,
                       )
@@ -579,7 +579,7 @@ export class BookPage implements Page {
   }
 
   handleChange(elem: HTMLTextAreaElement | HTMLInputElement): void {
-    const attributes = elem.name.split(".");
+    const attributes = elem.name.split(/[\.\[\]]/).filter(at => !!at);
     const first = attributes.shift();
 
     if (first === "book") {
@@ -591,8 +591,6 @@ export class BookPage implements Page {
     } else if (first === "activePart") {
       const activePart = this[first];
       updateNestedProperty(activePart, attributes, elem.value);
-    } else {
-      throw new Error("Invalid first item");
     }
 
     this.hasChanges = true;

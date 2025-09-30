@@ -26,7 +26,7 @@ export async function createChapterOutline(
   const book: Book = await getBook(bookId);
   const chapter: Chapter = book.chapters[chapterNumber - 1];
   console.log(
-    `Generating chapter outline for ${chapter.number} of book ${book.title}`,
+    `Generating chapter outline for chapter ${chapter.number} of book ${book.title}`,
   );
 
   const initialPromptTokens = book.model.text.usage.prompt_tokens;
@@ -36,7 +36,7 @@ export async function createChapterOutline(
     ...(await referencesPrompt(book, ReferenceUse.enum.outlining)),
     ...bookOverviewPrompt(book),
     ...charactersPrompt(book),
-    ...writtenChaptersPrompt(book),
+    ...writtenChaptersPrompt(book, chapter),
     ...chapterDetailsPrompt(chapter),
     ...makeChapterOutlinePrompt(chapter),
   ];
@@ -72,6 +72,9 @@ const makeChapterOutlinePrompt = (
     role: "user",
     content: `
 I want you to outline the "${chapter.title}" chapter into ${chapter.minParts} to ${chapter.maxParts} distinct parts.
+Each part of the outline should contain details as to the events that happen in that part, which characters are involved,
+and details that an author would need to write it.
+Keep in mind the details of when, where, what, why, how, and who from the chapter details.
 `,
   },
 ];

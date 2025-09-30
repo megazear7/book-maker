@@ -5,6 +5,7 @@ import zodToJsonSchema from "zod-to-json-schema";
 import { Book } from "../types/book.type.js";
 import { getTextModelConfig } from "./get-model-config.js";
 import { writeBook } from "./write-book.js";
+import { promises as fs } from "fs";
 
 export async function getJsonCompletion<T>(
   book: Book,
@@ -32,7 +33,12 @@ export async function getJsonCompletion<T>(
     };
   }
 
+  await fs.mkdir("debug", { recursive: true });
+  await fs.writeFile("debug/get-json-completion_config.json", JSON.stringify(config, null, 4));
+
   const completion = await client.chat.completions.create(config);
+
+  await fs.writeFile("debug/get-json-completion_completion.json", JSON.stringify(completion, null, 4));
 
   if (!completion.choices[0].message.content) {
     throw new Error("No response");

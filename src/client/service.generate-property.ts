@@ -6,7 +6,6 @@ import { getProperty } from "../shared/util.js";
 export function generateProperty(book: Book, property: string): void {
   const value = getProperty(book, property.split("book.")[1]);
   const length = value.split(" ").length;
-  console.log(value, length);
   createModal(
     `Generate ${property}`,
     "Generate",

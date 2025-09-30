@@ -1,25 +1,31 @@
-import { Book, Chapter, ReferenceUse } from "../types/book.type.js";
+import { Book, Chapter, ChapterPartNumber, ReferenceUse } from "../types/book.type.js";
 import { ChatCompletionMessageParam } from "openai/resources";
 import { loadFiles } from "./util.js";
 
-export const existingPartsPrompt = (
+export const priorPartsPrompt = (
   chapter: Chapter,
-): ChatCompletionMessageParam[] => [
-  {
-    role: "user",
-    content: `
-${chapter.parts.map((part) => part.text).join("\n")}
+  partNumber: ChapterPartNumber,
+): ChatCompletionMessageParam[] => {
+  const priorParts = chapter.parts.slice(0, partNumber - 1);
+  return priorParts.length > 0 ? [
+    {
+      role: "user",
+      content: `
+This is what has been written for chapter ${chapter.number} so far:
+
+${priorParts.map((part) => part.text).join("\n")}
 `,
-  },
-];
+    },
+  ] : [];
+}
 
 export const chapterDetailsPrompt = (
   chapter: Chapter,
 ): ChatCompletionMessageParam[] => [
-  {
-    role: "user",
-    content: `
-${chapter.title}
+    {
+      role: "user",
+      content: `
+Chapter ${chapter.number}: ${chapter.title}
 
 When:
 ${chapter.when}
@@ -39,8 +45,8 @@ ${chapter.how}
 Who
 ${chapter.who}
 `,
-  },
-];
+    },
+  ];
 
 export const referencesPrompt = async (
   book: Book,
@@ -52,42 +58,37 @@ export const referencesPrompt = async (
       .map((ref) => loadFiles(ref)),
   );
 
-  return [
+  return loadedRefs.reduce((prompts, ref) => [
+    ...prompts,
     {
       role: "user",
-      content: loadedRefs
-        .map(
-          (ref) => `
-${ref.fileContent}
-
-${ref.instructions}
-`,
-        )
-        .join("\n\n\n\n\n"),
+      content: ref.fileContent
     },
-  ];
+    {
+      role: "user",
+      content: ref.instructions
+    }
+  ], [] as ChatCompletionMessageParam[]);
 };
 
 export const bookOverviewPrompt = (
   book: Book,
 ): ChatCompletionMessageParam[] => [
-  {
-    role: "user",
-    content: `
-${book.overview}
-
-
-
-The above is an overview of the book that you will be writing.
-`,
-  },
-];
+    {
+      role: "user",
+      content: book.overview,
+    }, {
+      role: "user",
+      content: `The above is an overview of the book that you will be writing.`,
+    }
+  ];
 
 export const writtenChaptersPrompt = (
   book: Book,
+  chapterBeingWritten: Chapter
 ): ChatCompletionMessageParam[] => {
   return book.chapters
-    .filter((chapter) => chapter.parts.length > 0)
+    .filter((chapter) => chapter.parts.length > 0 && chapter.number != chapterBeingWritten.number)
     .map((chapter) => ({
       role: "user",
       content: `
@@ -98,39 +99,34 @@ ${chapter.parts.map((part) => part.text).join("\n")}
     }));
 };
 
-export const charactersPrompt = (book: Book): ChatCompletionMessageParam[] => [
-  {
-    role: "user",
-    content: `
+export const charactersPrompt = (book: Book): ChatCompletionMessageParam[] => {
+  return book.characters ? [
+    {
+      role: "user",
+      content: `
 Characters in this book:
 
-${book.characters
-  .map(
-    (character) => `
-${character.name}:
-${character.instructions}
+${book.characters.map(character => `${character.name}: ${character.instructions}`).join("\n\n")}
 `,
-  )
-  .join("\n\n")}
-`,
-  },
-];
+    },
+  ] : []
+}
 
 export const generatePreviewSentencePrompt = (
   word: string,
   book: Book,
 ): ChatCompletionMessageParam[] => [
-  {
-    role: "system",
-    content: `You are helping create a preview sentence for testing pronunciation of the word "${word}" in the context of a book. Create a short, natural sentence that uses the word "${word}" in a way that would appear in this book's style and genre.`,
-  },
-  {
-    role: "user",
-    content: `
+    {
+      role: "system",
+      content: `You are helping create a preview sentence for testing pronunciation of the word "${word}" in the context of a book. Create a short, natural sentence that uses the word "${word}" in a way that would appear in this book's style and genre.`,
+    },
+    {
+      role: "user",
+      content: `
 Book Title: ${book.title}
 Book Overview: ${book.overview}
 
 Create a single short sentence (6-15 words) that naturally incorporates the word "${word}" and fits the style and tone of this book. The sentence should demonstrate how the word would be used in context.
 `,
-  },
-];
+    },
+  ];

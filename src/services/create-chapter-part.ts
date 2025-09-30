@@ -15,7 +15,7 @@ import { getJsonCompletion } from "./get-json-completion.js";
 import {
   bookOverviewPrompt,
   chapterDetailsPrompt,
-  existingPartsPrompt,
+  priorPartsPrompt,
   referencesPrompt,
   writtenChaptersPrompt,
   charactersPrompt,
@@ -41,10 +41,10 @@ export async function createChapterPart(
     ...(await referencesPrompt(book, ReferenceUse.enum.writing)),
     ...bookOverviewPrompt(book),
     ...charactersPrompt(book),
-    ...writtenChaptersPrompt(book),
+    ...writtenChaptersPrompt(book, chapter),
     ...chapterDetailsPrompt(chapter),
-    ...existingPartsPrompt(chapter),
-    ...makeChapterPartPrompt(chapter, partNumber, partDescription),
+    ...priorPartsPrompt(chapter, partNumber),
+    ...makeChapterPartPrompt(book, chapter, partNumber, partDescription),
   ];
   const client = await getTextClient(book);
   const chapterPartText = await getJsonCompletion<BookChapterPartText>(
@@ -65,17 +65,20 @@ export async function createChapterPart(
 }
 
 const makeChapterPartPrompt = (
+  book: Book,
   chapter: Chapter,
   part: number,
   partDescription: ChapterPartDescription,
 ): ChatCompletionMessageParam[] => [
   {
     role: "user",
-    content: `
-${partDescription}
-  
-Write part ${part} the "${chapter.title}" chapter based on the above description${part > 0 ? " and the existing parts that were provided previously" : ""}.
-Do not include the chapter or part title at the beginning or any other information. Only provide the written text of this part of the book.
-`,
+    content: book.instructions.edit,
+  }, {
+    role: "user",
+    content: partDescription,
+  }, {
+    role: "user",
+    content: `Write part ${part} of the "${chapter.title}" chapter based on the above description${part > 0 ? " and the existing parts that were provided previously" : ""}.
+Do not include the chapter or part title at the beginning or any other information. Only provide the written text of this part of the book. Do not use markdown or any other formatting.`,
   },
 ];
