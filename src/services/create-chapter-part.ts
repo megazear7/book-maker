@@ -19,6 +19,7 @@ import {
   referencesPrompt,
   writtenChaptersPrompt,
   charactersPrompt,
+  editInstructionsPrompt,
 } from "./prompts.js";
 import { writeBook } from "./write-book.js";
 import { getBook } from "./get-book.js";
@@ -43,8 +44,9 @@ export async function createChapterPart(
     ...charactersPrompt(book),
     ...writtenChaptersPrompt(book, chapter),
     ...chapterDetailsPrompt(chapter),
+    ...editInstructionsPrompt(book),
     ...priorPartsPrompt(chapter, partNumber),
-    ...makeChapterPartPrompt(book, chapter, partNumber, partDescription),
+    ...makeChapterPartPrompt(chapter, partNumber, partDescription),
   ];
   const client = await getTextClient(book);
   const chapterPartText = await getJsonCompletion<BookChapterPartText>(
@@ -65,20 +67,22 @@ export async function createChapterPart(
 }
 
 const makeChapterPartPrompt = (
-  book: Book,
   chapter: Chapter,
   part: number,
   partDescription: ChapterPartDescription,
 ): ChatCompletionMessageParam[] => [
   {
     role: "user",
-    content: book.instructions.edit,
-  }, {
-    role: "user",
     content: partDescription,
   }, {
     role: "user",
-    content: `Write part ${part} of the "${chapter.title}" chapter based on the above description${part > 0 ? " and the existing parts that were provided previously" : ""}.
-Do not include the chapter or part title at the beginning or any other information. Only provide the written text of this part of the book. Do not use markdown or any other formatting.`,
+    content: `
+Write part ${part} of the "${chapter.title}" chapter based on the above description${part > 0 ? " and the existing parts that were provided previously" : ""}.
+The text should be a continuous flow from the prevous part of the part.
+Do not include the chapter or part title at the beginning or any other information.
+Only provide the written text of this part of the book.
+Reply in plain text without formatting.
+The length of this part should be about ${chapter.partLength} words long.
+`.trim(),
   },
 ];

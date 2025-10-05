@@ -48,6 +48,15 @@ ${chapter.who}
     },
   ];
 
+export const editInstructionsPrompt = (
+  book: Book,
+): ChatCompletionMessageParam[] => [
+  {
+    role: "user",
+    content: book.instructions.edit,
+  },
+];
+
 export const referencesPrompt = async (
   book: Book,
   use: ReferenceUse,

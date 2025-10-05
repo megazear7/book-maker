@@ -71,10 +71,10 @@ const makeChapterOutlinePrompt = (
   {
     role: "user",
     content: `
-I want you to outline the "${chapter.title}" chapter into ${chapter.minParts} to ${chapter.maxParts} distinct parts.
+Outline the "${chapter.title}" chapter into ${chapter.minParts} to ${chapter.maxParts} distinct parts.
+Keep in mind the details of when, where, what, why, how, and who from the chapter details but do not simply reiterate this information.
 Each part of the outline should contain details as to the events that happen in that part, which characters are involved,
 and details that an author would need to write it.
-Keep in mind the details of when, where, what, why, how, and who from the chapter details.
-`,
+`.trim(),
   },
 ];

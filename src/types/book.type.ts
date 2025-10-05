@@ -78,7 +78,7 @@ export type ChapterPartTitle = z.infer<typeof ChapterPartTitle>;
 
 export const ChapterPartDescription = z
   .string()
-  .describe("Details about the events that take place");
+  .describe("Details about the events that take place. This should be plain text without formatting or markdown.");
 export type ChapterPartDescription = z.infer<typeof ChapterPartDescription>;
 
 export const ChapterOutline = ChapterPartDescription.array();
