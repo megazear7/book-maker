@@ -29,6 +29,11 @@ export const BookReference = z.object({
 });
 export type BookReference = z.infer<typeof BookReference>;
 
+export const LoadedBookReference = BookReference.extend({
+  fileContent: z.string().describe("The file represented as a string"),
+});
+export type LoadedBookReference = z.infer<typeof LoadedBookReference>;
+
 export const BookOverview = z
   .string()
   .describe(
@@ -161,8 +166,7 @@ export type ChapterMaxParts = z.infer<typeof ChapterMaxParts>;
 
 export const ChapterPartLength = z
   .number()
-  .min(200)
-  .max(1200)
+  .min(0)
   .describe(
     "The the number of words of each part for the chapter. It should be short enough for the audio conversion to accurately transcribe the audio but long enough to be a significant portion of the chapter. A suggested number is 600.",
   );

@@ -1,6 +1,6 @@
 import z, { ZodSchema } from "zod";
 import fs from "fs";
-import { BookReference } from "../types/book.type.js";
+import { BookReference, LoadedBookReference } from "../types/book.type.js";
 import mammoth from "mammoth";
 import { PdfReader } from "pdfreader";
 import TurndownService from "turndown";
@@ -69,7 +69,7 @@ export function createEmpty<T>(schema: ZodSchema<T>): T {
 
 export async function loadFiles(
   ref: BookReference,
-): Promise<BookReference & { fileContent: string }> {
+): Promise<LoadedBookReference> {
   const filePath = ref.file;
   const extension = filePath.split(".").pop()?.toLowerCase();
 

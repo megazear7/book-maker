@@ -16,6 +16,7 @@ import {
   referencesPrompt,
   writtenChaptersPrompt,
   charactersPrompt,
+  editInstructionsPrompt,
 } from "./prompts.js";
 import { writeBook } from "./write-book.js";
 
@@ -36,6 +37,7 @@ export async function createChapterOutline(
     ...(await referencesPrompt(book, ReferenceUse.enum.outlining)),
     ...bookOverviewPrompt(book),
     ...charactersPrompt(book),
+    ...editInstructionsPrompt(book),
     ...writtenChaptersPrompt(book, chapter),
     ...chapterDetailsPrompt(chapter),
     ...makeChapterOutlinePrompt(chapter),
@@ -49,6 +51,11 @@ export async function createChapterOutline(
     ChapterOutline,
   );
   chapter.outline = outline;
+  for (const _ of outline) {
+    chapter.parts.push({
+      text: '',
+    });
+  }
   console.log(
     `Writing updates for chapter ${chapter.number} of book ${book.title}`,
   );
@@ -75,6 +82,9 @@ Outline the "${chapter.title}" chapter into ${chapter.minParts} to ${chapter.max
 Keep in mind the details of when, where, what, why, how, and who from the chapter details but do not simply reiterate this information.
 Each part of the outline should contain details as to the events that happen in that part, which characters are involved,
 and details that an author would need to write it.
+Do not include specific dates, months, and days in the overview.
+Instead focus on what should be written in the book.
+Remember that you are an amazing author.
 `.trim(),
   },
 ];

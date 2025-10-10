@@ -118,6 +118,16 @@ export class BookPage implements Page {
               <span>${usage}</span>
               <span class="save-status">${this.hasChanges ? "Saving" : "Saved"}</span>
             </div>
+        </div>
+
+        <div class="secondary-surface">
+            <h4>Overview</h4>
+            <div class="textarea-wrapper">
+              <div class="textarea-actions">
+                <button data-property="book.overview" class="generate-instructions clean"><span class="button-inner">${refreshIcon}</span></button>
+              </div>
+              <textarea name="book.overview">${book.overview}</textarea>
+            </div>
             <h4>Edit Instructions</h4>
             <div class="textarea-wrapper">
               <div class="textarea-actions">
@@ -223,7 +233,7 @@ export class BookPage implements Page {
                 <input name="activeChapter.maxParts" type="text" value="${activeChapter.maxParts}"></input>
 
                 <h4>Estimated Part Length in Words</h4>
-                <input name="activeChapter.partLength" type="text" value="${activeChapter.partLength}"></input>
+                <input name="activeChapter.partLength" type="number" value="${activeChapter.partLength}"></input>
             </div>
 
             <button id="create-chapter-outline"><span class="button-inner">${aiIconLeft}<span>${activeChapter.outline.length > 0 ? "Regenerate" : "Generate"} Outline</span>${aiIconRight}</span></button>
@@ -530,7 +540,6 @@ export class BookPage implements Page {
     await this.referencesComponent.addEventListeners();
     await this.charactersComponent.addEventListeners();
 
-    // TODO Add this button to all fields and implement an api to support this request.
     const generateInstructionsButtons = document.querySelectorAll(
       ".generate-instructions",
     );
@@ -587,7 +596,9 @@ export class BookPage implements Page {
       updateNestedProperty(book, attributes, elem.value);
     } else if (first === "activeChapter") {
       const activeChapter = this[first];
-      updateNestedProperty(activeChapter, attributes, elem.value);
+      const integerAttributes = [ 'partLength', 'maxParts', 'minParts' ];
+      const isIntegerAttribute = integerAttributes.includes(attributes[attributes.length - 1]);
+      updateNestedProperty(activeChapter, attributes, isIntegerAttribute ? parseInt(elem.value) : elem.value);
     } else if (first === "activePart") {
       const activePart = this[first];
       updateNestedProperty(activePart, attributes, elem.value);

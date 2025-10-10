@@ -1,4 +1,4 @@
-import { Book, Chapter, ChapterPartNumber, ReferenceUse } from "../types/book.type.js";
+import { Book, Chapter, ChapterPartNumber, LoadedBookReference, ReferenceUse } from "../types/book.type.js";
 import { ChatCompletionMessageParam } from "openai/resources";
 import { loadFiles } from "./util.js";
 
@@ -11,7 +11,7 @@ export const priorPartsPrompt = (
     {
       role: "user",
       content: `
-This is what has been written for chapter ${chapter.number} so far:
+Chapter ${chapter.number} ${priorParts.length > 1 ? `parts ${1} through ${priorParts.length + 1}` : `part 1:`}:
 
 ${priorParts.map((part) => part.text).join("\n")}
 `,
@@ -61,23 +61,22 @@ export const referencesPrompt = async (
   book: Book,
   use: ReferenceUse,
 ): Promise<ChatCompletionMessageParam[]> => {
-  const loadedRefs = await Promise.all(
-    book.references
-      .filter((ref) => ref.whenToUse.includes(use))
-      .map((ref) => loadFiles(ref)),
-  );
-
-  return loadedRefs.reduce((prompts, ref) => [
-    ...prompts,
-    {
-      role: "user",
-      content: ref.fileContent
-    },
-    {
-      role: "user",
-      content: ref.instructions
+  const loadedRefs: ChatCompletionMessageParam[] = [];
+  for (const ref of book.references) {
+    if (ref.whenToUse.includes(use)) {
+      const loadedRef = await loadFiles(ref);
+      loadedRefs.push({
+        role: "user",
+        content: loadedRef.fileContent
+      });
+      loadedRefs.push({
+        role: "user",
+        content: loadedRef.instructions
+      });
     }
-  ], [] as ChatCompletionMessageParam[]);
+  }
+
+  return loadedRefs;
 };
 
 export const bookOverviewPrompt = (
@@ -96,7 +95,8 @@ export const writtenChaptersPrompt = (
   book: Book,
   chapterBeingWritten: Chapter
 ): ChatCompletionMessageParam[] => {
-  return book.chapters
+  const priorChapters = book.chapters.slice(0, chapterBeingWritten.number - 1);
+  return priorChapters
     .filter((chapter) => chapter.parts.length > 0 && chapter.number != chapterBeingWritten.number)
     .map((chapter) => ({
       role: "user",
@@ -109,13 +109,17 @@ ${chapter.parts.map((part) => part.text).join("\n")}
 };
 
 export const charactersPrompt = (book: Book): ChatCompletionMessageParam[] => {
-  return book.characters ? [
+  return book.characters && book.characters.length > 0 ? [
     {
       role: "user",
       content: `
 Characters in this book:
 
-${book.characters.map(character => `${character.name}: ${character.instructions}`).join("\n\n")}
+${book.characters.map(character => `
+${character.name}: ${character.instructions}
+
+Use this as simply background information. Do not reemphasize these character details in every part or chapter.
+`.trim()).join("\n\n")}
 `,
     },
   ] : []

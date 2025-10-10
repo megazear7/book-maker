@@ -25,11 +25,21 @@ export async function createChapter(
     partNumber <= chapter.outline.length;
     partNumber++
   ) {
+    parts.push({
+      text: "",
+    });
+  }
+
+  for (
+    let partNumber: ChapterPartNumber = 1;
+    partNumber <= chapter.outline.length;
+    partNumber++
+  ) {
     console.log(
       `Generating part ${partNumber}/${chapter.outline.length} for chapter ${chapter.number}`,
     );
     const part = await createChapterPart(bookId, chapterNumber, partNumber);
-    parts.push(part);
+    parts[partNumber - 1] = part;
   }
 
   console.log(

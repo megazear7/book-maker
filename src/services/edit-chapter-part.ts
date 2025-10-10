@@ -12,12 +12,10 @@ import { ChatCompletionMessageParam } from "openai/resources";
 import { getTextClient } from "./client.js";
 import { getJsonCompletion } from "./get-json-completion.js";
 import {
-  bookOverviewPrompt,
-  chapterDetailsPrompt,
   priorPartsPrompt,
   referencesPrompt,
   writtenChaptersPrompt,
-  charactersPrompt,
+  editInstructionsPrompt,
 } from "./prompts.js";
 import { writeBook } from "./write-book.js";
 import { getBook } from "./get-book.js";
@@ -47,10 +45,8 @@ export async function editChapterPart(
 
   const history: ChatCompletionMessageParam[] = [
     ...(await referencesPrompt(book, ReferenceUse.enum.editing)),
-    ...bookOverviewPrompt(book),
-    ...charactersPrompt(book),
+    ...editInstructionsPrompt(book),
     ...writtenChaptersPrompt(book, chapter),
-    ...chapterDetailsPrompt(chapter),
     ...priorPartsPrompt(chapter, partNumber),
     ...makeEditChapterPartPrompt(existingPart.text, options),
   ];
@@ -106,19 +102,24 @@ const makeEditChapterPartPrompt = (
   }
 
   const instructionText = instructions.length > 0
-    ? `Apply the following edits: ${instructions.join(", ")}. `
+    ? `Apply the following edits: ${instructions.join(". ")}. `
     : "";
 
   return [
     {
       role: "user",
-      content: `Here is the existing text of this chapter part:
-
-${existingText}
-
-${instructionText}Edit this text while keeping it as similar as possible to the original. Make only the requested changes and preserve the core content, plot, and character actions. Do not rewrite the entire scene - only apply the specified edits.
-
-Return the edited text.`,
+      content: existingText,
     },
+    {
+      role: "user",
+      content: `
+The above is the existing text of this chapter part.
+${instructionText}
+Edit this text while keeping it as similar as possible to the original.
+Make only the requested changes and preserve the core content, plot, and character actions.
+Do not rewrite the entire scene - only apply the specified edits.
+Return the edited text.
+`
+    }
   ];
 };
