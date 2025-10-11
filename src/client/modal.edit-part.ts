@@ -1,12 +1,11 @@
 import { createModal, ModalPart } from "./service.modal.js";
 import { editChapterPart } from "./service.api.js";
+import { Book, Chapter } from "../types/book.type.js";
 
 export async function openEditPartModal(
-  bookId: string,
-  chapterNumber: number,
   partNumber: number,
-  book: any,
-  chapter: any,
+  book: Book,
+  chapter: Chapter,
 ): Promise<void> {
   const fields: ModalPart[] = [
     {
@@ -51,12 +50,22 @@ export async function openEditPartModal(
   createModal("Edit Chapter Part", "Edit", fields, async (result) => {
     // Prepare the edit options
     const options = {
-      addMoreDialog: result.find((r) => r.name === "addMoreDialog")?.value === true,
-      useLessDescriptiveLanguage: result.find((r) => r.name === "useLessDescriptiveLanguage")?.value === true,
-      replaceUndesirableWords: result.find((r) => r.name === "replaceUndesirableWords")?.value === true,
-      splitIntoParagraphs: result.find((r) => r.name === "splitIntoParagraphs")?.value === true,
-      removeOutOfPlaceReferences: result.find((r) => r.name === "removeOutOfPlaceReferences")?.value === true,
-      additionalInstructions: result.find((r) => r.name === "additionalInstructions")?.value as string || "",
+      addMoreDialog:
+        result.find((r) => r.name === "addMoreDialog")?.value === true,
+      useLessDescriptiveLanguage:
+        result.find((r) => r.name === "useLessDescriptiveLanguage")?.value ===
+        true,
+      replaceUndesirableWords:
+        result.find((r) => r.name === "replaceUndesirableWords")?.value ===
+        true,
+      splitIntoParagraphs:
+        result.find((r) => r.name === "splitIntoParagraphs")?.value === true,
+      removeOutOfPlaceReferences:
+        result.find((r) => r.name === "removeOutOfPlaceReferences")?.value ===
+        true,
+      additionalInstructions:
+        (result.find((r) => r.name === "additionalInstructions")
+          ?.value as string) || "",
     };
 
     try {

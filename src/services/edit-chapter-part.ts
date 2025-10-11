@@ -82,15 +82,21 @@ const makeEditChapterPartPrompt = (
   }
 
   if (options.useLessDescriptiveLanguage) {
-    instructions.push("Use less descriptive language to make the writing more concise");
+    instructions.push(
+      "Use less descriptive language to make the writing more concise",
+    );
   }
 
   if (options.replaceUndesirableWords) {
-    instructions.push("Replace words that do not match the setting, theme, style, and timeframe of the book");
+    instructions.push(
+      "Replace words that do not match the setting, theme, style, and timeframe of the book",
+    );
   }
 
   if (options.splitIntoParagraphs) {
-    instructions.push("Split the text into proper paragraphs for better readability");
+    instructions.push(
+      "Split the text into proper paragraphs for better readability",
+    );
   }
 
   if (options.removeOutOfPlaceReferences) {
@@ -101,9 +107,10 @@ const makeEditChapterPartPrompt = (
     instructions.push(options.additionalInstructions);
   }
 
-  const instructionText = instructions.length > 0
-    ? `Apply the following edits: ${instructions.join(". ")}. `
-    : "";
+  const instructionText =
+    instructions.length > 0
+      ? `Apply the following edits: ${instructions.join(". ")}. `
+      : "";
 
   return [
     {
@@ -119,7 +126,7 @@ Edit this text while keeping it as similar as possible to the original.
 Make only the requested changes and preserve the core content, plot, and character actions.
 Do not rewrite the entire scene - only apply the specified edits.
 Return the edited text.
-`
-    }
+`,
+    },
   ];
 };

@@ -1,3 +1,6 @@
+import { ReferenceUse } from "../types/book.type.js";
+import z from "zod";
+
 export function getProperty(
   obj: Record<string, unknown>,
   property: string,
@@ -98,4 +101,8 @@ export function callbackOnProperty(
   }
 
   return foundProperty;
+}
+
+export function getZodEnumValues(enumSchema: z.ZodEnum<any>): string[] {
+  return enumSchema._def.values as string[];
 }

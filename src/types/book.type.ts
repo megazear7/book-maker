@@ -19,7 +19,7 @@ export const BookMinimalInfo = z.object({
 });
 export type BookMinimalInfo = z.infer<typeof BookMinimalInfo>;
 
-export const ReferenceUse = z.enum(["outlining", "writing", "editing"]);
+export const ReferenceUse = z.enum(["outlining", "writing", "editing", "plot"]);
 export type ReferenceUse = z.infer<typeof ReferenceUse>;
 
 export const BookReference = z.object({
@@ -83,7 +83,9 @@ export type ChapterPartTitle = z.infer<typeof ChapterPartTitle>;
 
 export const ChapterPartDescription = z
   .string()
-  .describe("Details about the events that take place. This should be plain text without formatting or markdown.");
+  .describe(
+    "Details about the events that take place. This should be plain text without formatting or markdown.",
+  );
 export type ChapterPartDescription = z.infer<typeof ChapterPartDescription>;
 
 export const ChapterOutline = ChapterPartDescription.array();

@@ -1,7 +1,8 @@
-import { Book } from "../types/book.type.js";
+import { Book, ReferenceUse } from "../types/book.type.js";
 import { Component } from "./component.interface.js";
 import { trashIcon } from "./service.icon.js";
 import { createModal } from "./service.modal.js";
+import { getZodEnumValues } from "../shared/util.js";
 
 export class References implements Component {
   book: Book;
@@ -129,10 +130,10 @@ export class References implements Component {
           name: "whenToUse",
           label: "When to Use",
           type: "multiselect",
-          options: [
-            { label: "Outlining", value: "outlining" },
-            { label: "Writing", value: "writing" },
-          ],
+          options: getZodEnumValues(ReferenceUse).map((value) => ({
+            label: value.charAt(0).toUpperCase() + value.slice(1),
+            value,
+          })),
           selected: ref.whenToUse,
         },
       ],
@@ -144,6 +145,8 @@ export class References implements Component {
           (result.find((r) => r.name === "whenToUse")?.value as (
             | "outlining"
             | "writing"
+            | "editing"
+            | "plot"
           )[]) || [];
         this.onChange();
         // Save to server

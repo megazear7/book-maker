@@ -51,9 +51,9 @@ export async function createChapterOutline(
     ChapterOutline,
   );
   chapter.outline = outline;
-  for (const _ of outline) {
+  for (let i = 0; i < outline.length; i++) {
     chapter.parts.push({
-      text: '',
+      text: "",
     });
   }
   console.log(

@@ -44,7 +44,7 @@ export async function openBookDetailsModal(book: Book): Promise<void> {
   createModal("Book Details", "Save", fields, async (result) => {
     // Update book details
     if (!book.details) {
-      book.details = { };
+      book.details = {};
     }
 
     book.details.authorName =

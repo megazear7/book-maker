@@ -11,6 +11,7 @@ export default [
   {
     rules: {
       "@typescript-eslint/explicit-function-return-type": "error",
+      "no-useless-escape": "off",
     }
   }
 ];

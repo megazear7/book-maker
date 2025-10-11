@@ -1,5 +1,8 @@
 import OpenAI from "openai";
-import { ChatCompletionCreateParamsNonStreaming, ChatCompletionMessageParam } from "openai/resources";
+import {
+  ChatCompletionCreateParamsNonStreaming,
+  ChatCompletionMessageParam,
+} from "openai/resources";
 import { ZodSchema } from "zod";
 import zodToJsonSchema from "zod-to-json-schema";
 import { Book } from "../types/book.type.js";
@@ -34,11 +37,17 @@ export async function getJsonCompletion<T>(
   }
 
   await fs.mkdir("debug", { recursive: true });
-  await fs.writeFile("debug/get-json-completion_config.json", JSON.stringify(config, null, 4));
+  await fs.writeFile(
+    "debug/get-json-completion-prompts.json",
+    JSON.stringify(config, null, 4),
+  );
 
   const completion = await client.chat.completions.create(config);
 
-  await fs.writeFile("debug/get-json-completion_completion.json", JSON.stringify(completion, null, 4));
+  await fs.writeFile(
+    "debug/get-json-completion-completion.json",
+    JSON.stringify(completion, null, 4),
+  );
 
   if (!completion.choices[0].message.content) {
     throw new Error("No response");
@@ -58,7 +67,7 @@ export async function getJsonCompletion<T>(
           (book.model.text.cost.outputTokenCost / 1000000) +
         completion.usage.prompt_tokens *
           (book.model.text.cost.inputTokenCost / 1000000);
-      console.log("Added cost: " + addedCost, completion.usage);
+      console.log("Added cost: $" + addedCost.toFixed(2));
     } else {
       console.log("No usage info returned: ", completion.usage);
     }

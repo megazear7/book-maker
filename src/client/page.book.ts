@@ -341,9 +341,7 @@ export class BookPage implements Page {
     const createChapterPartButton = document.getElementById(
       "create-chapter-part",
     );
-    const editChapterPartButton = document.getElementById(
-      "edit-chapter-part",
-    );
+    const editChapterPartButton = document.getElementById("edit-chapter-part");
     const createChapterPartAudioButton = document.getElementById(
       "create-chapter-part-audio",
     );
@@ -396,7 +394,7 @@ export class BookPage implements Page {
 
     if (editChapterPartButton && activeChapter && activePartNumber) {
       editChapterPartButton.addEventListener("click", async () => {
-        await openEditPartModal(book.id, activeChapter.number, activePartNumber, book, activeChapter);
+        await openEditPartModal(activePartNumber, book, activeChapter);
       });
     }
 
@@ -588,7 +586,7 @@ export class BookPage implements Page {
   }
 
   handleChange(elem: HTMLTextAreaElement | HTMLInputElement): void {
-    const attributes = elem.name.split(/[\.\[\]]/).filter(at => !!at);
+    const attributes = elem.name.split(/[\.\[\]]/).filter((at) => !!at);
     const first = attributes.shift();
 
     if (first === "book") {
@@ -596,9 +594,15 @@ export class BookPage implements Page {
       updateNestedProperty(book, attributes, elem.value);
     } else if (first === "activeChapter") {
       const activeChapter = this[first];
-      const integerAttributes = [ 'partLength', 'maxParts', 'minParts' ];
-      const isIntegerAttribute = integerAttributes.includes(attributes[attributes.length - 1]);
-      updateNestedProperty(activeChapter, attributes, isIntegerAttribute ? parseInt(elem.value) : elem.value);
+      const integerAttributes = ["partLength", "maxParts", "minParts"];
+      const isIntegerAttribute = integerAttributes.includes(
+        attributes[attributes.length - 1],
+      );
+      updateNestedProperty(
+        activeChapter,
+        attributes,
+        isIntegerAttribute ? parseInt(elem.value) : elem.value,
+      );
     } else if (first === "activePart") {
       const activePart = this[first];
       updateNestedProperty(activePart, attributes, elem.value);

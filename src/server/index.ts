@@ -28,7 +28,10 @@ import { promises as fs, createReadStream } from "fs";
 import { mkdirSync } from "fs";
 import { createChapterPartAudio } from "../services/create-chapter-part-audio.js";
 import { getBookAudio } from "../services/get-book-audio.js";
-import { editChapterPart, EditChapterPartOptions } from "../services/edit-chapter-part.js";
+import {
+  editChapterPart,
+  EditChapterPartOptions,
+} from "../services/edit-chapter-part.js";
 import multer from "multer";
 import { generateProperty } from "../services/generate-property.js";
 import { generateEverything } from "../services/book-generate-everything.js";
@@ -149,17 +152,20 @@ server.post("/api/book/:book/chapter/:chapter/part/:part", async (req, res) => {
     ),
   );
 });
-server.post("/api/book/:book/chapter/:chapter/part/:part/edit", async (req, res) => {
-  const options: EditChapterPartOptions = req.body;
-  res.json(
-    await editChapterPart(
-      req.params.book,
-      parseInt(req.params.chapter),
-      parseInt(req.params.part),
-      options,
-    ),
-  );
-});
+server.post(
+  "/api/book/:book/chapter/:chapter/part/:part/edit",
+  async (req, res) => {
+    const options: EditChapterPartOptions = req.body;
+    res.json(
+      await editChapterPart(
+        req.params.book,
+        parseInt(req.params.chapter),
+        parseInt(req.params.part),
+        options,
+      ),
+    );
+  },
+);
 server.post(
   "/api/book/:book/chapter/:chapter/part/:part/audio",
   async (req, res) => {
@@ -180,12 +186,12 @@ server.get(
       parseInt(req.params.chapter),
       parseInt(req.params.part),
     );
-    
+
     if (!audioId) {
       res.status(404).send("Audio file not found");
       return;
     }
-    
+
     const audioPath = `books/book.${req.params.book}.audio/${audioId}.mp3`;
 
     try {

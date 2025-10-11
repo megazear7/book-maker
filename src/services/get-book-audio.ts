@@ -1,4 +1,4 @@
-import { Book, BookId } from "../types/book.type.js";
+import { Book, BookId, Chapter } from "../types/book.type.js";
 import { getBook } from "./get-book.js";
 import { getChapterPartAudioId } from "./get-chapter-part-audio-id.js";
 import { getAudioClient } from "./client.js";
@@ -47,14 +47,18 @@ export async function getBookAudio(bookId: BookId): Promise<Readable> {
         if (audioPaths.length > 0) {
           try {
             await combineMP3Files(audioPaths, audioPath);
-            console.log(`Returning partial audio with ${audioPaths.length} segments`);
+            console.log(
+              `Returning partial audio with ${audioPaths.length} segments`,
+            );
             return createReadStream(audioPath);
           } catch (err) {
             console.error("Failed to combine partial MP3 files:", err);
             throw err;
           }
         } else {
-          throw new Error(`No audio available for chapter ${chapter.number} part ${partNumber} and no previous audio to return`);
+          throw new Error(
+            `No audio available for chapter ${chapter.number} part ${partNumber} and no previous audio to return`,
+          );
         }
       }
 
@@ -112,7 +116,10 @@ async function combineMP3Files(
   });
 }
 
-async function generateChapterIntro(book: Book, chapter: any): Promise<string> {
+async function generateChapterIntro(
+  book: Book,
+  chapter: Chapter,
+): Promise<string> {
   const client = await getAudioClient(book);
   const introId = `chapter_${chapter.number}_intro`;
 
@@ -122,7 +129,7 @@ async function generateChapterIntro(book: Book, chapter: any): Promise<string> {
     await fs.access(introPath);
     console.log(`Chapter intro audio already exists: ${introPath}`);
     return introId;
-  } catch (err) {
+  } catch {
     console.log(
       `Chapter intro audio does not exist, generating new audio: ${introPath}`,
     );
@@ -176,7 +183,7 @@ async function createSilence(duration: number): Promise<string> {
     await fs.access(silencePath);
     console.log(`Silence audio file already exists: ${silencePath}`);
     return silenceId;
-  } catch (err) {
+  } catch {
     console.log(
       `Silence audio file does not exist, generating new audio: ${silencePath}`,
     );
