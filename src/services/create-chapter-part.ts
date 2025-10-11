@@ -227,6 +227,7 @@ const makeFixQualityPrompt = (
   partDescription: ChapterPartDescription,
   currentText: string,
 ): ChatCompletionMessageParam[] => {
+  const lastPart = chapter.parts.length === part;
   return [
     {
       role: "user",
@@ -241,6 +242,7 @@ const makeFixQualityPrompt = (
       content: `
 Improve the writing quality of this part by enhancing grammar, style, clarity, and engagement.
 Ensure the language is vivid, concise, and appropriate for the book's tone.
+${ lastPart ? '' : `The end of each part should flow to the beginning of the next part without a summary or conclusion.`}
 Do not change the plot, characters, or core content.
 Reply with the improved text only, without any additional comments or formatting.
 `.trim(),
