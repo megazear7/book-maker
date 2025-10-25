@@ -1,7 +1,8 @@
 import express from "express";
 import { getBook } from "../services/get-book.js";
-import page from "./page.js";
-import body from "./body.js";
+import { Page } from "./page.js";
+import { PageNew } from "./page-new.js";
+import { PageBody } from "./body.js";
 import { getBooks } from "../services/get-books.js";
 import { createChapterOutline } from "../services/create-chapter-outline.js";
 import { createChapter } from "../services/create-chapter.js";
@@ -40,6 +41,7 @@ import { getTextClient } from "../services/client.js";
 import { getTextModelConfig } from "../services/get-model-config.js";
 import { getAudioClient } from "../services/client.js";
 import { createDocxFile } from "../services/book-file-docx.js";
+import { PageBodyNew } from "./body-new.js";
 
 const server = express();
 server.use(express.json({ limit: "10mb" }));
@@ -341,6 +343,7 @@ server.get("/api/book/:book/download.docx", async (req, res) => {
   }
 });
 server.use(express.static("dist/client"));
+server.use(express.static("dist/client-new"));
 server.use("/shared", express.static("dist/shared"));
 server.use("/types", express.static("dist/types"));
 server.use(
@@ -348,8 +351,12 @@ server.use(
   express.static("node_modules/docx/dist/index.mjs"),
 );
 server.use(express.static("src/static"));
+server.get("/new/*", async (req, res) => {
+  console.log("Serving new page for", req.url);
+  res.send(PageNew(PageBodyNew()));
+});
 server.get("/*", async (req, res) => {
-  res.send(page(body()));
+  res.send(Page(PageBody()));
 });
 
 // Error handling middleware
