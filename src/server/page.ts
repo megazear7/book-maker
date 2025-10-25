@@ -2,7 +2,7 @@ export const Page = (body: string): string => `
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Book Maker</title>
+        <title>Book Maker Old</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="/app.css">
 

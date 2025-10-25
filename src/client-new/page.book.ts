@@ -467,6 +467,18 @@ export class PageBook extends BasePage {
     }
   }
 
+  private async handleAddPart() {
+    if (!this.activeChapter) return;
+
+    try {
+      // TODO: Implement adding parts
+      alert.info('Add part functionality not yet implemented');
+    } catch (error) {
+      console.error('Add part failed:', error);
+      alert.error('Failed to add part');
+    }
+  }
+
   private handleBookTitleChange(e: Event) {
     const target = e.target as HTMLInputElement;
     this.book.title = target.value;
@@ -518,6 +530,18 @@ export class PageBook extends BasePage {
     const target = e.target as HTMLTextAreaElement;
     this.activePart.text = target.value;
     this.handleChange();
+  }
+
+  private navigateToChapter(chapterNumber: number) {
+    window.history.pushState(null, '', `/new/book/${this.book.id}/chapter/${chapterNumber}`);
+    // Trigger route parsing in the app component
+    window.dispatchEvent(new PopStateEvent('popstate'));
+  }
+
+  private navigateToPart(chapterNumber: number, partNumber: number) {
+    window.history.pushState(null, '', `/new/book/${this.book.id}/chapter/${chapterNumber}/part/${partNumber}`);
+    // Trigger route parsing in the app component
+    window.dispatchEvent(new PopStateEvent('popstate'));
   }
 
   render() {
@@ -640,7 +664,10 @@ export class PageBook extends BasePage {
         <ul class="pills">
           ${this.book.chapters.map(chapter => html`
             <li class="${chapter.number === this.activeChapter?.number ? 'active' : ''}">
-              <a href="/book/${this.book.id}/chapter/${chapter.number}">
+              <a
+                href="/new/book/${this.book.id}/chapter/${chapter.number}"
+                @click=${(e: Event) => { e.preventDefault(); this.navigateToChapter(chapter.number); }}
+              >
                 Chapter ${chapter.number}: ${chapter.title}
               </a>
             </li>
@@ -652,6 +679,23 @@ export class PageBook extends BasePage {
           </li>
         </ul>
       </div>
+
+      ${this.activeChapter ? html`
+        <div class="part-navigation">
+          <h4>Parts in Chapter ${this.activeChapter.number}</h4>
+          <div class="part-pills">
+            ${this.activeChapter.parts.map((part, index) => html`
+              <a
+                class="part-pill ${this.activePart === part ? 'active' : ''}"
+                @click=${(e: Event) => { e.preventDefault(); this.navigateToPart(this.activeChapter!.number, index + 1); }}
+              >
+                Part ${index + 1}
+              </a>
+            `)}
+            <button class="add-part-btn" @click=${this.handleAddPart}>+</button>
+          </div>
+        </div>
+      ` : ''}
 
       ${this.activeChapter ? html`
         <div class="chapter-details secondary-surface">

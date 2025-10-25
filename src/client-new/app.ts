@@ -134,7 +134,9 @@ export class BookMakerApp extends LitElement {
   private async loadBooks() {
     try {
       const response = await fetch('/api/books');
-      this.books = BookMinimalInfo.array().parse(await response.json());
+      const data = await response.json();
+      this.books = BookMinimalInfo.array().parse(data);
+      this.requestUpdate();
     } catch (error) {
       console.error('Failed to load books:', error);
     }
@@ -150,19 +152,19 @@ export class BookMakerApp extends LitElement {
       this.chapter = undefined;
       this.activePart = undefined;
       this.partNumber = undefined;
-    } else if (path.match(/^\/book\/([^/]+)\/chapter\/([^/]+)\/part\/([^/]+)$/)) {
-      const [, bookId, chapterNum, partNum] = path.match(/^\/book\/([^/]+)\/chapter\/([^/]+)\/part\/([^/]+)$/)!;
+    } else if (path.match(/^\/new\/book\/([^/]+)\/chapter\/([^/]+)\/part\/([^/]+)$/)) {
+      const [, bookId, chapterNum, partNum] = path.match(/^\/new\/book\/([^/]+)\/chapter\/([^/]+)\/part\/([^/]+)$/)!;
       this.currentPage = 'part';
       this.bookId = bookId as BookId;
       this.partNumber = parseInt(partNum) as ChapterPartNumber;
       this.loadBookData();
-    } else if (path.match(/^\/book\/([^/]+)\/chapter\/([^/]+)$/)) {
-      const [, bookId, chapterNum] = path.match(/^\/book\/([^/]+)\/chapter\/([^/]+)$/)!;
+    } else if (path.match(/^\/new\/book\/([^/]+)\/chapter\/([^/]+)$/)) {
+      const [, bookId, chapterNum] = path.match(/^\/new\/book\/([^/]+)\/chapter\/([^/]+)$/)!;
       this.currentPage = 'chapter';
       this.bookId = bookId as BookId;
       this.loadBookData();
-    } else if (path.match(/^\/book\/([^/]+)$/)) {
-      const [, bookId] = path.match(/^\/book\/([^/]+)$/)!;
+    } else if (path.match(/^\/new\/book\/([^/]+)$/)) {
+      const [, bookId] = path.match(/^\/new\/book\/([^/]+)$/)!;
       this.currentPage = 'book';
       this.bookId = bookId as BookId;
       this.loadBookData();
@@ -202,6 +204,8 @@ export class BookMakerApp extends LitElement {
     } finally {
       this.isLoading = false;
     }
+
+    this.requestUpdate();
   }
 
   private navigateTo(path: string) {
@@ -261,11 +265,9 @@ export class BookMakerApp extends LitElement {
       case 'home':
         return html`<page-home></page-home>`;
       case 'book':
-        return this.book ? html`<page-book .book=${this.book} .activeChapter=${this.chapter} .activePart=${this.activePart} .activePartNumber=${this.partNumber} .hasChanges=${this.hasChanges}></page-book>` : html`<p>Loading...</p>`;
       case 'chapter':
-        return this.book && this.chapter ? html`<chapter-page .book=${this.book} .chapter=${this.chapter}></chapter-page>` : html`<p>Loading...</p>`;
       case 'part':
-        return this.book && this.chapter && this.activePart ? html`<part-page .book=${this.book} .chapter=${this.chapter} .part=${this.activePart}></part-page>` : html`<p>Loading...</p>`;
+        return this.book ? html`<page-book .book=${this.book} .activeChapter=${this.chapter} .activePart=${this.activePart} .activePartNumber=${this.partNumber} .hasChanges=${this.hasChanges}></page-book>` : html`<p>Loading...</p>`;
       case '404':
       default:
         return html`<page-404></page-404>`;

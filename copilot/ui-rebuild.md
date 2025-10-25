@@ -3,7 +3,6 @@ DO NOT copy files from one folder to the other.
 Instead, reimplement the functionality using LitElement best practices.
 Focus on iteratively refactoring the code to make it high quality, excellent code.
 ALL the files you should be editing are under /Users/alexlockhart/src/book-maker
-
 Check the checkboxes in this markdown file as you complete the steps.
 
 ## Analysis of Current UI Structure
