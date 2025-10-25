@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const PageName = z
-  .enum(["home", "book", "chapter", "part"])
+  .enum(["home", "book", "chapter", "part", "404"])
   .describe(
     "The name of the current page, used for routing and rendering the correct content.",
   );

@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "serve": "nodemon dist/server/index.js --ignore books --ignore debug",
-    "build": "tsc",
+    "build": "tsc && rollup -c && mkdir -p dist/client-new && cp src/client-new/index.html dist/client-new/",
     "watch": "run-p watch:tsc watch:rollup serve",
     "watch:tsc": "tsc --watch",
     "watch:rollup": "rollup -c --watch",

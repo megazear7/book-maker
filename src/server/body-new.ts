@@ -1,4 +1,4 @@
 export const PageBodyNew = (): string => `
-    <hello-world></hello-world>
+    <book-maker-app></book-maker-app>
     <script type="module" src="/app-new.js"></script>
 `;
