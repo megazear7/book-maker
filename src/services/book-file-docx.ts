@@ -419,7 +419,7 @@ export async function createDocxFile(bookId: string): Promise<Buffer> {
 
   zip.updateFile("word/settings.xml", Buffer.from(modifiedSettingsXml, "utf8"));
 
-  await fs.writeFile("debug-document.xml", documentXml, "utf8");
+  await fs.writeFile("debug/document.xml", documentXml, "utf8");
 
   // Modify XML to add mirrorMargins to chapter sections
   // Chapter sections are identified by having footers (page numbers)

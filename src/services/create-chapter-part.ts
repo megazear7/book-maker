@@ -216,6 +216,7 @@ Fix any plot inconsistencies, logical errors, or continuity issues in this part 
 Ensure the story progresses logically and maintains coherence with the established plot.
 Do not change the core content or add new elements unless necessary to fix inconsistencies.
 Reply with the improved text only, without any additional comments or formatting.
+The length of this part should remain about ${chapter.partLength} words long.
 `.trim(),
     },
   ];
@@ -245,6 +246,7 @@ Ensure the language is vivid, concise, and appropriate for the book's tone.
 ${ lastPart ? '' : `The end of each part should flow to the beginning of the next part without a summary or conclusion.`}
 Do not change the plot, characters, or core content.
 Reply with the improved text only, without any additional comments or formatting.
+The length of this part should remain about ${chapter.partLength} words long.
 `.trim(),
     },
   ];
